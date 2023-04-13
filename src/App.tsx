@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, Fragment } from 'react'
 import GlobalStyles from './assets/styles/GlobalStyled'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PublicRouters from './Routers'
@@ -10,15 +10,18 @@ const App: FC = () => {
       <Router>
         <Routes>
           {PublicRouters.map((routes, index) => {
-            const Layout = DefaultLayout
+            let Layout = DefaultLayout
             const Page = routes.component
+            if (routes.layout) {
+              Layout = Fragment
+            }
             return (
               <Route
                 key={index}
                 path={routes.path}
                 element={
                   <Layout>
-                    <Page />
+                    <Page type={routes.type} />
                   </Layout>
                 }
               />

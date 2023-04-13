@@ -6,14 +6,14 @@ const DefaultLayoutStyled = styled.div`
     min-height: 80vh;
     background: rgb(23, 53, 139);
     &-w-2 {
-      width: 20%;
+      width: 15%;
       background: rgb(23, 53, 139);
       color: white;
     }
     &-w-8 {
       padding: 20px 50px;
       background: rgb(241, 242, 245);
-      width: 75%;
+      width: 80%;
       border-radius: 5px 0 0 5px;
     }
   }

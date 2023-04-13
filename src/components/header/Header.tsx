@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import styled from 'styled-components'
-
+import Navbars from '../navbar/Navbar'
 const HeaderStyled = styled.div`
   text-align: center;
   background: rgb(23, 53, 139);
@@ -14,6 +14,7 @@ const Header: FC = () => {
   return (
     <HeaderStyled>
       <h1>Manage Apartment</h1>
+      <Navbars />
     </HeaderStyled>
   )
 }

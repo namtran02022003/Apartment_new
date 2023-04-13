@@ -1,8 +1,9 @@
-import { FC } from 'react'
+import { FC, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { Residentjson } from './Residentjson'
+import { getResident } from '../../apis/Service'
+import { useNavigate } from 'react-router-dom'
 const ResidentStyled = styled.div`
   .apartment-flex {
     display: flex;
@@ -94,6 +95,11 @@ const ResidentStyled = styled.div`
   }
 `
 const Resident: FC = () => {
+  const [residents, setResidents] = useState([])
+  const Navigate = useNavigate()
+  useEffect(() => {
+    getResident(setResidents)
+  }, [])
   return (
     <ResidentStyled>
       <div className="apartment-flex">
@@ -103,11 +109,13 @@ const Resident: FC = () => {
         <div className="apartment-flex-item apartment-flex">
           <form>
             <input type="text" placeholder="Enter search..." />
-            <button className="btn-search">
+            <button title="search" className="btn-search">
               <FontAwesomeIcon icon={faSearch} />
             </button>
           </form>
-          <button className="btn-create">Create new Resident</button>
+          <button onClick={() => Navigate('/create_persons')} className="btn-create">
+            Create new Resident
+          </button>
         </div>
       </div>
       <div className="apartment-content">
@@ -118,23 +126,23 @@ const Resident: FC = () => {
               <th>Resident name</th>
               <th>Email</th>
               <th>Phone number</th>
-              <th>Prove</th>
+              <th>ID card</th>
               <th>Gender</th>
               <th>Date of birth</th>
               <th>job</th>
               <th colSpan={2}>Action</th>
             </tr>
-            {Residentjson.map((apartment) => {
+            {residents.map((resident) => {
               return (
-                <tr key={apartment.id}>
-                  <td>#{apartment.id}</td>
-                  <td>{apartment.name}</td>
-                  <td>{apartment.email}</td>
-                  <td>{apartment.phone_num_ber}</td>
-                  <td>{apartment.cmt}</td>
-                  <td>{apartment.gender}</td>
-                  <td>{apartment.data_of_birth}</td>
-                  <td>{apartment.jos}</td>
+                <tr key={resident.id}>
+                  <td>#{resident.id}</td>
+                  <td>{resident.fullName}</td>
+                  <td>{resident.email}</td>
+                  <td>{resident.phone}</td>
+                  <td>{resident.cin}</td>
+                  <td>{resident.gender ? 'male' : 'female'}</td>
+                  <td>{resident.dob}</td>
+                  <td>{resident.carrer}</td>
                   <td className="td-action">
                     <FontAwesomeIcon icon={faEdit} />
                     <FontAwesomeIcon icon={faTrash} />

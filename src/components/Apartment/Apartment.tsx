@@ -1,8 +1,9 @@
-import { FC } from 'react'
+import { FC, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faEdit, faTrash, faInfo } from '@fortawesome/free-solid-svg-icons'
-import { listApartment } from './Apartmentjson'
+import { faSearch, faEdit, faInfo } from '@fortawesome/free-solid-svg-icons'
+import { getApartments } from '../../apis/Service'
+import { useNavigate } from 'react-router-dom'
 const ApartmentStyled = styled.div`
   .apartment-flex {
     display: flex;
@@ -61,10 +62,10 @@ const ApartmentStyled = styled.div`
         width: 10%;
       }
       & th:nth-child(2) {
-        width: 30%;
+        width: 20%;
       }
       & th:nth-child(3) {
-        width: 15%;
+        width: 10%;
       }
       & th:nth-child(4) {
         width: 10%;
@@ -73,7 +74,10 @@ const ApartmentStyled = styled.div`
         width: 10%;
       }
       & th:nth-child(6) {
-        width: 25%;
+        width: 20%;
+      }
+      & th:nth-child(7) {
+        width: 20%;
       }
       .td-action {
         display: flex;
@@ -111,54 +115,93 @@ const ApartmentStyled = styled.div`
     }
   }
 `
+
+interface ApartmentInterFace {
+  id: number
+  area: number
+  apartmentName: string
+  status: number
+  personInApartment: string
+  ownerApartmentName: string
+}
 const Apartment: FC = () => {
+  const [apartments, setApartment] = useState([])
+  const Navigate = useNavigate()
+  useEffect(() => {
+    getApartments(setApartment)
+  }, [])
+  const handleUpdate = (id: number) => {
+    Navigate(`/update_apartment/${id}`)
+  }
   return (
-    <ApartmentStyled>
-      <div className="apartment-flex">
-        <div className="apartment-flex-item">
-          <h4>Apartment list / Create new Apartment</h4>
-        </div>
-        <div className="apartment-flex-item apartment-flex">
-          <form>
-            <input type="text" placeholder="Enter search..." />
-            <button className="btn-search">
-              <FontAwesomeIcon icon={faSearch} />
+    <>
+      <ApartmentStyled>
+        <div className="apartment-flex">
+          <div className="apartment-flex-item">
+            <h4>Apartment list / Create new Apartment</h4>
+          </div>
+          <div className="apartment-flex-item apartment-flex">
+            <form>
+              <input type="text" placeholder="Enter search..." />
+              <button title="search" type="button" className="btn-search">
+                <FontAwesomeIcon icon={faSearch} />
+              </button>
+            </form>
+            <button onClick={() => Navigate('/create_apartment')} className="btn-create">
+              Create new Apartment
             </button>
-          </form>
-          <button className="btn-create">Create new Apartment</button>
+          </div>
         </div>
-      </div>
-      <div className="apartment-content">
-        <table>
-          <tbody>
-            <tr>
-              <th>Id</th>
-              <th>Hosted name</th>
-              <th>Area</th>
-              <th>Status</th>
-              <th>Num/Apartment</th>
-              <th colSpan={2}>Action</th>
-            </tr>
-            {listApartment.map((apartment) => {
-              return (
-                <tr key={apartment.id}>
-                  <td>#{apartment.id}</td>
-                  <td>{apartment.name}</td>
-                  <td>{apartment.area}</td>
-                  <td>{apartment.status}</td>
-                  <td>{apartment.number_of_room}</td>
-                  <td className="td-action">
-                    <FontAwesomeIcon icon={faEdit} />
-                    <FontAwesomeIcon icon={faTrash} />
-                    <FontAwesomeIcon icon={faInfo} />
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-    </ApartmentStyled>
+        <div className="apartment-content">
+          <table>
+            <tbody>
+              <tr>
+                <th>Id</th>
+                <th>Apartment name</th>
+                <th>Area</th>
+                <th>Status</th>
+                <th>Num/Apartment</th>
+                <th>OwnerApartmentName</th>
+                <th colSpan={2}>Action</th>
+              </tr>
+              {apartments.map((apartment: ApartmentInterFace) => {
+                let status = ''
+                switch (apartment.status) {
+                  case 0:
+                    status = 'disabled'
+                    break
+                  case 1:
+                    status = 'enable'
+                    break
+                  case 2:
+                    status = 'Repair'
+                }
+                return (
+                  <tr key={apartment.id}>
+                    <td>#{apartment.id}</td>
+                    <td>{apartment.apartmentName}</td>
+                    <td>{apartment.area}</td>
+                    <td>{status}</td>
+                    <td>{apartment.personInApartment}</td>
+                    <td>{apartment.ownerApartmentName}</td>
+                    <td className="td-action">
+                      <FontAwesomeIcon
+                        onClick={() => {
+                          handleUpdate(apartment.id)
+                        }}
+                        icon={faEdit}
+                      />
+                      {/* <FontAwesomeIcon icon={faTrash} /> */}
+                      <FontAwesomeIcon icon={faInfo} />
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </ApartmentStyled>
+    </>
   )
 }
 
