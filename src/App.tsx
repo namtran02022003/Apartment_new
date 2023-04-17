@@ -13,6 +13,8 @@ const App: FC = () => {
             let Layout = DefaultLayout
             const Page = routes.component
             if (routes.layout) {
+              Layout = routes.layout
+            } else if (routes.layout === null) {
               Layout = Fragment
             }
             return (

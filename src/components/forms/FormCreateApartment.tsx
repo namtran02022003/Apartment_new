@@ -3,7 +3,7 @@ import Inputs from './Inputs'
 import axios from 'axios'
 import { RouteApartment } from '../../apis/RouteApis'
 import ValidationFormCreateApartment from './Validation'
-import FormCreateApartmentstyled from '../../assets/styles/FormCreateApartment'
+import FormCreateApartmentstyled from '../../assets/styles/Forms'
 import { getApartment } from '../../apis/Service'
 import { useParams, useNavigate } from 'react-router-dom'
 interface Props {

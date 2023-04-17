@@ -3,7 +3,9 @@ import styled from 'styled-components'
 const NavbarStyled = styled.ul`
   padding: 20px 30px;
   display: flex;
-  justify-content: center;
+  width: 50%;
+  margin: auto;
+  justify-content: space-around;
   .navbar-item {
     display: block;
     padding: 10px 15px;

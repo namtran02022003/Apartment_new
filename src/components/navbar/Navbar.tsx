@@ -9,7 +9,6 @@ const listItem = [
 ]
 const Navbars: FC = () => {
   const { pathname } = useLocation()
-  console.log(pathname)
   return (
     <Navbar>
       {listItem.map((item, index) => {

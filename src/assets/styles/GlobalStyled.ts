@@ -4,7 +4,7 @@ const GlobalStyles = createGlobalStyle`
   body {
     font-family: 'Noto Sans', sans-serif;
     margin: 0;
-   padding: 0;
+    padding: 0;
     box-sizing: border-box;
   }
   a {
@@ -15,17 +15,13 @@ const GlobalStyles = createGlobalStyle`
     margin: 0;
   }
   .btn-create {
-    display: block;
-    margin: 20px auto;
-    width: 60%;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background: #417c41;
-    cursor: pointer;
     &:hover {
       background : green;
     }
+  }
+  .err-message {
+    color: red;
+    font-size: 0.9rem;
   }
 `
 export default GlobalStyles

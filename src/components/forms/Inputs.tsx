@@ -11,11 +11,11 @@ interface Props {
 }
 
 const Inputs: FC = (props: Props) => {
-  const { name, err, label, type, placeholder, value, onHandleChange } = props
+  const { label, err, ...res } = props
   return (
     <div className="form-control">
       <label>{label}</label>
-      <input name={name} value={value} onChange={onHandleChange} type={type} placeholder={placeholder} />
+      <input {...res} />
       <p className="err-message">{err}</p>
     </div>
   )

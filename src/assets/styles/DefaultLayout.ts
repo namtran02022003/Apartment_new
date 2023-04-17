@@ -1,20 +1,31 @@
 import styled from 'styled-components'
 
 const DefaultLayoutStyled = styled.div`
-  .layout-flex {
+  .layout-content {
+    padding: 0 50px;
+    background: #ccc;
+    min-height: 550px;
+  }
+  th {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+  .td-action {
     display: flex;
-    min-height: 80vh;
-    background: rgb(23, 53, 139);
-    &-w-2 {
-      width: 15%;
-      background: rgb(23, 53, 139);
-      color: white;
+    justify-content: space-around;
+    button {
+      border-radius: 50%;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
     }
-    &-w-8 {
-      padding: 20px 50px;
-      background: rgb(241, 242, 245);
-      width: 80%;
-      border-radius: 5px 0 0 5px;
+    .btn-edit {
+      border: 1px solid #007bff;
+      color: #007bff;
+    }
+    .btn-delete {
+      border: 1px solid red;
+      color: red;
     }
   }
 `

@@ -1,19 +1,22 @@
 import { FC, useCallback, useEffect, useState } from 'react'
-import Inputs from './Inputs'
-import FormCreateApartmentstyled from '../../assets/styles/FormCreateApartment'
+import Inputs from '../Inputs'
+import Formstyled from '../../../assets/styles/Forms'
 import Select from 'react-select'
 import axios from 'axios'
-
+import { useNavigate, useParams } from 'react-router-dom'
+import ValidatePersons from './ValidateCreatePersons'
 const FormCreatePersons: FC = () => {
+  const { id } = useParams()
+  const Navigate = useNavigate()
   const [values, setValues] = useState({
     fullName: '',
     phone: '',
     email: '',
     dob: '',
     cin: '',
-    gender: 'true',
+    gender: 1,
     carrer: '',
-    idParent: '',
+    apartmentId: '',
     status: '1'
   })
   const [messageErrs, setMessageErrs] = useState({
@@ -23,12 +26,13 @@ const FormCreatePersons: FC = () => {
     dob: '',
     cin: '',
     carrer: '',
-    idParent: ''
+    apartmentId: ''
   })
-  const handleChange = (option) => {
-    setValues({ ...values, idParent: option.values })
-  }
   const [options, setOptions] = useState([])
+  const handleChange = (option) => {
+    setValues({ ...values, apartmentId: option })
+    setMessageErrs({ ...messageErrs, apartmentId: '' })
+  }
   const getDatasSearch = useCallback(async () => {
     const res = await axios.get('http://localhost:8080/api/apartments', {
       params: {
@@ -39,19 +43,43 @@ const FormCreatePersons: FC = () => {
     const newDatas = res.data.map((apartment) => {
       return {
         values: apartment.id,
-        label: apartment.apartmentName
+        label: apartment.apartmentCode
       }
     })
     setOptions(newDatas)
   }, [])
   useEffect(() => {
     getDatasSearch()
-  }, [getDatasSearch]) // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getDatasSearch])
+  useEffect(() => {
+    const getPerson = async () => {
+      const res = await axios.get(`http://localhost:8080/api/persons/${id}`)
+      setValues(res.data)
+    }
+    if (id) {
+      getPerson()
+    }
+  }, [id])
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const newValues = {
+      ...values,
+      apartmentId: values.apartmentId.values
+    }
+    if (!Object.keys(ValidatePersons(newValues, setMessageErrs)).length > 0) {
+      if (!id) {
+        await axios.post('http://localhost:8080/api/persons', newValues)
+        Navigate('/persons')
+      } else {
+        await axios.put(`http://localhost:8080/api/persons/${id}`, newValues)
+        Navigate('/persons')
+      }
+    }
+  }
   console.log(values)
-  console.log(options)
   return (
-    <FormCreateApartmentstyled>
-      <form>
+    <Formstyled>
+      <form onSubmit={handleSubmit}>
         <h2>Create new Persons</h2>
         <div className="flex">
           <div className="flex-item">
@@ -61,7 +89,7 @@ const FormCreatePersons: FC = () => {
               type="text"
               placeholder="Enter FullName"
               value={values.fullName}
-              onHandleChange={(e) => {
+              onChange={(e) => {
                 setMessageErrs({
                   ...messageErrs,
                   fullName: ''
@@ -76,7 +104,7 @@ const FormCreatePersons: FC = () => {
               type="text"
               placeholder="Enter PhoneNumber"
               value={values.phone}
-              onHandleChange={(e) => {
+              onChange={(e) => {
                 setMessageErrs({
                   ...messageErrs,
                   phone: ''
@@ -91,7 +119,7 @@ const FormCreatePersons: FC = () => {
               type="email"
               placeholder="Enter Email"
               value={values.email}
-              onHandleChange={(e) => {
+              onChange={(e) => {
                 setMessageErrs({
                   ...messageErrs,
                   email: ''
@@ -107,11 +135,11 @@ const FormCreatePersons: FC = () => {
                   onChange={(e) => {
                     setValues({ ...values, gender: e.target.value })
                   }}
-                  checked={values.gender == 'true'}
+                  checked={values.gender == 1}
                   title="gender"
                   type="radio"
                   name="gender"
-                  value={'true'}
+                  value={1}
                 />
                 Male
               </span>
@@ -120,11 +148,11 @@ const FormCreatePersons: FC = () => {
                   onChange={(e) => {
                     setValues({ ...values, gender: e.target.value })
                   }}
-                  checked={values.gender == 'false'}
+                  checked={values.gender == 0}
                   title="gender"
                   type="radio"
                   name="gender"
-                  value={'false'}
+                  value={0}
                 />
                 Female
               </span>
@@ -132,14 +160,15 @@ const FormCreatePersons: FC = () => {
           </div>
           <div className="flex-item">
             <label htmlFor="nameApartment">Name Apartment:</label>
-            <Select id="nameApartment" value={values.idParent} onChange={handleChange} options={options} isSearchable placeholder="Select a fruit" />
+            <Select id="nameApartment" value={values.apartmentId} onChange={handleChange} options={options} isSearchable placeholder="Select a fruit" />
+            <p className="err-message">{messageErrs.apartmentId}</p>
             <Inputs
               name="cin"
-              label="IdCode"
+              label="Cin"
               type="text"
               placeholder="Enter IdCode"
               value={values.cin}
-              onHandleChange={(e) => {
+              onChange={(e) => {
                 setMessageErrs({
                   ...messageErrs,
                   cin: ''
@@ -154,7 +183,7 @@ const FormCreatePersons: FC = () => {
               type="text"
               placeholder="Enter Carrer"
               value={values.carrer}
-              onHandleChange={(e) => {
+              onChange={(e) => {
                 setMessageErrs({
                   ...messageErrs,
                   carrer: ''
@@ -168,7 +197,8 @@ const FormCreatePersons: FC = () => {
               name="date"
               type="date"
               value={values.dob}
-              onHandleChange={(e) => {
+              err={messageErrs.dob}
+              onChange={(e) => {
                 setMessageErrs({
                   ...messageErrs,
                   dob: ''
@@ -178,9 +208,9 @@ const FormCreatePersons: FC = () => {
             />
           </div>
         </div>
-        <button className="btn-create">Create Presons</button>
+        <button className="btn-create-person">Create Presons</button>
       </form>
-    </FormCreateApartmentstyled>
+    </Formstyled>
   )
 }
 export default FormCreatePersons

@@ -6,7 +6,7 @@ function DefaultLayout({ children }: { children: JSX.Element }) {
   return (
     <DefaultLayoutStyled>
       <Header />
-      {children}
+      <div className="layout-content"> {children}</div>
       <Footer />
     </DefaultLayoutStyled>
   )

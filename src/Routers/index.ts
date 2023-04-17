@@ -1,18 +1,22 @@
 import Apartment from '../components/Apartment/Apartment'
-import Resident from '../components/Resident/Resident'
 import Ssevice from '../components/service/Service'
-import Bill from '../components/bill/Bill'
 import Contract from '../components/contract/Contract'
-import FormCreateApartment from '../components/forms/FormCreateApartment'
-import FormCreatePersons from '../components/forms/FormCreatePersons'
+import FormCreatePersons from '../components/forms/persons/FormCreatePersons'
+import Persons from '..//components/persons/Personts'
+import FormContracts from '../components/forms/contract/FormContracts'
+import ApartmentDetail from '../components/Apartment/ApartmentDetail'
+import FormCreateNewBill from '../components/forms/service/FormCreateNewBill'
+import DetailPersons from '../components/persons/DetailPersons'
 const PublicRouters = [
   { path: '/', component: Apartment },
-  { path: 'resident', component: Resident },
   { path: 'service', component: Ssevice },
-  { path: 'bill', component: Bill },
-  { path: 'Contract', component: Contract },
-  { path: 'create_apartment', component: FormCreateApartment, type: 'Create', layout: true },
-  { path: 'update_apartment/:id', component: FormCreateApartment, type: 'Update', layout: true },
-  { path: 'Create_persons', component: FormCreatePersons, type: 'Create', layout: true }
+  { path: 'contract', component: Contract },
+  { path: '/persons', component: Persons },
+  { path: 'create_persons', component: FormCreatePersons, layout: null },
+  { path: 'edit_person/:id', component: FormCreatePersons, layout: null },
+  { path: 'create_contract', component: FormContracts, layout: null },
+  { path: '/apartment_detail/:id', component: ApartmentDetail },
+  { path: '/create_new_bill', component: FormCreateNewBill, layout: null },
+  { path: '/person_detail/:id', component: DetailPersons }
 ]
 export default PublicRouters

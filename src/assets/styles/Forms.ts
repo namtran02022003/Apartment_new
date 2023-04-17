@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-const FormCreateApartmentstyled = styled.div`
+const Formstyled = styled.div`
   background: rgb(204, 204, 204);
   height: 100vh;
   display: flex;
@@ -11,6 +11,7 @@ const FormCreateApartmentstyled = styled.div`
     width: 700px;
     padding: 15px 20px;
     background: #fff;
+    border-radius: 5px;
     h2 {
       padding: 30px 0;
       text-align: center;
@@ -54,11 +55,21 @@ const FormCreateApartmentstyled = styled.div`
         outline: 1px solid #ccc;
       }
     }
-  }
-  .err-message {
-    color: red;
-    font-size: 0.9rem;
+    .btn-create-person {
+      border: none;
+      border-radius: 4px;
+      background: #61b561;
+      width: 50%;
+      padding: 10px 15px;
+      margin: 20px auto;
+      display: block;
+      cursor: pointer;
+      &:hover {
+        background: green;
+        color: #fff;
+      }
+    }
   }
 `
 
-export default FormCreateApartmentstyled
+export default Formstyled
