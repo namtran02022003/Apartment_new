@@ -15,10 +15,14 @@ interface ListServiceInterFace {
 }
 const FromSortDateStyled = styled.form`
   display: flex;
+  border: none !important;
   div {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    span {
+      margin: 0 10px;
+    }
   }
   & div input {
     border-radius: 4px !important;

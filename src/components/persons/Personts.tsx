@@ -22,8 +22,8 @@ const Persons: FC = () => {
   const [loading, setLoading] = useState(true)
   const Navigate = useNavigate()
   useEffect(() => {
-    try {
-      const getPersons = async () => {
+    const getPersons = async () => {
+      try {
         const res = await axios.get('http://localhost:8080/api/persons/represent', {
           params: {
             pageSize: 10,
@@ -31,14 +31,14 @@ const Persons: FC = () => {
           }
         })
         setPersons(res.data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
       }
-      getPersons()
-    } catch (error) {
-      console.log(error)
     }
-    setLoading(false)
-  }, [])
-  console.log(persons)
+    getPersons()
+  }, [setLoading])
+
   return loading ? (
     <Loading />
   ) : (
@@ -69,7 +69,6 @@ const Persons: FC = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Cin</th>
-                <th>Date time</th>
                 <th>Action</th>
               </tr>
               {persons.map((person: ListPersonsInterFace) => {
@@ -80,9 +79,8 @@ const Persons: FC = () => {
                     <td>{person.email}</td>
                     <td>{person.phone}</td>
                     <td>{person.cin}</td>
-                    <td>{person.dob}</td>
                     <td className="td-action">
-                      <button onClick={() => Navigate(`/person_detail/${person.id}`)} title="eee">
+                      <button onClick={() => Navigate(`/person_detail/${person.id}`)} title="view detail">
                         <FontAwesomeIcon className="icon-eye" icon={faEye} />
                       </button>
                     </td>

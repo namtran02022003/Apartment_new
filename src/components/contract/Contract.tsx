@@ -21,16 +21,20 @@ const Contract: FC = () => {
   const Navigate = useNavigate()
   useEffect(() => {
     const getContracts = async () => {
-      const res = await axios.get('http://localhost:8080/api/contracts', {
-        params: {
-          pageSize: 10,
-          pageNo: 1
-        }
-      })
-      setContracts(res.data)
+      try {
+        const res = await axios.get('http://localhost:8080/api/contracts', {
+          params: {
+            pageSize: 10,
+            pageNo: 1
+          }
+        })
+        setContracts(res.data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+      }
     }
     getContracts()
-    setLoading(false)
   }, [])
   console.log(contracts)
   return loading ? (
@@ -58,7 +62,6 @@ const Contract: FC = () => {
           <table>
             <tbody>
               <tr>
-                <th>Contract code</th>
                 <th>Apartment name</th>
                 <th>Host name</th>
                 <th>Acreage</th>
@@ -70,7 +73,6 @@ const Contract: FC = () => {
               {contracts.map((contract: ListContractInterFace) => {
                 return (
                   <tr key={contract.id}>
-                    <td>#{contract.code}</td>
                     <td>{contract.apartment.name}</td>
                     <td>{contract.person.fullName}</td>
                     <td>{contract.apartment.area}</td>
@@ -78,7 +80,9 @@ const Contract: FC = () => {
                     <td>{moment(contracts.startDate).format('DD/MM/YYYY')}</td>
                     <td>{contract.status == 1 ? 'active' : 'emty'}</td>
                     <td className="td-action">
-                      <FontAwesomeIcon icon={faEye} />
+                      <button title="view detail contract">
+                        <FontAwesomeIcon className="icon-eye" icon={faEye} />
+                      </button>
                     </td>
                   </tr>
                 )

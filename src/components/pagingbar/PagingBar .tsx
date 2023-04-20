@@ -4,8 +4,9 @@ import styled from 'styled-components'
 const PagingBarStyled = styled.div`
   .pagingBar {
     display: flex;
-    justify-content: center;
+    justify-content: end;
     align-items: center;
+    margin: 20px 200px 0 0;
   }
 
   .pagingButton {

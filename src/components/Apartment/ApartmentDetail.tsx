@@ -41,23 +41,51 @@ interface personsInterFace {
 const ApartmentDetail: FC = () => {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
-  const [contracts, setContract] = useState([])
-  const [listPersons, setListPersons] = useState([])
+  const [contracts, setContract] = useState(null)
+  const [listPersons, setListPersons] = useState(null)
+  const [error, setError] = useState(null)
   const Navigate = useNavigate()
   useEffect(() => {
-    const getDatas = async () => {
-      const resContract = await axios.get(`http://localhost:8080/api/apartments/${id}/contract`)
-      const resPersons = await axios.get(`http://localhost:8080/api/apartments/${id}/persons-active`)
-      setContract(resContract.data)
-      setListPersons(resPersons.data)
+    let isMounted = true
+    const fetchData = async () => {
+      try {
+        const resContract = await axios.get(`http://localhost:8080/api/apartments/${id}/contract`)
+        const resPersons = await axios.get(`http://localhost:8080/api/apartments/${id}/person-active`)
+        if (isMounted) {
+          setContract(resContract.data)
+          setListPersons(resPersons.data)
+          setLoading(false)
+        }
+      } catch (error) {
+        if (isMounted) {
+          setError('Có lỗi xảy ra khi tải dữ liệu, vui lòng thử lại sau.')
+          setLoading(false)
+        }
+      }
+    }
+    if (id) {
+      fetchData()
+    } else {
       setLoading(false)
     }
-    getDatas()
+    return () => {
+      isMounted = false
+    }
   }, [id])
-  console.log(listPersons)
-  return loading ? (
-    <Loading />
-  ) : (
+
+  if (loading) {
+    return <Loading />
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>
+  }
+
+  if (!contracts || !listPersons) {
+    return <div>No data</div>
+  }
+
+  return (
     <ApeartmentDetailStyled>
       <div className="item">
         <h2>Contract</h2>
@@ -104,10 +132,7 @@ const ApartmentDetail: FC = () => {
               return (
                 <tr key={person.id}>
                   <td>{person.id}</td>
-                  <td>
-                    {person.fullName}
-                    {`${person.idParent ? '' : ' (host)'} `}
-                  </td>
+                  <td>{person.fullName}</td>
                   <td>{person.email}</td>
                   <td>{person.phone}</td>
                   <td>{person.gender ? 'Male' : 'Female'}</td>

@@ -3,8 +3,22 @@ interface Err {
   endDate?: string
   priceApartment?: number | string
   code?: string
+  apartment: string
+  person: string
 }
-const ValidateContract = (values: object, setMessageErr: unknown) => {
+interface Contract {
+  startDate: string
+  endDate: string
+  priceApartment: number
+  code: string
+  apartment: {
+    id: string
+  }
+  person: {
+    id: string
+  }
+}
+const ValidateContract = (values: Contract, setMessageErr) => {
   const errs: Err = {}
   if (!values.startDate) {
     errs.startDate = 'Invalid start date'

@@ -50,7 +50,6 @@ const ApartmentStyled = styled.div`
   }
   .apartment-content {
     background: #fff;
-    min-height: 500px;
     table {
       width: 100%;
       border-collapse: collapse;
@@ -76,6 +75,9 @@ const ApartmentStyled = styled.div`
     td {
       border: 1px solid #ccc;
       padding: 5px 10px;
+    }
+    td {
+      padding: 10px;
     }
   }
 `

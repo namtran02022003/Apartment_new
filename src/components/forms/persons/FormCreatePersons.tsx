@@ -17,7 +17,7 @@ const FormCreatePersons: FC = () => {
     gender: 1,
     carrer: '',
     apartmentId: '',
-    status: '1'
+    status: ''
   })
   const [messageErrs, setMessageErrs] = useState({
     fullName: '',
@@ -64,15 +64,17 @@ const FormCreatePersons: FC = () => {
     e.preventDefault()
     const newValues = {
       ...values,
-      apartmentId: values.apartmentId.values
+      apartmentId: values.apartmentId.values,
+      gender: values.gender == 1 ? true : false
     }
+    console.log(newValues)
     if (!Object.keys(ValidatePersons(newValues, setMessageErrs)).length > 0) {
       if (!id) {
         await axios.post('http://localhost:8080/api/persons', newValues)
-        Navigate('/persons')
+        Navigate('/resident')
       } else {
         await axios.put(`http://localhost:8080/api/persons/${id}`, newValues)
-        Navigate('/persons')
+        Navigate('/resident')
       }
     }
   }

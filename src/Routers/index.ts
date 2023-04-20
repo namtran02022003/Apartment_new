@@ -11,7 +11,7 @@ const PublicRouters = [
   { path: '/', component: Apartment },
   { path: 'service', component: Ssevice },
   { path: 'contract', component: Contract },
-  { path: '/persons', component: Persons },
+  { path: '/resident', component: Persons },
   { path: 'create_persons', component: FormCreatePersons, layout: null },
   { path: 'edit_person/:id', component: FormCreatePersons, layout: null },
   { path: 'create_contract', component: FormContracts, layout: null },

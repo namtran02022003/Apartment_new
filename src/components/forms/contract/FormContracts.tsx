@@ -49,6 +49,19 @@ const FormContractsStyled = styled.div`
         color: #fff;
       }
     }
+    .live_here {
+      display: flex;
+      margin-top: 20px;
+      align-items: center;
+      input {
+        width: 20px;
+        height: 20px;
+        margin-left: 20px;
+        &:focus-within {
+          outline: none;
+        }
+      }
+    }
   }
 `
 const FormContracts: FC = () => {
@@ -64,7 +77,8 @@ const FormContracts: FC = () => {
     },
     apartment: {
       id: ''
-    }
+    },
+    liveHere: true
   })
   const [messageErrs, setMessageErrs] = useState({
     startDate: '',
@@ -101,6 +115,7 @@ const FormContracts: FC = () => {
     }
     getDatas()
   }, [])
+  console.log(dataOptions)
   const handlaChangeOptionsPersons = (e) => {
     setValues((pre) => {
       return {
@@ -214,6 +229,16 @@ const FormContracts: FC = () => {
         <label htmlFor="Apartment">Apartment Id</label>
         <Select onChange={handlaChangeOptionsApartments} value={values.apartment.id} options={dataOptions.apartments} />
         <p className="err-message">{messageErrs.apartment}</p>
+        <div className="live_here">
+          <label htmlFor="live_here">LiveHere:</label>
+          <input
+            onChange={() => setValues({ ...values, liveHere: !values.liveHere })}
+            checked={values.liveHere}
+            id="live_here"
+            type="checkbox"
+            title="liveHere"
+          />
+        </div>
         <button className="btn-create-contract" type="submit">
           submit
         </button>

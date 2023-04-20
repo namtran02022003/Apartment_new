@@ -10,11 +10,15 @@ const DetailPersons: FC = () => {
   const { id } = useParams()
   useEffect(() => {
     const getMembers = async () => {
-      const resMenbers = await axios.get(`http://localhost:8080/api/apartments/${id}/persons-active`)
-      setPersons(resMenbers.data)
+      try {
+        const resMenbers = await axios.get(`http://localhost:8080/api/represent/${id}/persons`)
+        setPersons(resMenbers.data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+      }
     }
     getMembers()
-    setLoading(false)
   }, [id])
   console.log(perons)
   return loading ? (

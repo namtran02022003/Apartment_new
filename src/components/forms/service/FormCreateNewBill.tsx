@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import styled from 'styled-components'
+import Inputs from '../Inputs'
 const FormCreateNewBillStyled = styled.div`
   background: rgb(204, 204, 204);
   height: 100vh;
@@ -19,6 +20,7 @@ const FormCreateNewBill: FC = () => {
     <FormCreateNewBillStyled>
       <form className="form-create">
         <h2>Create new bill</h2>
+        <Inputs />
       </form>
     </FormCreateNewBillStyled>
   )

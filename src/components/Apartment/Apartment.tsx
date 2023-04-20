@@ -15,10 +15,19 @@ const FormSearchStyled = styled.form`
     position: absolute;
     height: 200px;
     overflow: auto;
-    padding: 10px 15px;
+    padding: 25px 15px;
     box-sizing: border-box;
     z-index: 100;
     border-radius: 10px;
+    span {
+      position: absolute;
+      right: 3%;
+      top: 5px;
+      cursor: pointer;
+      padding: 5px 10px;
+      background: rgb(245 238 238);
+      border-radius: 4px;
+    }
     a {
       padding: 5px;
       cursor: pointer;
@@ -38,6 +47,9 @@ interface ApartmentInterFace {
   personInApartment: string | number
   apartmentCode: string
 }
+interface MouseEvent {
+  preventDefault(): void
+}
 const Apartment: FC = () => {
   const [apartments, setApartment] = useState([])
   const [loading, setLoading] = useState(true)
@@ -46,8 +58,8 @@ const Apartment: FC = () => {
   const [dataSearchs, setDatasSearch] = useState([])
   const Navigate = useNavigate()
   useEffect(() => {
-    try {
-      const getApartments = async () => {
+    const getApartments = async () => {
+      try {
         const res = await axios.get('http://localhost:8080/api/apartments', {
           params: {
             pageSize: 10,
@@ -55,18 +67,20 @@ const Apartment: FC = () => {
           }
         })
         setApartment(res.data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
       }
-      getApartments()
-    } catch (error) {
-      console.log(error)
     }
-    setLoading(false)
+    getApartments()
   }, [index])
 
   useEffect(() => {
     const getDataSearchs = async () => {
-      const res = await axios.post('http://localhost:8080/api/apartments/search-by-name', {
-        name: textSearch.trim()
+      const res = await axios.get('http://localhost:8080/api/apartments/search-by-name', {
+        params: {
+          apartmentName: textSearch.trim()
+        }
       })
       setDatasSearch(res.data)
     }
@@ -74,6 +88,11 @@ const Apartment: FC = () => {
       getDataSearchs()
     }
   }, [textSearch])
+  const handleClickLink = (e: MouseEvent) => {
+    e.preventDefault()
+    alert('emty')
+  }
+  console.log(apartments)
   return loading ? (
     <Loading />
   ) : (
@@ -98,13 +117,23 @@ const Apartment: FC = () => {
               </button>
               {textSearch.trim().length > 0 && (
                 <div className="menu_search">
-                  {dataSearchs.map((apartment: object) => {
-                    return (
-                      <Link to={`/apartment_detail/${apartment.id}`} key={apartment.id}>
-                        {apartment.apartmentCode}
-                      </Link>
-                    )
-                  })}
+                  <span onDoubleClick={() => setTextSearch('')}>x</span>
+                  {dataSearchs.length > 0 ? (
+                    dataSearchs.map((apartment: object) => {
+                      return (
+                        <Link
+                          disabled={!apartment.roomMaster}
+                          to={`/apartment_detail/${apartment.id}`}
+                          key={apartment.id}
+                          onClick={!apartment.roomMaster ? (e) => handleClickLink(e) : null}
+                        >
+                          {apartment.apartmentCode}
+                        </Link>
+                      )
+                    })
+                  ) : (
+                    <p>no data</p>
+                  )}
                 </div>
               )}
             </FormSearchStyled>
@@ -114,9 +143,9 @@ const Apartment: FC = () => {
           <table>
             <tbody>
               <tr>
-                <th>apartmentCode</th>
-                <th>Persons</th>
-                <th>contractCode</th>
+                <th>Apartment id</th>
+                <th>Resident</th>
+                <th>Contract code</th>
                 <th>status</th>
                 <th>Number/room</th>
                 <th>Actions</th>
