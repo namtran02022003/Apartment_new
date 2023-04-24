@@ -1,7 +1,7 @@
 import { FC, Fragment } from 'react'
 import GlobalStyles from './assets/styles/GlobalStyled'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import PublicRouters from './Routers'
+import PublicRouters from './routers'
 import DefaultLayout from './components/layouts/DefaultLayout'
 const App: FC = () => {
   return (

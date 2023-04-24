@@ -4,14 +4,20 @@ import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
-import axios from 'axios'
+import baseAxios from '../../apis/ConfigAxios'
 import * as moment from 'moment'
+import withAuthorization from '../../routers/WithAuthorization'
 interface ListContractInterFace {
   id: number
   code: string
-  apartment: object
-  person: string
-  status: string
+  apartment: {
+    name: string
+    area: string | number
+  }
+  person: {
+    fullName: string
+  }
+  status: string | number
   priceApartment: string | number
   startDate: string
 }
@@ -22,7 +28,7 @@ const Contract: FC = () => {
   useEffect(() => {
     const getContracts = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/contracts', {
+        const res = await baseAxios.get('/contracts', {
           params: {
             pageSize: 10,
             pageNo: 1
@@ -44,7 +50,7 @@ const Contract: FC = () => {
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item">
-            <h3>Total: 20/50</h3>
+            <h3>Total contracts: 20/50</h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
             <form>
@@ -76,9 +82,9 @@ const Contract: FC = () => {
                     <td>{contract.apartment.name}</td>
                     <td>{contract.person.fullName}</td>
                     <td>{contract.apartment.area}</td>
-                    <td>{contract.priceApartment}</td>
+                    <td>{Number(contract.priceApartment).toLocaleString()} VND</td>
                     <td>{moment(contracts.startDate).format('DD/MM/YYYY')}</td>
-                    <td>{contract.status == 1 ? 'active' : 'emty'}</td>
+                    <td>{contract.status}</td>
                     <td className="td-action">
                       <button title="view detail contract">
                         <FontAwesomeIcon className="icon-eye" icon={faEye} />
@@ -95,4 +101,4 @@ const Contract: FC = () => {
   )
 }
 
-export default Contract
+export default withAuthorization(Contract)

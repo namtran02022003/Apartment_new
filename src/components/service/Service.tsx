@@ -6,6 +6,7 @@ import Loading from '../loading/Loading'
 import Servicejson from './Servicejson'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
+import baseAxios from '../../apis/ConfigAxios'
 interface ListServiceInterFace {
   billNum: string | number
   apartmentNum: string | number
@@ -36,7 +37,12 @@ const Service: FC = () => {
   const [loading, setLoading] = useState(true)
   const Navigate = useNavigate()
   useEffect(() => {
-    setService(Servicejson)
+    const getService = async () => {
+      const res = await baseAxios.get('/service-fee')
+      console.log(res.data)
+      setService(Servicejson)
+    }
+    getService()
     setLoading(false)
   }, [])
   return loading ? (

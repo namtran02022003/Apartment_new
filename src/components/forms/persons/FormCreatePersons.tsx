@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react'
 import Inputs from '../Inputs'
 import Formstyled from '../../../assets/styles/Forms'
 import Select from 'react-select'
-import axios from 'axios'
+import baseAxios from '../../../apis/ConfigAxios'
 import { useNavigate, useParams } from 'react-router-dom'
 import ValidatePersons from './ValidateCreatePersons'
 const FormCreatePersons: FC = () => {
@@ -34,7 +34,7 @@ const FormCreatePersons: FC = () => {
     setMessageErrs({ ...messageErrs, apartmentId: '' })
   }
   const getDatasSearch = useCallback(async () => {
-    const res = await axios.get('http://localhost:8080/api/apartments', {
+    const res = await baseAxios.get('/apartments', {
       params: {
         pageSize: 100,
         pageNo: 1
@@ -53,7 +53,7 @@ const FormCreatePersons: FC = () => {
   }, [getDatasSearch])
   useEffect(() => {
     const getPerson = async () => {
-      const res = await axios.get(`http://localhost:8080/api/persons/${id}`)
+      const res = await baseAxios.get(`/persons/${id}`)
       setValues(res.data)
     }
     if (id) {
@@ -70,10 +70,10 @@ const FormCreatePersons: FC = () => {
     console.log(newValues)
     if (!Object.keys(ValidatePersons(newValues, setMessageErrs)).length > 0) {
       if (!id) {
-        await axios.post('http://localhost:8080/api/persons', newValues)
+        await baseAxios.post('/persons', newValues)
         Navigate('/resident')
       } else {
-        await axios.put(`http://localhost:8080/api/persons/${id}`, newValues)
+        await baseAxios.put(`/persons/${id}`, newValues)
         Navigate('/resident')
       }
     }

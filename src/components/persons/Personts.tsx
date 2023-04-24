@@ -4,7 +4,7 @@ import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
-import axios from 'axios'
+import baseAxios from '../../apis/ConfigAxios'
 interface ListPersonsInterFace {
   id: number
   fullName: string
@@ -24,7 +24,7 @@ const Persons: FC = () => {
   useEffect(() => {
     const getPersons = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/persons/represent', {
+        const res = await baseAxios.get('/persons/represent', {
           params: {
             pageSize: 10,
             pageNo: 1
@@ -38,7 +38,7 @@ const Persons: FC = () => {
     }
     getPersons()
   }, [setLoading])
-
+  console.log(persons)
   return loading ? (
     <Loading />
   ) : (
@@ -46,7 +46,7 @@ const Persons: FC = () => {
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item">
-            <h3>Total: 20/50</h3>
+            <h3>Total resident: 20/50</h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
             <form>

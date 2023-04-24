@@ -23,5 +23,8 @@ const GlobalStyles = createGlobalStyle`
     color: red;
     font-size: 0.9rem;
   }
+  * {
+    box-sizing: border-box;
+  }
 `
 export default GlobalStyles

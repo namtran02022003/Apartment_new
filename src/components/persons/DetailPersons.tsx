@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Loading from '../loading/Loading'
 import { useParams } from 'react-router-dom'
-import axios from 'axios'
+import baseAxios from '../../apis/ConfigAxios'
 const DetailPersonsStyled = styled.div``
 const DetailPersons: FC = () => {
   const [loading, setLoading] = useState(true)
@@ -11,7 +11,7 @@ const DetailPersons: FC = () => {
   useEffect(() => {
     const getMembers = async () => {
       try {
-        const resMenbers = await axios.get(`http://localhost:8080/api/represent/${id}/persons`)
+        const resMenbers = await baseAxios.get(`/represent/${id}/persons`)
         setPersons(resMenbers.data)
         setLoading(false)
       } catch (error) {
@@ -25,7 +25,13 @@ const DetailPersons: FC = () => {
     <Loading />
   ) : (
     <DetailPersonsStyled>
-      <p>detail</p>
+      <table>
+        <tbody>
+          <tr>
+            <th></th>
+          </tr>
+        </tbody>
+      </table>
     </DetailPersonsStyled>
   )
 }

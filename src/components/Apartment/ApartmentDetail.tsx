@@ -1,4 +1,4 @@
-import axios from 'axios'
+import baseAxios from '../../apis/ConfigAxios'
 import { FC, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -6,9 +6,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import Loading from '../loading/Loading'
 import * as moment from 'moment'
+import withAuthorization from '../../routers/WithAuthorization'
 const ApeartmentDetailStyled = styled.div`
   background: #fff;
   padding: 10px 20px;
+  h1 {
+    margin: 20px 0;
+    text-align: center;
+  }
   .item {
     margin: 30px 0;
   }
@@ -42,15 +47,15 @@ const ApartmentDetail: FC = () => {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
   const [contracts, setContract] = useState(null)
-  const [listPersons, setListPersons] = useState(null)
-  const [error, setError] = useState(null)
+  const [listPersons, setListPersons] = useState([])
+  const [error, setError] = useState('')
   const Navigate = useNavigate()
   useEffect(() => {
     let isMounted = true
     const fetchData = async () => {
       try {
-        const resContract = await axios.get(`http://localhost:8080/api/apartments/${id}/contract`)
-        const resPersons = await axios.get(`http://localhost:8080/api/apartments/${id}/person-active`)
+        const resContract = await baseAxios.get(`/apartments/${id}/contract`)
+        const resPersons = await baseAxios.get(`/apartments/${id}/person-active`)
         if (isMounted) {
           setContract(resContract.data)
           setListPersons(resPersons.data)
@@ -84,11 +89,12 @@ const ApartmentDetail: FC = () => {
   if (!contracts || !listPersons) {
     return <div>No data</div>
   }
-
+  console.log(listPersons)
   return (
     <ApeartmentDetailStyled>
+      <h1>Detail Apartment</h1>
       <div className="item">
-        <h2>Contract</h2>
+        <h3>Contract</h3>
         <table>
           <tbody>
             <tr>
@@ -113,31 +119,27 @@ const ApartmentDetail: FC = () => {
         </table>
       </div>
       <div className="item">
-        <h2>Members:</h2>
+        <h3>Members:</h3>
         <table>
           <tbody>
             <tr>
-              <th>id</th>
-              <th>fullname</th>
-              <th>email</th>
-              <th>phone number</th>
-              <th>gender</th>
-              <th>date of birth</th>
-              <th>status</th>
-              <th>carrer</th>
-              <th>cin</th>
-              <th>action</th>
+              <th>Fullname</th>
+              <th>Email</th>
+              <th>Phone number</th>
+              <th>Gender</th>
+              <th>Date of birth</th>
+              <th>Carrer</th>
+              <th>Id no</th>
+              <th>Action</th>
             </tr>
             {listPersons.map((person: personsInterFace) => {
               return (
                 <tr key={person.id}>
-                  <td>{person.id}</td>
                   <td>{person.fullName}</td>
                   <td>{person.email}</td>
                   <td>{person.phone}</td>
                   <td>{person.gender ? 'Male' : 'Female'}</td>
                   <td>{person.dob}</td>
-                  <td>{person.status}</td>
                   <td>{person.carrer}</td>
                   <td>{person.cin}</td>
                   <td className="td-action">
@@ -158,4 +160,4 @@ const ApartmentDetail: FC = () => {
   )
 }
 
-export default ApartmentDetail
+export default withAuthorization(ApartmentDetail)

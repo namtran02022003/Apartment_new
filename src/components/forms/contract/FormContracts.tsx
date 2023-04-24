@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react'
 import Inputs from '../Inputs'
 import Select from 'react-select'
 import styled from 'styled-components'
-import axios from 'axios'
+import baseAxios from '../../../apis/ConfigAxios'
 import ValidateContract from './ValidateContratc'
 import { useNavigate } from 'react-router-dom'
 const FormContractsStyled = styled.div`
@@ -94,15 +94,15 @@ const FormContracts: FC = () => {
   })
   useEffect(() => {
     const getDatas = async () => {
-      const resPersons = await axios.get('http://localhost:8080/api/persons')
-      const resApartment = await axios.get('http://localhost:8080/api/apartments')
-      const dataPersons = resPersons.data.map((person: object) => {
+      const resPersons = await baseAxios.get('/persons')
+      const resApartment = await baseAxios.get('/apartments')
+      const dataPersons = resPersons.data.map((person: { id: number; fullName: string }) => {
         return {
           value: person.id,
           label: person.fullName
         }
       })
-      const dataApartment = resApartment.data.map((apartment: object) => {
+      const dataApartment = resApartment.data.map((apartment: { id: number; apartmentCode: string }) => {
         return {
           value: apartment.id,
           label: apartment.apartmentCode
@@ -156,7 +156,7 @@ const FormContracts: FC = () => {
       }
     }
     if (!Object.keys(ValidateContract(newValues, setMessageErrs)).length > 0) {
-      await axios.post('http://localhost:8080/api/contracts', newValues)
+      await baseAxios.post('/contracts', newValues)
       Navigate('/contract')
     }
   }

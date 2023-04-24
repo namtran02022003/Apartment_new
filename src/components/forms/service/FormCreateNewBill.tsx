@@ -21,6 +21,12 @@ const FormCreateNewBill: FC = () => {
       <form className="form-create">
         <h2>Create new bill</h2>
         <Inputs />
+        <Inputs />
+        <Inputs />
+        <Inputs />
+        <Inputs />
+        <Inputs />
+        <Inputs />
       </form>
     </FormCreateNewBillStyled>
   )

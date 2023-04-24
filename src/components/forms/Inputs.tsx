@@ -1,23 +1,25 @@
-import { FC } from 'react'
+import { FC, ChangeEvent } from 'react'
+
 interface Props {
   name: string
   label: string
   placeholder: string
   value?: string | number
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
   err?: string
-  type: unknown
-  onHandleChange: unknown
+  type: string
+  onHandleChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
-const Inputs: FC = (props: Props) => {
+const Inputs: FC<Props> = (props) => {
   const { label, err, ...res } = props
   return (
     <div className="form-control">
       <label>{label}</label>
       <input {...res} />
-      <p className="err-message">{err}</p>
+      {err && <p className="err-message">{err}</p>}
     </div>
   )
 }
+
 export default Inputs

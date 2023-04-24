@@ -1,12 +1,13 @@
-import { FC, useState, useEffect } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, Link } from 'react-router-dom'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
-import axios from 'axios'
 import PagingBar from '../pagingbar/PagingBar '
 import styled from 'styled-components'
+import withAuthorization from '../../routers/WithAuthorization'
+import baseAxios from '../../apis/ConfigAxios'
 const FormSearchStyled = styled.form`
   position: relative;
   .menu_search {
@@ -57,10 +58,12 @@ const Apartment: FC = () => {
   const [textSearch, setTextSearch] = useState('')
   const [dataSearchs, setDatasSearch] = useState([])
   const Navigate = useNavigate()
+  const [err, setErr] = useState('')
   useEffect(() => {
     const getApartments = async () => {
+      setLoading(true)
       try {
-        const res = await axios.get('http://localhost:8080/api/apartments', {
+        const res = await baseAxios.get(`/apartments`, {
           params: {
             pageSize: 10,
             pageNo: index
@@ -69,7 +72,7 @@ const Apartment: FC = () => {
         setApartment(res.data)
         setLoading(false)
       } catch (error) {
-        console.log(error)
+        setErr('ERRR')
       }
     }
     getApartments()
@@ -77,7 +80,7 @@ const Apartment: FC = () => {
 
   useEffect(() => {
     const getDataSearchs = async () => {
-      const res = await axios.get('http://localhost:8080/api/apartments/search-by-name', {
+      const res = await baseAxios.get('/apartments/search-by-name', {
         params: {
           apartmentName: textSearch.trim()
         }
@@ -88,11 +91,15 @@ const Apartment: FC = () => {
       getDataSearchs()
     }
   }, [textSearch])
+
   const handleClickLink = (e: MouseEvent) => {
     e.preventDefault()
     alert('emty')
   }
-  console.log(apartments)
+  if (err) {
+    return <div>{err}</div>
+  }
+  console.log(loading)
   return loading ? (
     <Loading />
   ) : (
@@ -100,7 +107,7 @@ const Apartment: FC = () => {
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item">
-            <h3>Total: 20/50</h3>
+            <h3>Total apartments: 20/50</h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
             <FormSearchStyled>
@@ -119,7 +126,7 @@ const Apartment: FC = () => {
                 <div className="menu_search">
                   <span onDoubleClick={() => setTextSearch('')}>x</span>
                   {dataSearchs.length > 0 ? (
-                    dataSearchs.map((apartment: object) => {
+                    dataSearchs.map((apartment: { roomMaster: string; id: number | string; apartmentCode: string }) => {
                       return (
                         <Link
                           disabled={!apartment.roomMaster}
@@ -156,7 +163,7 @@ const Apartment: FC = () => {
                     <td>#{apartment.apartmentCode}</td>
                     <td>{apartment.roomMaster || 'Emty'}</td>
                     <td>{apartment.contractCode || 'Emty'}</td>
-                    <td>{apartment.status == 1 ? 'Occupied ' : 'Available'}</td>
+                    <td>{apartment.status ? <b>{apartment.status}</b> : 'Emty'}</td>
                     <td>{apartment.personInApartment}</td>
                     <td className="td-action">
                       <button
@@ -183,4 +190,4 @@ const Apartment: FC = () => {
   )
 }
 
-export default Apartment
+export default withAuthorization(Apartment)

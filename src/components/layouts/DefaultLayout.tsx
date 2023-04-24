@@ -1,5 +1,6 @@
 import DefaultLayoutStyled from '../../assets/styles/DefaultLayout'
 import Sidebar from '../sidebar/Sidebar'
+import withAuthorization from '../../routers/WithAuthorization'
 function DefaultLayout({ children }: { children: JSX.Element }) {
   return (
     <DefaultLayoutStyled>
@@ -12,4 +13,4 @@ function DefaultLayout({ children }: { children: JSX.Element }) {
     </DefaultLayoutStyled>
   )
 }
-export default DefaultLayout
+export default withAuthorization(DefaultLayout)
