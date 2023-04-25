@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
 import baseAxios from '../../apis/ConfigAxios'
+import PagingBar from '../pagingbar/PagingBar '
 interface ListPersonsInterFace {
   id: number
   fullName: string
@@ -20,6 +21,7 @@ interface ListPersonsInterFace {
 const Persons: FC = () => {
   const [persons, setPersons] = useState([])
   const [loading, setLoading] = useState(true)
+  const [index, setIndex] = useState(1)
   const Navigate = useNavigate()
   useEffect(() => {
     const getPersons = async () => {
@@ -27,7 +29,7 @@ const Persons: FC = () => {
         const res = await baseAxios.get('/persons/represent', {
           params: {
             pageSize: 10,
-            pageNo: 1
+            pageNo: index
           }
         })
         setPersons(res.data)
@@ -37,8 +39,7 @@ const Persons: FC = () => {
       }
     }
     getPersons()
-  }, [setLoading])
-  console.log(persons)
+  }, [index])
   return loading ? (
     <Loading />
   ) : (
@@ -61,34 +62,41 @@ const Persons: FC = () => {
           </div>
         </div>
         <div className="apartment-content">
-          <table>
-            <tbody>
-              <tr>
-                <th>ApartmentCode</th>
-                <th>FullName</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Cin</th>
-                <th>Action</th>
-              </tr>
-              {persons.map((person: ListPersonsInterFace) => {
-                return (
-                  <tr key={person.id}>
-                    <td>#{person.apartmentCode}</td>
-                    <td>{person.fullName}</td>
-                    <td>{person.email}</td>
-                    <td>{person.phone}</td>
-                    <td>{person.cin}</td>
-                    <td className="td-action">
-                      <button onClick={() => Navigate(`/person_detail/${person.id}`)} title="view detail">
-                        <FontAwesomeIcon className="icon-eye" icon={faEye} />
-                      </button>
-                    </td>
+          {persons.length ? (
+            <div>
+              <table>
+                <tbody>
+                  <tr>
+                    <th>ApartmentCode</th>
+                    <th>FullName</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Cin</th>
+                    <th>Action</th>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                  {persons.map((person: ListPersonsInterFace) => {
+                    return (
+                      <tr key={person.id}>
+                        <td>#{person.apartmentCode}</td>
+                        <td>{person.fullName}</td>
+                        <td>{person.email}</td>
+                        <td>{person.phone}</td>
+                        <td>{person.cin}</td>
+                        <td className="td-action">
+                          <button onClick={() => Navigate(`/person_detail/${person.id}`)} title="view detail">
+                            <FontAwesomeIcon className="icon-eye" icon={faEye} />
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+              <PagingBar currentPage={index} totalPages={10} onPageChange={setIndex} />
+            </div>
+          ) : (
+            <div>no data</div>
+          )}
         </div>
       </ApartmentStyled>
     </>

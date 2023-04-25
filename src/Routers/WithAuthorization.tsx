@@ -6,7 +6,6 @@ function withAuthorization(WrappedComponent: FC) {
     const navigate = useNavigate()
     useEffect(() => {
       const tokenLocal: null | string = localStorage.getItem('token') || ''
-      console.log(tokenLocal)
       if (!tokenLocal) {
         navigate('/login')
       }

@@ -1,14 +1,25 @@
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState, SyntheticEvent } from 'react'
 import Inputs from '../Inputs'
 import Formstyled from '../../../assets/styles/Forms'
 import Select from 'react-select'
 import baseAxios from '../../../apis/ConfigAxios'
 import { useNavigate, useParams } from 'react-router-dom'
 import ValidatePersons from './ValidateCreatePersons'
+interface ValuesFace {
+  fullName: string
+  phone: string
+  email: string
+  dob: string
+  cin: number | string
+  gender: string | number
+  carrer: string
+  apartmentId: { values?: string } | string | object
+  status: string
+}
 const FormCreatePersons: FC = () => {
   const { id } = useParams()
   const Navigate = useNavigate()
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<ValuesFace>({
     fullName: '',
     phone: '',
     email: '',
@@ -29,7 +40,7 @@ const FormCreatePersons: FC = () => {
     apartmentId: ''
   })
   const [options, setOptions] = useState([])
-  const handleChange = (option) => {
+  const handleChange = (option: { value: string | number; label: string }) => {
     setValues({ ...values, apartmentId: option })
     setMessageErrs({ ...messageErrs, apartmentId: '' })
   }
@@ -40,7 +51,7 @@ const FormCreatePersons: FC = () => {
         pageNo: 1
       }
     })
-    const newDatas = res.data.map((apartment) => {
+    const newDatas = res.data.map((apartment: { id: string | number; apartmentCode: string }) => {
       return {
         values: apartment.id,
         label: apartment.apartmentCode
@@ -60,7 +71,7 @@ const FormCreatePersons: FC = () => {
       getPerson()
     }
   }, [id])
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
     const newValues = {
       ...values,

@@ -6,7 +6,6 @@ import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
 import PagingBar from '../pagingbar/PagingBar '
 import styled from 'styled-components'
-import withAuthorization from '../../routers/WithAuthorization'
 import baseAxios from '../../apis/ConfigAxios'
 const FormSearchStyled = styled.form`
   position: relative;
@@ -69,8 +68,10 @@ const Apartment: FC = () => {
             pageNo: index
           }
         })
-        setApartment(res.data)
-        setLoading(false)
+        setTimeout(() => {
+          setApartment(res.data)
+          setLoading(false)
+        }, 500)
       } catch (error) {
         setErr('ERRR')
       }
@@ -129,10 +130,9 @@ const Apartment: FC = () => {
                     dataSearchs.map((apartment: { roomMaster: string; id: number | string; apartmentCode: string }) => {
                       return (
                         <Link
-                          disabled={!apartment.roomMaster}
                           to={`/apartment_detail/${apartment.id}`}
                           key={apartment.id}
-                          onClick={!apartment.roomMaster ? (e) => handleClickLink(e) : null}
+                          onClick={!apartment.roomMaster ? (e) => handleClickLink(e) : undefined}
                         >
                           {apartment.apartmentCode}
                         </Link>
@@ -190,4 +190,4 @@ const Apartment: FC = () => {
   )
 }
 
-export default withAuthorization(Apartment)
+export default Apartment

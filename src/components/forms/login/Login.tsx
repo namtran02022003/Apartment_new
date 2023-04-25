@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useState, SyntheticEvent } from 'react'
 import styled from 'styled-components'
 import Inputs from '../Inputs'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -77,18 +77,22 @@ const LoginFormStyled = styled.div`
     }
   }
 `
+interface userFace {
+  username?: string
+  password?: string
+}
 const LoginForm: FC = () => {
   const [user, setUser] = useState({
     username: '',
     password: ''
   })
   const [type, setType] = useState(true)
-  const [errMessage, setErrMessage] = useState({
+  const [errMessage, setErrMessage] = useState<userFace>({
     username: '',
     password: ''
   })
   const Navigate = useNavigate()
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
     const flag = Object.keys(ValidateLogin(user, setErrMessage)).length > 0
     if (!flag) {
@@ -110,6 +114,7 @@ const LoginForm: FC = () => {
             setUser({ ...user, username: e.target.value })
             setErrMessage({ ...errMessage, username: '' })
           }}
+          name="username"
           type="text"
           label="Username"
           placeholder="Enter_username"
@@ -119,6 +124,7 @@ const LoginForm: FC = () => {
         <div className="position-relative">
           <Inputs
             type={type ? 'password' : 'text'}
+            name="password"
             label="Password"
             placeholder="Enter_password"
             value={user.password}

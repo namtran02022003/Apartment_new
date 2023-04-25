@@ -1,7 +1,12 @@
 import DefaultLayoutStyled from '../../assets/styles/DefaultLayout'
 import Sidebar from '../sidebar/Sidebar'
 import withAuthorization from '../../routers/WithAuthorization'
-function DefaultLayout({ children }: { children: JSX.Element }) {
+import { FC } from 'react'
+interface Props {
+  children?: JSX.Element
+}
+const DefaultLayout: FC<Props> = ({ children }) => {
+  console.log('run')
   return (
     <DefaultLayoutStyled>
       <div className="layout-content">

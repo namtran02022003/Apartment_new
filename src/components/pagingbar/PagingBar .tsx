@@ -40,10 +40,14 @@ const PagingBarStyled = styled.div`
 `
 const MAX_BUTTONS = 3
 
-const PagingBar: FC = ({ currentPage, totalPages, onPageChange }) => {
+const PagingBar: FC<{
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+}> = (props) => {
+  const { currentPage, totalPages, onPageChange } = props
   const pageButtons = []
   let startPage, endPage
-
   if (totalPages <= MAX_BUTTONS) {
     startPage = 1
     endPage = totalPages

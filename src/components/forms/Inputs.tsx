@@ -8,7 +8,7 @@ interface Props {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
   err?: string
   type: string
-  onHandleChange: (e: ChangeEvent<HTMLInputElement>) => void
+  onHandleChange?: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 const Inputs: FC<Props> = (props) => {

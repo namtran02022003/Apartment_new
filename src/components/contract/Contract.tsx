@@ -6,7 +6,6 @@ import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
 import baseAxios from '../../apis/ConfigAxios'
 import * as moment from 'moment'
-import withAuthorization from '../../routers/WithAuthorization'
 interface ListContractInterFace {
   id: number
   code: string
@@ -42,7 +41,6 @@ const Contract: FC = () => {
     }
     getContracts()
   }, [])
-  console.log(contracts)
   return loading ? (
     <Loading />
   ) : (
@@ -83,7 +81,7 @@ const Contract: FC = () => {
                     <td>{contract.person.fullName}</td>
                     <td>{contract.apartment.area}</td>
                     <td>{Number(contract.priceApartment).toLocaleString()} VND</td>
-                    <td>{moment(contracts.startDate).format('DD/MM/YYYY')}</td>
+                    <td>{moment(contract.startDate).format('DD/MM/YYYY')}</td>
                     <td>{contract.status}</td>
                     <td className="td-action">
                       <button title="view detail contract">
@@ -101,4 +99,4 @@ const Contract: FC = () => {
   )
 }
 
-export default withAuthorization(Contract)
+export default Contract

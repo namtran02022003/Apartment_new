@@ -1,10 +1,11 @@
+import { Dispatch, SetStateAction } from 'react'
 interface Err {
   startDate?: string
   endDate?: string
   priceApartment?: number | string
   code?: string
-  apartment: string
-  person: string
+  apartment?: string
+  person?: string
 }
 interface Contract {
   startDate: string
@@ -18,7 +19,7 @@ interface Contract {
     id: string
   }
 }
-const ValidateContract = (values: Contract, setMessageErr) => {
+const ValidateContract = (values: Contract, setMessageErr: Dispatch<SetStateAction<object>>) => {
   const errs: Err = {}
   if (!values.startDate) {
     errs.startDate = 'Invalid start date'

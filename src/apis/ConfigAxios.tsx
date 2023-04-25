@@ -6,7 +6,8 @@ const baseAxios = axios.create({
 
 baseAxios.interceptors.request.use(
   (config) => {
-    const token = JSON.parse(localStorage.getItem('token'))
+    const tokenLocal: string | null = localStorage.getItem('token')
+    const token: string | undefined = tokenLocal ? JSON.parse(tokenLocal) : undefined
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }

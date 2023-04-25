@@ -1,5 +1,23 @@
-const ValidatePersons = (values, setMessageErr) => {
-  const errs = {}
+import { Dispatch, SetStateAction } from 'react'
+interface ValuesFace {
+  fullName: string
+  phone: string
+  email: string
+  dob: string
+  cin: number | string
+  gender: string | number
+  carrer: string
+  apartmentId: { values?: string } | string | object
+  status: string
+}
+interface ErrFace {
+  fullName?: string
+  email?: string
+  dob?: string
+  apartmentId?: string | number
+}
+const ValidatePersons = (values: ValuesFace, setMessageErr: Dispatch<SetStateAction<object>>) => {
+  const errs: ErrFace = {}
   if (!values.fullName.trim()) {
     errs.fullName = 'Invalid fullname'
   } else if (values.fullName.trim().length < 8) {

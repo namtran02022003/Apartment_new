@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import Loading from '../loading/Loading'
 import * as moment from 'moment'
-import withAuthorization from '../../routers/WithAuthorization'
 const ApeartmentDetailStyled = styled.div`
   background: #fff;
   padding: 10px 20px;
@@ -43,10 +42,17 @@ interface personsInterFace {
   dob: string
   status: string | number
 }
+interface contractsInterFace {
+  person: { fullName: string }
+  apartment: { code: string; area: number | string }
+  code: string
+  startDate: string
+  endDate: string
+}
 const ApartmentDetail: FC = () => {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
-  const [contracts, setContract] = useState(null)
+  const [contracts, setContract] = useState<contractsInterFace>()
   const [listPersons, setListPersons] = useState([])
   const [error, setError] = useState('')
   const Navigate = useNavigate()
@@ -55,7 +61,7 @@ const ApartmentDetail: FC = () => {
     const fetchData = async () => {
       try {
         const resContract = await baseAxios.get(`/apartments/${id}/contract`)
-        const resPersons = await baseAxios.get(`/apartments/${id}/person-active`)
+        const resPersons = await baseAxios.get(`/apartments/${id}/persons`)
         if (isMounted) {
           setContract(resContract.data)
           setListPersons(resPersons.data)
@@ -160,4 +166,4 @@ const ApartmentDetail: FC = () => {
   )
 }
 
-export default withAuthorization(ApartmentDetail)
+export default ApartmentDetail
