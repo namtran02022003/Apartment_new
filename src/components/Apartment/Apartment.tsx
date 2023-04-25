@@ -53,9 +53,11 @@ interface MouseEvent {
 const Apartment: FC = () => {
   const [apartments, setApartment] = useState([])
   const [loading, setLoading] = useState(true)
+  const [show, setShow] = useState(false)
   const [index, setIndex] = useState(1)
   const [textSearch, setTextSearch] = useState('')
   const [dataSearchs, setDatasSearch] = useState([])
+  const [countApartment, setCountApartment] = useState(0)
   const Navigate = useNavigate()
   const [err, setErr] = useState('')
   useEffect(() => {
@@ -68,7 +70,9 @@ const Apartment: FC = () => {
             pageNo: index
           }
         })
+        const resTotal = await baseAxios.get(`/apartments/count-apartment-occupied`)
         setTimeout(() => {
+          setCountApartment(resTotal.data)
           setApartment(res.data)
           setLoading(false)
         }, 500)
@@ -100,7 +104,6 @@ const Apartment: FC = () => {
   if (err) {
     return <div>{err}</div>
   }
-  console.log(loading)
   return loading ? (
     <Loading />
   ) : (
@@ -108,24 +111,33 @@ const Apartment: FC = () => {
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item">
-            <h3>Total apartments: 20/50</h3>
+            <h3>Total apartments: {countApartment}/100</h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
             <FormSearchStyled>
               <input
+                maxLength={50}
                 type="text"
                 value={textSearch}
                 onChange={(e) => {
                   setTextSearch(e.target.value)
+                  setShow(true)
                 }}
                 placeholder="Enter search..."
               />
-              <button title="search" type="submit" className="btn-search">
+              <button
+                disabled={!textSearch}
+                type="button"
+                onClick={() => {
+                  Navigate(`/apartments/search_by_name/${textSearch}`)
+                }}
+                title="search"
+                className="btn-search"
+              >
                 <FontAwesomeIcon icon={faSearch} />
               </button>
-              {textSearch.trim().length > 0 && (
+              {show && (
                 <div className="menu_search">
-                  <span onDoubleClick={() => setTextSearch('')}>x</span>
                   {dataSearchs.length > 0 ? (
                     dataSearchs.map((apartment: { roomMaster: string; id: number | string; apartmentCode: string }) => {
                       return (
@@ -150,9 +162,8 @@ const Apartment: FC = () => {
           <table>
             <tbody>
               <tr>
-                <th>Apartment id</th>
-                <th>Resident</th>
-                <th>Contract code</th>
+                <th>Apartment ID</th>
+                <th>Host name</th>
                 <th>status</th>
                 <th>Number/room</th>
                 <th>Actions</th>
@@ -162,7 +173,6 @@ const Apartment: FC = () => {
                   <tr key={apartment.id}>
                     <td>#{apartment.apartmentCode}</td>
                     <td>{apartment.roomMaster || 'Emty'}</td>
-                    <td>{apartment.contractCode || 'Emty'}</td>
                     <td>{apartment.status ? <b>{apartment.status}</b> : 'Emty'}</td>
                     <td>{apartment.personInApartment}</td>
                     <td className="td-action">

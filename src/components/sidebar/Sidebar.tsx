@@ -15,7 +15,7 @@ const Sidebar: FC = () => {
     <SidebarStyled>
       <Link to="/">
         <FontAwesomeIcon className="icon-home" icon={faHome} />
-        Manage Apartments
+        Apartment management
       </Link>
       <div className="content">
         {listItem.map((item, index) => {

@@ -1,9 +1,10 @@
+import { Dispatch, SetStateAction } from 'react'
 interface userFace {
   username?: string
   password?: string
 }
 
-function ValidateLogin(user: userFace, setErrs) {
+function ValidateLogin(user: userFace, setErrs: Dispatch<SetStateAction<object>>) {
   const err: userFace = {}
   if (user.username?.trim().length != 12) {
     err.username = 'Incorrect username'

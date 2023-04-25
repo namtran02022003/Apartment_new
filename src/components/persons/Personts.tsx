@@ -67,11 +67,11 @@ const Persons: FC = () => {
               <table>
                 <tbody>
                   <tr>
-                    <th>ApartmentCode</th>
-                    <th>FullName</th>
+                    <th>Apartment ID</th>
+                    <th>Host name</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>Cin</th>
+                    <th>ID</th>
                     <th>Action</th>
                   </tr>
                   {persons.map((person: ListPersonsInterFace) => {

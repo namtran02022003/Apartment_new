@@ -17,6 +17,11 @@ module.exports = (env, argv) => {
   const isAnalyze = Boolean(env?.analyze)
   /** @type {import('webpack').Configuration} **/
   const config = {
+    plugins: [
+      new Dotenv({
+        path: './env' // default is .env
+      })
+    ],
     resolve: {
       extensions: ['.tsx', '.ts', '.jsx', '.js']
     },

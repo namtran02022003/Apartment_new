@@ -5,8 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faEye } from '@fortawesome/free-solid-svg-icons'
 import backgroung_login from '../../../assets/images/background_login.png'
 import ValidateLogin from './ValidateLogin'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import baseAxios from '../../../apis/ConfigAxios'
+
 const LoginFormStyled = styled.div`
   background-image: url(${backgroung_login});
   background-size: cover;
@@ -97,7 +98,8 @@ const LoginForm: FC = () => {
     const flag = Object.keys(ValidateLogin(user, setErrMessage)).length > 0
     if (!flag) {
       try {
-        const res = await axios.post('http://localhost:8080/auth/login', user)
+        const res = await baseAxios.post(`/login`, user)
+        console.log(res)
         await localStorage.setItem('token', JSON.stringify(res.data.accessToken))
         Navigate('/')
       } catch (error) {
