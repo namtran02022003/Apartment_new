@@ -6,7 +6,6 @@ interface Props {
   children?: JSX.Element
 }
 const DefaultLayout: FC<Props> = ({ children }) => {
-  console.log('run')
   return (
     <DefaultLayoutStyled>
       <div className="layout-content">

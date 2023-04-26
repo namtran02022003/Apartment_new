@@ -28,77 +28,63 @@ const ApeartmentDetailStyled = styled.div`
     padding: 10px 5px;
   }
 `
-interface contractsInterFace {
-  person: { fullName: string }
-  apartment: { code: string; area: number | string }
-  code: string
-  status: string
+interface ApartmentDetailInterFace {
+  apartmentCode: string
+  roomMaster: string
+  contractCode: string
+  status: boolean
+  area: string | number
+  personInApartment: number | string
 }
 const ApartmentDetail: FC = () => {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
-  const [contracts, setContract] = useState<contractsInterFace>()
-  const [error, setError] = useState('')
+  const [ApartmentDetail, setApartmentDetail] = useState<ApartmentDetailInterFace>()
   useEffect(() => {
-    let isMounted = true
-    const fetchData = async () => {
+    const getApartment = async () => {
       try {
-        const resContract = await baseAxios.get(`/apartments/${id}/contract`)
-        if (isMounted) {
-          setContract(resContract.data)
+        const res = await baseAxios.get(`/apartments/${id}`)
+        setTimeout(() => {
+          setApartmentDetail(res.data)
           setLoading(false)
-        }
+        }, 500)
       } catch (error) {
-        if (isMounted) {
-          setError('Có lỗi xảy ra khi tải dữ liệu, vui lòng thử lại sau.')
-          setLoading(false)
-        }
+        console.log(error)
       }
     }
-    if (id) {
-      fetchData()
-    } else {
-      setLoading(false)
-    }
-    return () => {
-      isMounted = false
-    }
+    getApartment()
   }, [id])
-
   if (loading) {
     return <Loading />
   }
 
-  if (error) {
-    return <div className="error">{error}</div>
-  }
-
-  if (!contracts) {
+  if (!ApartmentDetail) {
     return <div>No data</div>
   }
+  console.log(ApartmentDetail)
   return (
     <ApeartmentDetailStyled>
-      <h1>Detail Apartment</h1>
+      <h1>Apartment Detail</h1>
       <div className="item">
         <table>
           <tbody>
             <tr>
-              <th>Apartment id</th>
+              <th>Apartment ID</th>
               <th>Host name</th>
-              <th>Contract id</th>
+              <th>Contract ID</th>
               <th>Area</th>
-              <th>Number/room</th>
+              <th>Resident number</th>
               <th>Status</th>
             </tr>
             <tr>
-              <td>{contracts.apartment.code}</td>
-              <td>{contracts.person.fullName} </td>
-              <td>{contracts.code}</td>
+              <td>{ApartmentDetail.apartmentCode}</td>
+              <td>{ApartmentDetail.roomMaster} </td>
+              <td>{ApartmentDetail.contractCode}</td>
               <td>
-                {contracts.apartment.area}m<sub>2</sub>
+                {ApartmentDetail.area}m<sub>2</sub>
               </td>
-              <td>d</td>
-              <td>{contracts.status}</td>
+              <td>{ApartmentDetail.personInApartment}</td>
+              <td>{ApartmentDetail.status ? <b>Occupied</b> : 'Available'}</td>
             </tr>
           </tbody>
         </table>

@@ -22,8 +22,6 @@ const DefaultLayoutStyled = styled.div`
     opacity: 0.9;
   }
   .td-action {
-    display: flex;
-    justify-content: space-around;
     button {
       border-radius: 50%;
       border: none;

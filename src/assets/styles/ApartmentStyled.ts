@@ -54,14 +54,15 @@ const ApartmentStyled = styled.div`
       width: 100%;
       border-collapse: collapse;
       .td-action {
-        display: flex;
-        justify-content: space-around;
         button {
           border-radius: 50%;
           border: 1px solid #ccc;
           padding: 9px 9px;
           cursor: pointer;
           .icon-eye {
+            color: blue;
+          }
+          .icon-edit {
             color: blue;
           }
           &:disabled {
@@ -73,11 +74,13 @@ const ApartmentStyled = styled.div`
     table,
     th,
     td {
-      border: 1px solid #ccc;
       padding: 5px 10px;
     }
     td {
       padding: 10px;
+    }
+    tr:nth-child(odd) {
+      background-color: rgb(239 227 227);
     }
   }
 `

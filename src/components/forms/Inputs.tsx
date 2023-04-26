@@ -2,10 +2,10 @@ import { FC, ChangeEvent } from 'react'
 
 interface Props {
   name: string
-  label: string
-  placeholder: string
+  label?: string
+  placeholder?: string
   value?: string | number
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void
   err?: string
   type: string
   onHandleChange?: (e: ChangeEvent<HTMLInputElement>) => void

@@ -26,5 +26,8 @@ const GlobalStyles = createGlobalStyle`
   * {
     box-sizing: border-box;
   }
+  th {
+    text-align: left;
+  }
 `
 export default GlobalStyles

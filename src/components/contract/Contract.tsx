@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faEye, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
@@ -24,23 +24,30 @@ const Contract: FC = () => {
   const [contracts, setContracts] = useState([])
   const [loading, setLoading] = useState(true)
   const Navigate = useNavigate()
-  useEffect(() => {
-    const getContracts = async () => {
-      try {
-        const res = await baseAxios.get('/contracts', {
-          params: {
-            pageSize: 10,
-            pageNo: 1
-          }
-        })
+  const getContracts = async () => {
+    try {
+      const res = await baseAxios.get('/contracts', {
+        params: {
+          pageSize: 10,
+          pageNo: 1
+        }
+      })
+      setTimeout(() => {
         setContracts(res.data)
         setLoading(false)
-      } catch (error) {
-        console.log(error)
-      }
+      }, 500)
+    } catch (error) {
+      console.log(error)
     }
+  }
+  useEffect(() => {
     getContracts()
   }, [])
+  const handleDeleteContract = async (id: number) => {
+    const res = await baseAxios.put(`/contracts/change-status`, [id])
+    console.log(res)
+    getContracts()
+  }
   return loading ? (
     <Loading />
   ) : (
@@ -68,7 +75,7 @@ const Contract: FC = () => {
               <tr>
                 <th>Apartment name</th>
                 <th>Host name</th>
-                <th>Acreage</th>
+                <th>Area</th>
                 <th>Rental price</th>
                 <th>Registration</th>
                 <th>Status</th>
@@ -76,7 +83,7 @@ const Contract: FC = () => {
               </tr>
               {contracts.map((contract: ListContractInterFace) => {
                 return (
-                  <tr key={contract.id}>
+                  <tr key={contract.code}>
                     <td>{contract.apartment.name}</td>
                     <td>{contract.person.fullName}</td>
                     <td>{contract.apartment.area}</td>
@@ -84,8 +91,11 @@ const Contract: FC = () => {
                     <td>{moment(contract.startDate).format('DD/MM/YYYY')}</td>
                     <td>{contract.status}</td>
                     <td className="td-action">
-                      <button title="view detail contract">
+                      <button onClick={() => Navigate(`/detail-contrac/${contract.id}`)} title="view detail contract">
                         <FontAwesomeIcon className="icon-eye" icon={faEye} />
+                      </button>
+                      <button onClick={() => handleDeleteContract(contract.id)} title="view detail contract">
+                        <FontAwesomeIcon className="icon-faTrash" icon={faTrash} />
                       </button>
                     </td>
                   </tr>

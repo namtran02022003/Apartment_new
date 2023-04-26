@@ -1,17 +1,22 @@
 import { FC, Fragment } from 'react'
-import GlobalStyles from './assets/styles/GlobalStyled'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PublicRouters from './routers'
 import DefaultLayout from './components/layouts/DefaultLayout'
-
+import GlobalStyles from './assets/styles/GlobalStyled'
+interface face {
+  component: React.FC
+  layout?: React.FC | null
+  type?: string
+  path: string
+}
 const App: FC = () => {
   return (
     <>
       <GlobalStyles />
       <Router>
         <Routes>
-          {PublicRouters.map((routes, index) => {
-            let Layout = DefaultLayout
+          {PublicRouters.map((routes: face, index: number) => {
+            let Layout: React.FC | typeof Fragment = DefaultLayout
             const Page = routes.component
             if (routes.layout) {
               Layout = routes.layout
@@ -24,7 +29,7 @@ const App: FC = () => {
                 path={routes.path}
                 element={
                   <Layout>
-                    <Page type={routes.type} />
+                    <Page />
                   </Layout>
                 }
               />
@@ -35,4 +40,5 @@ const App: FC = () => {
     </>
   )
 }
+
 export default App

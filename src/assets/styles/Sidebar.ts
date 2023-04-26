@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 const SidebarStyled = styled.div`
   a {
-    padding: 30px 0;
+    margin-bottom: 30px;
     color: #fff;
     font-weight: 400;
     cursor: pointer;
@@ -29,6 +29,13 @@ const SidebarStyled = styled.div`
   }
   .active {
     background: rgb(55 16 173);
+  }
+  .logo-home {
+    width: 75%;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+    mix-blend-mode: screen;
   }
 `
 export default SidebarStyled

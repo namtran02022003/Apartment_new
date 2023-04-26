@@ -32,14 +32,17 @@ const Persons: FC = () => {
             pageNo: index
           }
         })
-        setPersons(res.data)
-        setLoading(false)
+        setTimeout(() => {
+          setPersons(res.data)
+          setLoading(false)
+        }, 500)
       } catch (error) {
         console.log(error)
       }
     }
     getPersons()
   }, [index])
+  console.log(persons)
   return loading ? (
     <Loading />
   ) : (
@@ -83,7 +86,7 @@ const Persons: FC = () => {
                         <td>{person.phone}</td>
                         <td>{person.cin}</td>
                         <td className="td-action">
-                          <button onClick={() => Navigate(`/person_detail/${person.id}`)} title="view detail">
+                          <button onClick={() => Navigate(`/person_detail/${person.apartmentCode}`)} title="view detail">
                             <FontAwesomeIcon className="icon-eye" icon={faEye} />
                           </button>
                         </td>

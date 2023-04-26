@@ -10,7 +10,7 @@ const ModalStyled = styled.div`
 `
 const ModalServices: FC = () => {
   return (
-    <ModalServices>
+    <ModalStyled>
       <table>
         <tbody>
           <tr>
@@ -20,6 +20,6 @@ const ModalServices: FC = () => {
           </tr>
         </tbody>
       </table>
-    </ModalServices>
+    </ModalStyled>
   )
 }

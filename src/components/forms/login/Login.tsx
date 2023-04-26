@@ -7,7 +7,6 @@ import backgroung_login from '../../../assets/images/background_login.png'
 import ValidateLogin from './ValidateLogin'
 import { useNavigate } from 'react-router-dom'
 import baseAxios from '../../../apis/ConfigAxios'
-
 const LoginFormStyled = styled.div`
   background-image: url(${backgroung_login});
   background-size: cover;

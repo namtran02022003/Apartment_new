@@ -101,6 +101,7 @@ const Apartment: FC = () => {
     e.preventDefault()
     alert('emty')
   }
+  console.log(apartments)
   if (err) {
     return <div>{err}</div>
   }
@@ -164,16 +165,16 @@ const Apartment: FC = () => {
               <tr>
                 <th>Apartment ID</th>
                 <th>Host name</th>
-                <th>status</th>
-                <th>Number/room</th>
-                <th>Actions</th>
+                <th>Status</th>
+                <th>Resident number</th>
+                <th>Action</th>
               </tr>
               {apartments.map((apartment: ApartmentInterFace) => {
                 return (
                   <tr key={apartment.id}>
-                    <td>#{apartment.apartmentCode}</td>
+                    <td>{apartment.apartmentCode}</td>
                     <td>{apartment.roomMaster || 'Emty'}</td>
-                    <td>{apartment.status ? <b>{apartment.status}</b> : 'Emty'}</td>
+                    <td>{apartment.status ? <b>Occupied</b> : 'Available'}</td>
                     <td>{apartment.personInApartment}</td>
                     <td className="td-action">
                       <button
