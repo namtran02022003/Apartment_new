@@ -51,7 +51,6 @@ const FormCreatePersons: FC = () => {
         pageNo: 1
       }
     })
-    console.log(res.data)
     const newDatas = res.data.map((apartment: { id: string | number; name: string }) => {
       return {
         values: apartment.id,
@@ -79,7 +78,6 @@ const FormCreatePersons: FC = () => {
       apartmentId: values.apartmentId.values,
       gender: values.gender == 1 ? true : false
     }
-    console.log(newValues)
     if (!(Object.keys(ValidatePersons(newValues, setMessageErrs)).length > 0)) {
       if (!id) {
         await baseAxios.post('/persons', newValues)
@@ -90,7 +88,6 @@ const FormCreatePersons: FC = () => {
       }
     }
   }
-  console.log(values)
   return (
     <Formstyled>
       <form onSubmit={handleSubmit}>

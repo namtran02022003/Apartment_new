@@ -1,8 +1,11 @@
 import styled from 'styled-components'
-
+import backgroung_login from '../images/background_login.png'
 const Formstyled = styled.div`
   background: rgb(204, 204, 204);
   height: 100vh;
+  background-image: url(${backgroung_login});
+  background-size: cover;
+  background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;

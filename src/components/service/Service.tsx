@@ -71,7 +71,9 @@ const Service: FC = () => {
                 <FontAwesomeIcon icon={faSearch} />
               </button>
             </form>
-            <button className="btn-create">Service unit price</button>
+            <button onClick={() => Navigate(`/service_unit_price`)} className="btn-create">
+              Service unit price
+            </button>
             <button onClick={() => Navigate('/create_new_bill')} className="btn-create">
               Create new bill
             </button>

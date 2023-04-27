@@ -10,6 +10,7 @@ import DetailPersons from '../components/persons/DetailPersons'
 import LoginForm from '../components/forms/login/Login'
 import SearchApartments from '../components/apartment/SearchApartments'
 import ContractDetail from '../components/contract/ContractDetail'
+import ServicePrice from '../components/service/ServicePrice'
 const PublicRouters = [
   { path: '/', component: Apartment },
   { path: '/service', component: Ssevice },
@@ -24,6 +25,7 @@ const PublicRouters = [
   { path: '/login', component: LoginForm, layout: null },
   { path: '/apartments/search_by_name/:name', component: SearchApartments },
   { path: '/detail-contrac/:id', component: ContractDetail },
-  { path: '*', component: LoginForm, layout: null }
+  { path: '*', component: LoginForm, layout: null },
+  { path: '/service_unit_price', component: ServicePrice }
 ]
 export default PublicRouters
