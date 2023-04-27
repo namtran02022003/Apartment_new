@@ -32,9 +32,6 @@ const ValidateContract = (values: Contract, setMessageErr: Dispatch<SetStateActi
   } else if (values.priceApartment < 0) {
     errs.priceApartment = 'Invalid priceApartment'
   }
-  if (!values.code || values.code.length < 4 || values.code.length > 8) {
-    errs.code = 'Invalid code'
-  }
   if (!values.apartment.id) {
     errs.apartment = 'Invalid apartment'
   }

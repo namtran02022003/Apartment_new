@@ -45,16 +45,17 @@ const FormCreatePersons: FC = () => {
     setMessageErrs({ ...messageErrs, apartmentId: '' })
   }
   const getDatasSearch = useCallback(async () => {
-    const res = await baseAxios.get('/apartments', {
+    const res = await baseAxios.get('/apartments/un-available', {
       params: {
         pageSize: 100,
         pageNo: 1
       }
     })
-    const newDatas = res.data.map((apartment: { id: string | number; apartmentCode: string }) => {
+    console.log(res.data)
+    const newDatas = res.data.map((apartment: { id: string | number; name: string }) => {
       return {
         values: apartment.id,
-        label: apartment.apartmentCode
+        label: apartment.name
       }
     })
     setOptions(newDatas)
@@ -79,7 +80,7 @@ const FormCreatePersons: FC = () => {
       gender: values.gender == 1 ? true : false
     }
     console.log(newValues)
-    if (!Object.keys(ValidatePersons(newValues, setMessageErrs)).length > 0) {
+    if (!(Object.keys(ValidatePersons(newValues, setMessageErrs)).length > 0)) {
       if (!id) {
         await baseAxios.post('/persons', newValues)
         Navigate('/resident')
@@ -98,7 +99,7 @@ const FormCreatePersons: FC = () => {
           <div className="flex-item">
             <Inputs
               name="fullname"
-              label="FullName:"
+              label="FullName"
               type="text"
               placeholder="Enter FullName"
               value={values.fullName}
@@ -172,7 +173,7 @@ const FormCreatePersons: FC = () => {
             </div>
           </div>
           <div className="flex-item">
-            <label htmlFor="nameApartment">Name Apartment:</label>
+            <label htmlFor="nameApartment">Name Apartment</label>
             <Select id="nameApartment" value={values.apartmentId} onChange={handleChange} options={options} isSearchable placeholder="Select a fruit" />
             <p className="err-message">{messageErrs.apartmentId}</p>
             <Inputs

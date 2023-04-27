@@ -5,7 +5,7 @@ interface ValuesFace {
   email: string
   dob: string
   cin: number | string
-  gender: string | number
+  gender: string | number | boolean
   carrer: string
   apartmentId: { values?: string } | string | object
   status: string

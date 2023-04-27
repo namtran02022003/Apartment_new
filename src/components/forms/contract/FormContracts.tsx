@@ -5,8 +5,11 @@ import styled from 'styled-components'
 import baseAxios from '../../../apis/ConfigAxios'
 import ValidateContract from './ValidateContratc'
 import { useNavigate } from 'react-router-dom'
+import background_login from '../../../assets/images/background_login.png'
 const FormContractsStyled = styled.div`
   background: #ccc;
+  background-image: url(${background_login});
+  background-size: cover;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -19,7 +22,7 @@ const FormContractsStyled = styled.div`
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    background: #fff;
+    background: rgb(255 255 255 / 90%);
     margin: auto;
     input {
       box-sizing: border-box;
@@ -70,7 +73,6 @@ const FormContracts: FC = () => {
     startDate: '',
     priceApartment: '',
     endDate: '',
-    code: '',
     status: '1',
     person: {
       id: ''
@@ -84,7 +86,6 @@ const FormContracts: FC = () => {
     startDate: '',
     priceApartment: '',
     endDate: '',
-    code: '',
     person: '',
     apartment: ''
   })
@@ -95,17 +96,17 @@ const FormContracts: FC = () => {
   useEffect(() => {
     const getDatas = async () => {
       const resPersons = await baseAxios.get('/persons')
-      const resApartment = await baseAxios.get('/apartments')
+      const resApartment = await baseAxios.get('/apartments/available')
       const dataPersons = resPersons.data.map((person: { id: number; fullName: string }) => {
         return {
           value: person.id,
           label: person.fullName
         }
       })
-      const dataApartment = resApartment.data.map((apartment: { id: number; apartmentCode: string }) => {
+      const dataApartment = resApartment.data.map((apartment: { id: number; name: string }) => {
         return {
           value: apartment.id,
-          label: apartment.apartmentCode
+          label: apartment.name
         }
       })
       setDataOptions({
@@ -155,7 +156,7 @@ const FormContracts: FC = () => {
         id: values.apartment.id.value
       }
     }
-    if (!Object.keys(ValidateContract(newValues, setMessageErrs)).length > 0) {
+    if (!(Object.keys(ValidateContract(newValues, setMessageErrs)).length > 0)) {
       await baseAxios.post('/contracts', newValues)
       Navigate('/contract')
     }
@@ -207,21 +208,6 @@ const FormContracts: FC = () => {
           placeholder="Enter price"
           name="price"
           err={messageErrs.priceApartment}
-        />
-        <Inputs
-          onChange={(e) => {
-            setValues({ ...values, code: e.target.value })
-            setMessageErrs({
-              ...messageErrs,
-              code: ''
-            })
-          }}
-          value={values.code}
-          type="text"
-          label="Code HD"
-          placeholder="Enter code HD"
-          name="code"
-          err={messageErrs.code}
         />
         <label htmlFor="Persons">Persons Id</label>
         <Select onChange={handlaChangeOptionsPersons} value={values.person.id} options={dataOptions.persons} />

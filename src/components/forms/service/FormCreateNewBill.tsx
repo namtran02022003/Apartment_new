@@ -20,13 +20,8 @@ const FormCreateNewBill: FC = () => {
     <FormCreateNewBillStyled>
       <form className="form-create">
         <h2>Create new bill</h2>
-        <Inputs />
-        <Inputs />
-        <Inputs />
-        <Inputs />
-        <Inputs />
-        <Inputs />
-        <Inputs />
+        <Inputs label="Electric num" type="text" />
+        <Inputs label="Water num" type="text" />
       </form>
     </FormCreateNewBillStyled>
   )

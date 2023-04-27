@@ -18,8 +18,12 @@ interface ListPersonsInterFace {
   apartmentCode: string | number
   status: string | number
 }
+interface Persons {
+  content: []
+  totalElements: number
+}
 const Persons: FC = () => {
-  const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState<Persons>(Object)
   const [loading, setLoading] = useState(true)
   const [index, setIndex] = useState(1)
   const Navigate = useNavigate()
@@ -50,7 +54,7 @@ const Persons: FC = () => {
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item">
-            <h3>Total resident: 20/50</h3>
+            <h3>Total resident: {persons.totalElements}</h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
             <form>
@@ -65,7 +69,7 @@ const Persons: FC = () => {
           </div>
         </div>
         <div className="apartment-content">
-          {persons.length ? (
+          {persons.content.length ? (
             <div>
               <table>
                 <tbody>
@@ -77,7 +81,7 @@ const Persons: FC = () => {
                     <th>ID</th>
                     <th>Action</th>
                   </tr>
-                  {persons.map((person: ListPersonsInterFace) => {
+                  {persons.content.map((person: ListPersonsInterFace) => {
                     return (
                       <tr key={person.id}>
                         <td>#{person.apartmentCode}</td>

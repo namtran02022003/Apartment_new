@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import Loading from '../loading/Loading'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import baseAxios from '../../apis/ConfigAxios'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -23,7 +23,8 @@ const DetailPersons: FC = () => {
   const [loading, setLoading] = useState(true)
   const [persons, setPersons] = useState([])
   const { name } = useParams()
-  console.log(name)
+  const Navigate = useNavigate()
+  console.log(persons)
   useEffect(() => {
     const getMembers = async () => {
       try {
@@ -67,7 +68,7 @@ const DetailPersons: FC = () => {
                   <td>{person.dob}</td>
                   <td>{person.carrer}</td>
                   <td className="td-action">
-                    <button title="edit" className="btn-action">
+                    <button onClick={() => Navigate(`/edit_person/${person.id}`)} title="edit" className="btn-action">
                       <FontAwesomeIcon className="icon-edit" icon={faEdit} />
                     </button>
                   </td>

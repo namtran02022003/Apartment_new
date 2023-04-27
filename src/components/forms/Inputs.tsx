@@ -1,7 +1,7 @@
 import { FC, ChangeEvent } from 'react'
 
 interface Props {
-  name: string
+  name?: string
   label?: string
   placeholder?: string
   value?: string | number

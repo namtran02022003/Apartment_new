@@ -1,12 +1,13 @@
 import React, { FC, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, Link } from 'react-router-dom'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
 import PagingBar from '../pagingbar/PagingBar '
 import styled from 'styled-components'
 import baseAxios from '../../apis/ConfigAxios'
+import ListViewApartment from './ListViewApartment'
 const FormSearchStyled = styled.form`
   position: relative;
   .menu_search {
@@ -39,19 +40,16 @@ const FormSearchStyled = styled.form`
     }
   }
 `
-interface ApartmentInterFace {
-  id: number
-  roomMaster: string
-  contractCode: string
-  status: string
-  personInApartment: string | number
-  apartmentCode: string
-}
+
 interface MouseEvent {
   preventDefault(): void
 }
+interface Apartment {
+  content: []
+  totalElements: number
+}
 const Apartment: FC = () => {
-  const [apartments, setApartment] = useState([])
+  const [apartments, setApartment] = useState<Apartment>(Object)
   const [loading, setLoading] = useState(true)
   const [show, setShow] = useState(false)
   const [index, setIndex] = useState(1)
@@ -85,9 +83,9 @@ const Apartment: FC = () => {
 
   useEffect(() => {
     const getDataSearchs = async () => {
-      const res = await baseAxios.get('/apartments/search-by-name', {
+      const res = await baseAxios.get('/apartments/search-by-represent', {
         params: {
-          apartmentName: textSearch.trim()
+          represent: textSearch.trim()
         }
       })
       setDatasSearch(res.data)
@@ -96,12 +94,25 @@ const Apartment: FC = () => {
       getDataSearchs()
     }
   }, [textSearch])
-
+  useEffect(() => {
+    function closeMenuSearch(e: MouseEvent | TouchEvent) {
+      const element = document.getElementById('menu_search')
+      console.log(element)
+      if (e instanceof MouseEvent && e.target != element) {
+        setShow(false)
+      }
+    }
+    if (show) {
+      window.addEventListener('click', closeMenuSearch)
+      return () => {
+        window.removeEventListener('click', closeMenuSearch)
+      }
+    }
+  })
   const handleClickLink = (e: MouseEvent) => {
     e.preventDefault()
     alert('emty')
   }
-  console.log(apartments)
   if (err) {
     return <div>{err}</div>
   }
@@ -112,7 +123,9 @@ const Apartment: FC = () => {
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item">
-            <h3>Total apartments: {countApartment}/100</h3>
+            <h3>
+              Total apartments: {countApartment}/{apartments.totalElements}
+            </h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
             <FormSearchStyled>
@@ -138,7 +151,7 @@ const Apartment: FC = () => {
                 <FontAwesomeIcon icon={faSearch} />
               </button>
               {show && (
-                <div className="menu_search">
+                <div id="menu_search" className="menu_search">
                   {dataSearchs.length > 0 ? (
                     dataSearchs.map((apartment: { roomMaster: string; id: number | string; apartmentCode: string }) => {
                       return (
@@ -147,7 +160,7 @@ const Apartment: FC = () => {
                           key={apartment.id}
                           onClick={!apartment.roomMaster ? (e) => handleClickLink(e) : undefined}
                         >
-                          {apartment.apartmentCode}
+                          {apartment.apartmentCode} - {apartment.roomMaster}
                         </Link>
                       )
                     })
@@ -159,40 +172,7 @@ const Apartment: FC = () => {
             </FormSearchStyled>
           </div>
         </div>
-        <div className="apartment-content">
-          <table>
-            <tbody>
-              <tr>
-                <th>Apartment ID</th>
-                <th>Host name</th>
-                <th>Status</th>
-                <th>Resident number</th>
-                <th>Action</th>
-              </tr>
-              {apartments.map((apartment: ApartmentInterFace) => {
-                return (
-                  <tr key={apartment.id}>
-                    <td>{apartment.apartmentCode}</td>
-                    <td>{apartment.roomMaster || 'Emty'}</td>
-                    <td>{apartment.status ? <b>Occupied</b> : 'Available'}</td>
-                    <td>{apartment.personInApartment}</td>
-                    <td className="td-action">
-                      <button
-                        disabled={!apartment.contractCode}
-                        onClick={() => {
-                          Navigate(`/apartment_detail/${apartment.id}`)
-                        }}
-                        title="view"
-                      >
-                        <FontAwesomeIcon className="icon-eye" icon={faEye} />
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <ListViewApartment apartments={apartments.content} />
         <div>
           <PagingBar currentPage={index} totalPages={10} onPageChange={setIndex} />
         </div>

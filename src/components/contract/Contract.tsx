@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react'
+import { FC, useState, useEffect, useCallback } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faEye, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
@@ -6,6 +6,7 @@ import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
 import baseAxios from '../../apis/ConfigAxios'
 import * as moment from 'moment'
+import PagingBar from '../pagingbar/PagingBar '
 interface ListContractInterFace {
   id: number
   code: string
@@ -20,16 +21,21 @@ interface ListContractInterFace {
   priceApartment: string | number
   startDate: string
 }
+interface Contract {
+  content: []
+  totalElements: number
+}
 const Contract: FC = () => {
-  const [contracts, setContracts] = useState([])
+  const [contracts, setContracts] = useState<Contract>(Object)
   const [loading, setLoading] = useState(true)
+  const [index, setIndex] = useState(1)
   const Navigate = useNavigate()
-  const getContracts = async () => {
+  const getContracts = useCallback(async () => {
     try {
       const res = await baseAxios.get('/contracts', {
         params: {
           pageSize: 10,
-          pageNo: 1
+          pageNo: index
         }
       })
       setTimeout(() => {
@@ -39,15 +45,16 @@ const Contract: FC = () => {
     } catch (error) {
       console.log(error)
     }
-  }
+  }, [index])
   useEffect(() => {
     getContracts()
-  }, [])
+  }, [index, getContracts])
   const handleDeleteContract = async (id: number) => {
     const res = await baseAxios.put(`/contracts/change-status`, [id])
     console.log(res)
     getContracts()
   }
+  console.log(contracts)
   return loading ? (
     <Loading />
   ) : (
@@ -55,7 +62,7 @@ const Contract: FC = () => {
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item">
-            <h3>Total contracts: 20/50</h3>
+            <h3>Total contracts:{contracts.totalElements}</h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
             <form>
@@ -81,7 +88,7 @@ const Contract: FC = () => {
                 <th>Status</th>
                 <th>Action</th>
               </tr>
-              {contracts.map((contract: ListContractInterFace) => {
+              {contracts.content.map((contract: ListContractInterFace) => {
                 return (
                   <tr key={contract.code}>
                     <td>{contract.apartment.name}</td>
@@ -103,6 +110,7 @@ const Contract: FC = () => {
               })}
             </tbody>
           </table>
+          <PagingBar currentPage={index} totalPages={Math.ceil(Number(contracts.totalElements) / 10)} onPageChange={setIndex} />
         </div>
       </ApartmentStyled>
     </>
