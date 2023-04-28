@@ -1,19 +1,21 @@
-import { FC, useState, useEffect } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons'
-import ApartmentStyled from '../../assets/styles/ApartmentStyled'
-import Loading from '../loading/Loading'
-import Servicejson from './Servicejson'
-import styled from 'styled-components'
-import { useNavigate } from 'react-router-dom'
-import baseAxios from '../../apis/ConfigAxios'
+import { FC, useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons';
+import ApartmentStyled from '../../assets/styles/ApartmentStyled';
+import Loading from '../loading/Loading';
+import Servicejson from './Servicejson';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import baseAxios from '../../apis/ConfigAxios';
+
 interface ListServiceInterFace {
-  billNum: string | number
-  apartmentNum: string | number
-  totalAmountUnpaid: string
-  status: string
-  id: number
+  billNum: string | number;
+  apartmentNum: string | number;
+  totalAmountUnpaid: string;
+  status: string;
+  id: number;
 }
+
 const FromSortDateStyled = styled.form`
   display: flex;
   border: none !important;
@@ -31,20 +33,41 @@ const FromSortDateStyled = styled.form`
   button {
     margin: 0 10px;
   }
-`
+`;
+
 const Service: FC = () => {
-  const [services, setService] = useState([])
-  const [loading, setLoading] = useState(true)
-  const Navigate = useNavigate()
+  const [services, setService] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [file, setFile] = useState<File | null>(null); // sử dụng kiểu dữ liệu File để lưu trữ file được chọn
+  const Navigate = useNavigate();
+
   useEffect(() => {
     const getService = async () => {
-      const res = await baseAxios.get('/service-fee')
-      console.log(res.data)
-      setService(Servicejson)
+      const res = await baseAxios.get('/service-fee');
+      console.log(res.data);
+      setService(Servicejson);
+    };
+    getService();
+    setLoading(false);
+  }, []);
+
+  const postFile = async () => {
+    if (file) { // kiểm tra xem file đã được chọn chưa
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('apartmentcode', 'ABC123'); // thêm các thông tin khác vào form data
+      formData.append('email', 'example@gmail.com');
+      try {
+        const res = await baseAxios.post('/bills/upload', formData); // gửi request POST đến server với form data
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
     }
-    getService()
-    setLoading(false)
-  }, [])
+  };
+
+  console.log(file);
+
   return loading ? (
     <Loading />
   ) : (
@@ -71,6 +94,14 @@ const Service: FC = () => {
                 <FontAwesomeIcon icon={faSearch} />
               </button>
             </form>
+            <button onClick={() => postFile()} className="btn-create">
+              import excell
+            </button>
+            <input
+              onChange={(e) => setFile(e.target.files?.[0])} // lưu trữ file được chọn vào state
+              type="file"
+              title="file"
+            />
             <button onClick={() => Navigate(`/service_unit_price`)} className="btn-create">
               Service unit price
             </button>
@@ -102,14 +133,14 @@ const Service: FC = () => {
                       </button>
                     </td>
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>
         </div>
       </ApartmentStyled>
     </>
-  )
-}
+  );
+};
 
-export default Service
+export default Service;

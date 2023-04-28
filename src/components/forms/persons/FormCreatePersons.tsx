@@ -65,7 +65,7 @@ const FormCreatePersons: FC = () => {
   useEffect(() => {
     const getPerson = async () => {
       const res = await baseAxios.get(`/persons/${id}`)
-      setValues(res.data)
+      setValues({ ...res.data, apartmentId: { values: res.data.apartment.id, label: res.data.apartment.name } })
     }
     if (id) {
       getPerson()
@@ -88,6 +88,7 @@ const FormCreatePersons: FC = () => {
       }
     }
   }
+  console.log(values)
   return (
     <Formstyled>
       <form onSubmit={handleSubmit}>

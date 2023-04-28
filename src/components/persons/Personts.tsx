@@ -15,7 +15,7 @@ interface ListPersonsInterFace {
   cin: string
   gender: boolean
   carrer: string
-  apartmentCode: string | number
+  apartment: { code: string }
   status: string | number
 }
 interface Persons {
@@ -84,13 +84,13 @@ const Persons: FC = () => {
                   {persons.content.map((person: ListPersonsInterFace) => {
                     return (
                       <tr key={person.id}>
-                        <td>#{person.apartmentCode}</td>
+                        <td>#{person.apartment.code}</td>
                         <td>{person.fullName}</td>
                         <td>{person.email}</td>
                         <td>{person.phone}</td>
                         <td>{person.cin}</td>
                         <td className="td-action">
-                          <button onClick={() => Navigate(`/person_detail/${person.apartmentCode}`)} title="view detail">
+                          <button onClick={() => Navigate(`/person_detail/${person.apartment.code}`)} title="view detail">
                             <FontAwesomeIcon className="icon-eye" icon={faEye} />
                           </button>
                         </td>
