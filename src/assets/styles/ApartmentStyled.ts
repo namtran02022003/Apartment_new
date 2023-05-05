@@ -59,8 +59,12 @@ const ApartmentStyled = styled.div`
           border: 1px solid #ccc;
           padding: 9px 9px;
           cursor: pointer;
+          margin: 0 10px;
           .icon-eye {
             color: blue;
+          }
+          .icon-delete {
+            color: red;
           }
           .icon-edit {
             color: blue;

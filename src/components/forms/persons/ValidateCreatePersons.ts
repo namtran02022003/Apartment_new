@@ -7,7 +7,6 @@ interface ValuesFace {
   cin: number | string
   gender: string | number | boolean
   carrer: string
-  apartmentId: { values?: string } | string | object
   status: string
 }
 interface ErrFace {
@@ -31,10 +30,10 @@ const ValidatePersons = (values: ValuesFace, setMessageErr: Dispatch<SetStateAct
   if (!values.dob) {
     errs.dob = 'Invalid date of birth'
   }
-  if (!values.apartmentId) {
-    errs.apartmentId = 'Invalid apartmentId'
-  }
-  console.log(values.apartmentId)
+  // if (!values.apartmentId) {
+  //   errs.apartmentId = 'Invalid apartmentId'
+  // }
+  // console.log(values.apartmentId)
   setMessageErr(errs)
   return errs
 }

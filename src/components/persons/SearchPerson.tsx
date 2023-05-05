@@ -1,29 +1,29 @@
 import { FC, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import baseAxios from '../../apis/ConfigAxios'
-import ListViewApartment from './ListViewApartment'
+import ListViewPerson from './ListViewPerson'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 const SearchApartments: FC = () => {
   const { name } = useParams()
-  const [apartmentList, setApartmentList] = useState([])
+  const [personList, setPersonsList] = useState([])
   useEffect(() => {
-    const getListApartments = async () => {
+    const getListPersons = async () => {
       try {
-        const res = await baseAxios.get('/apartments/search-by-name', {
+        const res = await baseAxios.get('/persons/search-by-name', {
           params: {
-            apartmentName: name
+            personName: name
           }
         })
-        setApartmentList(res.data)
+        setPersonsList(res.data)
       } catch (error) {
         console.log(error)
       }
     }
-    getListApartments()
+    getListPersons()
   }, [name])
   return (
     <ApartmentStyled>
-      <ListViewApartment apartments={apartmentList} />
+      <ListViewPerson persons={personList} />
     </ApartmentStyled>
   )
 }

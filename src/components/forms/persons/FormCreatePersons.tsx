@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState, SyntheticEvent } from 'react'
+import { FC, useCallback, useEffect, useState, SyntheticEvent, ChangeEvent } from 'react'
 import Inputs from '../Inputs'
 import Formstyled from '../../../assets/styles/Forms'
 import Select from 'react-select'
@@ -13,7 +13,7 @@ interface ValuesFace {
   cin: number | string
   gender: string | number
   carrer: string
-  apartmentId: { values?: string } | string | object
+  apartmentId: { value?: string | undefined } | string
   status: string
 }
 const FormCreatePersons: FC = () => {
@@ -40,7 +40,7 @@ const FormCreatePersons: FC = () => {
     apartmentId: ''
   })
   const [options, setOptions] = useState([])
-  const handleChange = (option: { value: string | number; label: string }) => {
+  const handleChange = (option: { value: string; label: string }) => {
     setValues({ ...values, apartmentId: option })
     setMessageErrs({ ...messageErrs, apartmentId: '' })
   }
@@ -53,7 +53,7 @@ const FormCreatePersons: FC = () => {
     })
     const newDatas = res.data.map((apartment: { id: string | number; name: string }) => {
       return {
-        values: apartment.id,
+        value: apartment.id,
         label: apartment.name
       }
     })
@@ -65,7 +65,7 @@ const FormCreatePersons: FC = () => {
   useEffect(() => {
     const getPerson = async () => {
       const res = await baseAxios.get(`/persons/${id}`)
-      setValues({ ...res.data, apartmentId: { values: res.data.apartment.id, label: res.data.apartment.name } })
+      setValues({ ...res.data, apartmentId: { value: res.data.apartment.id, label: res.data.apartment.name } })
     }
     if (id) {
       getPerson()
@@ -75,24 +75,34 @@ const FormCreatePersons: FC = () => {
     e.preventDefault()
     const newValues = {
       ...values,
-      apartmentId: values.apartmentId.values,
+      apartmentId: values.apartmentId.value,
       gender: values.gender == 1 ? true : false
     }
     if (!(Object.keys(ValidatePersons(newValues, setMessageErrs)).length > 0)) {
-      if (!id) {
-        await baseAxios.post('/persons', newValues)
-        Navigate('/resident')
-      } else {
-        await baseAxios.put(`/persons/${id}`, newValues)
-        Navigate('/resident')
+      try {
+        if (!id) {
+          await baseAxios.post('/persons', newValues)
+          Navigate('/resident')
+        } else {
+          await baseAxios.put(`/persons/${id}`, newValues)
+          Navigate('/resident')
+        }
+      } catch (error) {
+        console.log(error)
       }
     }
   }
-  console.log(values)
+  const handleChangeInput = (e: ChangeEvent<HTMLInputElement>, name: string) => {
+    setMessageErrs({
+      ...messageErrs,
+      [name]: ''
+    })
+    setValues({ ...values, [name]: e.target.value })
+  }
   return (
     <Formstyled>
       <form onSubmit={handleSubmit}>
-        <h2>Create new Persons</h2>
+        <h2>{id ? 'Edit Person' : 'Create New Person'}</h2>
         <div className="flex">
           <div className="flex-item">
             <Inputs
@@ -102,11 +112,7 @@ const FormCreatePersons: FC = () => {
               placeholder="Enter FullName"
               value={values.fullName}
               onChange={(e) => {
-                setMessageErrs({
-                  ...messageErrs,
-                  fullName: ''
-                })
-                setValues({ ...values, fullName: e.target.value })
+                handleChangeInput(e, 'fullName')
               }}
               err={messageErrs.fullName}
             />
@@ -117,11 +123,7 @@ const FormCreatePersons: FC = () => {
               placeholder="Enter PhoneNumber"
               value={values.phone}
               onChange={(e) => {
-                setMessageErrs({
-                  ...messageErrs,
-                  phone: ''
-                })
-                setValues({ ...values, phone: e.target.value })
+                handleChangeInput(e, 'phone')
               }}
               err={messageErrs.phone}
             />
@@ -132,11 +134,7 @@ const FormCreatePersons: FC = () => {
               placeholder="Enter Email"
               value={values.email}
               onChange={(e) => {
-                setMessageErrs({
-                  ...messageErrs,
-                  email: ''
-                })
-                setValues({ ...values, email: e.target.value })
+                handleChangeInput(e, 'email')
               }}
               err={messageErrs.email}
             />
@@ -172,7 +170,7 @@ const FormCreatePersons: FC = () => {
           </div>
           <div className="flex-item">
             <label htmlFor="nameApartment">Name Apartment</label>
-            <Select id="nameApartment" value={values.apartmentId} onChange={handleChange} options={options} isSearchable placeholder="Select a fruit" />
+            <Select id="nameApartment" value={values.apartmentId} onChange={handleChange} options={options} placeholder="Select a fruit" />
             <p className="err-message">{messageErrs.apartmentId}</p>
             <Inputs
               name="cin"
@@ -181,11 +179,7 @@ const FormCreatePersons: FC = () => {
               placeholder="Enter IdCode"
               value={values.cin}
               onChange={(e) => {
-                setMessageErrs({
-                  ...messageErrs,
-                  cin: ''
-                })
-                setValues({ ...values, cin: e.target.value })
+                handleChangeInput(e, 'cin')
               }}
               err={messageErrs.cin}
             />
@@ -196,11 +190,7 @@ const FormCreatePersons: FC = () => {
               placeholder="Enter Carrer"
               value={values.carrer}
               onChange={(e) => {
-                setMessageErrs({
-                  ...messageErrs,
-                  carrer: ''
-                })
-                setValues({ ...values, carrer: e.target.value })
+                handleChangeInput(e, 'carrer')
               }}
               err={messageErrs.carrer}
             />
@@ -211,16 +201,12 @@ const FormCreatePersons: FC = () => {
               value={values.dob}
               err={messageErrs.dob}
               onChange={(e) => {
-                setMessageErrs({
-                  ...messageErrs,
-                  dob: ''
-                })
-                setValues({ ...values, dob: e.target.value })
+                handleChangeInput(e, 'dob')
               }}
             />
           </div>
         </div>
-        <button className="btn-create-person">Create Presons</button>
+        <button className="btn-create-person">{id ? 'Up date' : 'Create Presons'}</button>
       </form>
     </Formstyled>
   )

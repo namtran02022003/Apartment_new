@@ -1,31 +1,24 @@
 import { FC, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate, Link } from 'react-router-dom'
 import ApartmentStyled from '../../assets/styles/ApartmentStyled'
 import Loading from '../loading/Loading'
 import baseAxios from '../../apis/ConfigAxios'
 import PagingBar from '../pagingbar/PagingBar '
-interface ListPersonsInterFace {
-  id: number
-  fullName: string
-  email: string
-  dob: string
-  phone: string
-  cin: string
-  gender: boolean
-  carrer: string
-  apartment: { code: string }
-  status: string | number
-}
-interface Persons {
+import ListViewPerson from './ListViewPerson'
+import { FormSearchStyled } from '../apartment/Apartment'
+interface PersonsFace {
   content: []
   totalElements: number
 }
 const Persons: FC = () => {
-  const [persons, setPersons] = useState<Persons>(Object)
+  const [persons, setPersons] = useState<PersonsFace>(Object)
   const [loading, setLoading] = useState(true)
   const [index, setIndex] = useState(1)
+  const [textSearch, setTextSearch] = useState('')
+  const [dataSearchs, setDatasSearch] = useState([])
+  const [show, setShow] = useState(false)
   const Navigate = useNavigate()
   useEffect(() => {
     const getPersons = async () => {
@@ -46,7 +39,36 @@ const Persons: FC = () => {
     }
     getPersons()
   }, [index])
-  console.log(persons)
+  useEffect(() => {
+    const getDataSearchs = async () => {
+      const res = await baseAxios.get('/persons/search-by-name', {
+        params: {
+          personName: textSearch.trim()
+        }
+      })
+      console.log(res)
+      setDatasSearch(res.data)
+    }
+    if (textSearch.trim().length > 0) {
+      console.log(textSearch)
+      getDataSearchs()
+    }
+  }, [textSearch])
+  useEffect(() => {
+    function closeMenuSearch(e: MouseEvent | TouchEvent) {
+      const element = document.getElementById('menu_search')
+      console.log(element)
+      if (e instanceof MouseEvent && e.target != element) {
+        setShow(false)
+      }
+    }
+    if (show) {
+      window.addEventListener('click', closeMenuSearch)
+      return () => {
+        window.removeEventListener('click', closeMenuSearch)
+      }
+    }
+  })
   return loading ? (
     <Loading />
   ) : (
@@ -57,54 +79,42 @@ const Persons: FC = () => {
             <h3>Total resident: {persons.totalElements}</h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
-            <form>
-              <input type="text" placeholder="Enter search..." />
+            <FormSearchStyled>
+              <input
+                type="text"
+                placeholder="Enter search..."
+                value={textSearch}
+                onChange={(e) => {
+                  setTextSearch(e.target.value)
+                  setShow(true)
+                }}
+              />
               <button title="search" type="button" className="btn-search">
                 <FontAwesomeIcon icon={faSearch} />
               </button>
-            </form>
+              {show && (
+                <div id="menu_search" className="menu_search">
+                  {dataSearchs.length > 0 ? (
+                    dataSearchs.map((person: { fullName: string; id: number | string; apartment: { code: string } }) => {
+                      return (
+                        <Link to={`/person_detail/${person.apartment.code}`} key={person.id}>
+                          {person.fullName} - {person.apartment.code}
+                        </Link>
+                      )
+                    })
+                  ) : (
+                    <p>no data</p>
+                  )}
+                </div>
+              )}
+            </FormSearchStyled>
             <button onClick={() => Navigate('/Create_persons')} className="btn-create">
               Create new Persons
             </button>
           </div>
         </div>
-        <div className="apartment-content">
-          {persons.content.length ? (
-            <div>
-              <table>
-                <tbody>
-                  <tr>
-                    <th>Apartment ID</th>
-                    <th>Host name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>ID</th>
-                    <th>Action</th>
-                  </tr>
-                  {persons.content.map((person: ListPersonsInterFace) => {
-                    return (
-                      <tr key={person.id}>
-                        <td>#{person.apartment.code}</td>
-                        <td>{person.fullName}</td>
-                        <td>{person.email}</td>
-                        <td>{person.phone}</td>
-                        <td>{person.cin}</td>
-                        <td className="td-action">
-                          <button onClick={() => Navigate(`/person_detail/${person.apartment.code}`)} title="view detail">
-                            <FontAwesomeIcon className="icon-eye" icon={faEye} />
-                          </button>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-              <PagingBar currentPage={index} totalPages={10} onPageChange={setIndex} />
-            </div>
-          ) : (
-            <div>no data</div>
-          )}
-        </div>
+        <ListViewPerson persons={persons.content} />
+        {persons.content.length > 0 && <PagingBar currentPage={index} totalPages={Math.ceil(Number(persons.totalElements) / 10)} onPageChange={setIndex} />}
       </ApartmentStyled>
     </>
   )

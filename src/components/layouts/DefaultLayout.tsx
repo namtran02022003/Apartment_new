@@ -1,6 +1,5 @@
 import DefaultLayoutStyled from '../../assets/styles/DefaultLayout'
 import Sidebar from '../sidebar/Sidebar'
-import withAuthorization from '../../routers/WithAuthorization'
 import { FC } from 'react'
 interface Props {
   children?: JSX.Element
@@ -17,4 +16,4 @@ const DefaultLayout: FC<Props> = ({ children }) => {
     </DefaultLayoutStyled>
   )
 }
-export default withAuthorization(DefaultLayout)
+export default DefaultLayout

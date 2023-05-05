@@ -1,25 +1,17 @@
-import { FC, useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faEye } from '@fortawesome/free-solid-svg-icons';
-import ApartmentStyled from '../../assets/styles/ApartmentStyled';
-import Loading from '../loading/Loading';
-import Servicejson from './Servicejson';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import baseAxios from '../../apis/ConfigAxios';
-
-interface ListServiceInterFace {
-  billNum: string | number;
-  apartmentNum: string | number;
-  totalAmountUnpaid: string;
-  status: string;
-  id: number;
-}
-
+import { FC, useState, useEffect } from 'react'
+import ListViewService from './ListViewService'
+import ApartmentStyled from '../../assets/styles/ApartmentStyled'
+import Loading from '../loading/Loading'
+import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
+import baseAxios from '../../apis/ConfigAxios'
+import AlertMessage from '../alertMessage/AlertMessage'
+import Select from 'react-select'
 const FromSortDateStyled = styled.form`
   display: flex;
+  align-items: center;
   border: none !important;
-  div {
+  .div-item-search {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -27,120 +19,178 @@ const FromSortDateStyled = styled.form`
       margin: 0 10px;
     }
   }
-  & div input {
-    border-radius: 4px !important;
+  & input {
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+  & input[type='text'] {
+    border-radius: 50px;
+    margin: 0 10px;
+    padding: 12px 10px !important;
   }
   button {
     margin: 0 10px;
   }
-`;
+  .selec_search_service {
+    input[type='text'] {
+      padding: 0 50px !important;
+    }
+  }
+`
 
+const CustomInputStyled = styled.input`
+  &::-webkit-file-upload-button {
+    display: none;
+  }
+  &::before {
+    content: 'Select some files';
+    display: inline-block;
+    background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3);
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding: 5px 8px;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    text-shadow: 1px 1px #fff;
+    font-weight: 700;
+    font-size: 10pt;
+  }
+  &:hover::before {
+    border-color: black;
+  }
+  &:active::before {
+    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+  }
+`
+interface PropsValueSearchFace {
+  textSearch: { value: number } | string | null
+  startDate: string
+  endDate: string
+}
 const Service: FC = () => {
-  const [services, setService] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [file, setFile] = useState<File | null>(null); // sử dụng kiểu dữ liệu File để lưu trữ file được chọn
-  const Navigate = useNavigate();
+  const [services, setService] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [file, setFile] = useState<File | null>(null)
+  const [show, setShow] = useState(false)
+  const [option, setOptions] = useState([])
+  const [valueSearch, setValueSearch] = useState<PropsValueSearchFace>({
+    textSearch: null,
+    startDate: '',
+    endDate: ''
+  })
+  const Navigate = useNavigate()
 
   useEffect(() => {
     const getService = async () => {
-      const res = await baseAxios.get('/service-fee');
-      console.log(res.data);
-      setService(Servicejson);
-    };
-    getService();
-    setLoading(false);
-  }, []);
-
-  const postFile = async () => {
-    if (file) { // kiểm tra xem file đã được chọn chưa
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('apartmentcode', 'ABC123'); // thêm các thông tin khác vào form data
-      formData.append('email', 'example@gmail.com');
       try {
-        const res = await baseAxios.post('/bills/upload', formData); // gửi request POST đến server với form data
-        console.log(res);
+        const res = await baseAxios.get('/bills ')
+        setService(res.data)
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     }
-  };
-
-  console.log(file);
-
+    setTimeout(() => {
+      getService()
+      setLoading(false)
+    }, 500)
+  }, [])
+  const postFile = async () => {
+    if (file) {
+      console.log('ok')
+      // kiểm tra xem file đã được chọn chưa
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('apartmentcode', 'ABC123') // thêm các thông tin khác vào form data
+      formData.append('email', 'example@gmail.com')
+      try {
+        const res = await baseAxios.post('/bills/upload', formData) // gửi request POST đến server với form data
+        console.log(res)
+        setShow(true)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+  const handleSubmit = async () => {
+    console.log(valueSearch)
+    if (!valueSearch.endDate.trim() || !valueSearch.startDate.trim() || !valueSearch.textSearch) {
+      console.log('no')
+    } else {
+      const id = (valueSearch.textSearch as { value: number } | null)?.value
+      Navigate(`/service_search/${valueSearch.startDate + '/' + valueSearch.endDate + '/' + id}`)
+    }
+  }
+  useEffect(() => {
+    const getDatasSearch = async () => {
+      const res = await baseAxios.get('/apartments/un-available', {
+        params: {
+          pageSize: 100,
+          pageNo: 1
+        }
+      })
+      console.log(res.data)
+      const newDatas = res.data.map((apartment: { code: string | number; name: string }) => {
+        return {
+          value: apartment.code,
+          label: apartment.name
+        }
+      })
+      setOptions(newDatas)
+    }
+    getDatasSearch()
+  }, [])
   return loading ? (
     <Loading />
   ) : (
     <>
+      {show && <AlertMessage show={show} setShow={setShow} message="Import Success" />}
       <ApartmentStyled>
         <div className="apartment-flex">
-          <div className="apartment-flex-item">
+          <div className="apartment-flex-item apartment-flex">
             <FromSortDateStyled>
-              <div>
+              <div className="div-item-search">
                 <span>From:</span>
-                <input type="date" title="from" />
+                <input value={valueSearch.startDate} onChange={(e) => setValueSearch({ ...valueSearch, startDate: e.target.value })} type="date" title="from" />
               </div>
-              <div>
+              <div className="div-item-search">
                 <span>To:</span>
-                <input type="date" title="to" />
+                <input value={valueSearch.endDate} onChange={(e) => setValueSearch({ ...valueSearch, endDate: e.target.value })} type="date" title="to" />
               </div>
-              <button className="btn-create">Enter search</button>
+              <div className="">
+                <Select
+                  className="selec_search_service"
+                  value={valueSearch.textSearch}
+                  options={option}
+                  onChange={(option) => {
+                    setValueSearch({ ...valueSearch, textSearch: option })
+                  }}
+                />
+              </div>
+              <button type="button" onClick={() => handleSubmit()} className="btn-create">
+                Enter search
+              </button>
             </FromSortDateStyled>
           </div>
           <div className="apartment-flex-item apartment-flex">
-            <form>
-              <input type="text" placeholder="Enter search..." />
-              <button title="search" type="button" className="btn-search">
-                <FontAwesomeIcon icon={faSearch} />
-              </button>
-            </form>
             <button onClick={() => postFile()} className="btn-create">
               import excell
             </button>
-            <input
-              onChange={(e) => setFile(e.target.files?.[0])} // lưu trữ file được chọn vào state
+            <CustomInputStyled
+              onChange={(e) => setFile(e.target.files?.[0] || null)} // lưu trữ file được chọn vào state
               type="file"
               title="file"
             />
             <button onClick={() => Navigate(`/service_unit_price`)} className="btn-create">
               Service unit price
             </button>
-            <button onClick={() => Navigate('/create_new_bill')} className="btn-create">
-              Create new bill
-            </button>
           </div>
         </div>
-        <div className="apartment-content">
-          <table>
-            <tbody>
-              <tr>
-                <th>bill num</th>
-                <th>Apartment num</th>
-                <th>Total amound Unpaid</th>
-                <th>Status</th>
-                <th>View detail</th>
-              </tr>
-              {services.map((service: ListServiceInterFace) => {
-                return (
-                  <tr key={service.id}>
-                    <td>#{service.billNum}</td>
-                    <td>{service.apartmentNum}</td>
-                    <td>{Number(service.totalAmountUnpaid).toLocaleString()} VND</td>
-                    <td>{service.status}</td>
-                    <td className="td-action">
-                      <button title="view detail">
-                        <FontAwesomeIcon className="icon-eye" icon={faEye} />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <ListViewService services={services} />
       </ApartmentStyled>
     </>
-  );
-};
+  )
+}
 
-export default Service;
+export default Service

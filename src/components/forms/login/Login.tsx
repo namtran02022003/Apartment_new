@@ -77,6 +77,7 @@ const LoginFormStyled = styled.div`
     }
   }
 `
+
 interface userFace {
   username?: string
   password?: string
@@ -98,14 +99,18 @@ const LoginForm: FC = () => {
     if (!flag) {
       try {
         const res = await baseAxios.post(`/login`, user)
-        console.log(res)
         await localStorage.setItem('token', JSON.stringify(res.data.accessToken))
         Navigate('/')
-      } catch (error) {
-        console.log(error)
+      } catch (error: unknown) {
+        if (error.response.status === 400) {
+          alert(error.response.data.message)
+        } else {
+          alert(error)
+        }
       }
     }
   }
+
   return (
     <LoginFormStyled>
       <form onSubmit={handleSubmit}>

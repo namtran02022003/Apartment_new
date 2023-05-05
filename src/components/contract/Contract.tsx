@@ -7,6 +7,7 @@ import Loading from '../loading/Loading'
 import baseAxios from '../../apis/ConfigAxios'
 import * as moment from 'moment'
 import PagingBar from '../pagingbar/PagingBar '
+import AlertMessage from '../alertMessage/AlertMessage'
 interface ListContractInterFace {
   id: number
   code: string
@@ -29,6 +30,7 @@ const Contract: FC = () => {
   const [contracts, setContracts] = useState<Contract>(Object)
   const [loading, setLoading] = useState(true)
   const [index, setIndex] = useState(1)
+  const [showMess, setShowMess] = useState(false)
   const Navigate = useNavigate()
   const getContracts = useCallback(async () => {
     try {
@@ -50,19 +52,23 @@ const Contract: FC = () => {
     getContracts()
   }, [index, getContracts])
   const handleDeleteContract = async (id: number) => {
-    const res = await baseAxios.put(`/contracts/change-status`, [id])
-    console.log(res)
-    getContracts()
+    try {
+      await baseAxios.put(`/contracts/change-status`, [id])
+      setShowMess(true)
+      getContracts()
+    } catch (error) {
+      console.log(error)
+    }
   }
-  console.log(contracts)
   return loading ? (
     <Loading />
   ) : (
     <>
+      {showMess && <AlertMessage setShow={setShowMess} show={showMess} message="ok" />}
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item">
-            <h3>Total contracts:{contracts.totalElements}</h3>
+            <h3>Total contracts: {contracts.totalElements}</h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
             <form>
@@ -77,40 +83,48 @@ const Contract: FC = () => {
           </div>
         </div>
         <div className="apartment-content">
-          <table>
-            <tbody>
-              <tr>
-                <th>Apartment name</th>
-                <th>Host name</th>
-                <th>Area</th>
-                <th>Rental price</th>
-                <th>Registration</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-              {contracts.content.map((contract: ListContractInterFace) => {
-                return (
-                  <tr key={contract.code}>
-                    <td>{contract.apartment.name}</td>
-                    <td>{contract.person.fullName}</td>
-                    <td>{contract.apartment.area}</td>
-                    <td>{Number(contract.priceApartment).toLocaleString()} VND</td>
-                    <td>{moment(contract.startDate).format('DD/MM/YYYY')}</td>
-                    <td>{contract.status}</td>
-                    <td className="td-action">
-                      <button onClick={() => Navigate(`/detail-contrac/${contract.id}`)} title="view detail contract">
-                        <FontAwesomeIcon className="icon-eye" icon={faEye} />
-                      </button>
-                      <button onClick={() => handleDeleteContract(contract.id)} title="view detail contract">
-                        <FontAwesomeIcon className="icon-faTrash" icon={faTrash} />
-                      </button>
-                    </td>
+          {contracts.content.length > 0 ? (
+            <>
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Apartment name</th>
+                    <th>Host name</th>
+                    <th>Area</th>
+                    <th>Rental price</th>
+                    <th>Registration</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
-          <PagingBar currentPage={index} totalPages={Math.ceil(Number(contracts.totalElements) / 10)} onPageChange={setIndex} />
+                  {contracts.content.map((contract: ListContractInterFace) => {
+                    return (
+                      <tr key={contract.code}>
+                        <td>{contract.apartment.name}</td>
+                        <td>{contract.person.fullName}</td>
+                        <td>
+                          {contract.apartment.area}m<sub>2</sub>
+                        </td>
+                        <td>{Number(contract.priceApartment).toLocaleString()} VND</td>
+                        <td>{moment(contract.startDate).format('DD/MM/YYYY')}</td>
+                        <td>{contract.status}</td>
+                        <td className="td-action">
+                          <button onClick={() => Navigate(`/detail-contrac/${contract.id}`)} title="view detail contract">
+                            <FontAwesomeIcon className="icon-eye" icon={faEye} />
+                          </button>
+                          <button onClick={() => handleDeleteContract(contract.id)} title="view detail contract">
+                            <FontAwesomeIcon className="icon-faTrash" icon={faTrash} />
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+              <PagingBar currentPage={index} totalPages={Math.ceil(Number(contracts.totalElements) / 10)} onPageChange={setIndex} />
+            </>
+          ) : (
+            <div>No data matching</div>
+          )}
         </div>
       </ApartmentStyled>
     </>

@@ -29,5 +29,8 @@ const GlobalStyles = createGlobalStyle`
   th {
     text-align: left;
   }
+  sub {
+    vertical-align: super;
+  }
 `
 export default GlobalStyles

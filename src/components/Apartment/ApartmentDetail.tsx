@@ -3,30 +3,10 @@ import { FC, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import Loading from '../loading/Loading'
-const ApeartmentDetailStyled = styled.div`
-  background: #fff;
-  padding: 10px 20px;
-  h1 {
-    margin: 20px 0;
-    text-align: center;
-  }
-  .item {
-    margin: 30px 0;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    sub {
-      vertical-align: super;
-    }
-  }
-  th,
-  tr,
-  td,
-  table {
-    border: 1px solid #ccc;
-    padding: 10px 5px;
-  }
+import ApartmentStyled from '../../assets/styles/ApartmentStyled'
+const H1Margin = styled.h1`
+  margin: 30px auto;
+  text-align: center;
 `
 interface ApartmentDetailInterFace {
   apartmentCode: string
@@ -61,11 +41,10 @@ const ApartmentDetail: FC = () => {
   if (!ApartmentDetail) {
     return <div>No data</div>
   }
-  console.log(ApartmentDetail)
   return (
-    <ApeartmentDetailStyled>
-      <h1>Apartment Detail</h1>
-      <div className="item">
+    <ApartmentStyled>
+      <H1Margin>Apartment Detail</H1Margin>
+      <div className="item apartment-content">
         <table>
           <tbody>
             <tr>
@@ -89,7 +68,7 @@ const ApartmentDetail: FC = () => {
           </tbody>
         </table>
       </div>
-    </ApeartmentDetailStyled>
+    </ApartmentStyled>
   )
 }
 

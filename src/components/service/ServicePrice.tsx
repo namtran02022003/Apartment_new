@@ -47,16 +47,16 @@ const ServicePrice: FC = () => {
   const [water, setWater] = useState(false)
   const [values, setValues] = useState<values>({
     electric: {
-      id: '',
-      name: '',
+      id: '1',
+      name: 'ELECTRICITY',
       price: '',
-      unit: ''
+      unit: 'VND'
     },
     water: {
-      id: '',
-      name: '',
+      id: '2',
+      name: 'WATER',
       price: '',
-      unit: ''
+      unit: 'VND'
     }
   })
   const handleService = (service: string) => {

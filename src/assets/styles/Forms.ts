@@ -25,6 +25,10 @@ const Formstyled = styled.div`
       &-item {
         flex: 1;
         padding: 0 15px;
+        .btn-option-flag {
+          display: block;
+          margin: auto;
+        }
       }
     }
     label {

@@ -8,7 +8,7 @@ import PagingBar from '../pagingbar/PagingBar '
 import styled from 'styled-components'
 import baseAxios from '../../apis/ConfigAxios'
 import ListViewApartment from './ListViewApartment'
-const FormSearchStyled = styled.form`
+export const FormSearchStyled = styled.form`
   position: relative;
   .menu_search {
     width: 100%;
@@ -16,7 +16,7 @@ const FormSearchStyled = styled.form`
     position: absolute;
     height: 200px;
     overflow: auto;
-    padding: 25px 15px;
+    padding: 25px 10px;
     box-sizing: border-box;
     z-index: 100;
     border-radius: 10px;
@@ -31,6 +31,7 @@ const FormSearchStyled = styled.form`
     }
     a {
       padding: 5px;
+      font-size: 0.9rem;
       cursor: pointer;
       display: block;
       color: black;
@@ -47,6 +48,7 @@ interface MouseEvent {
 interface Apartment {
   content: []
   totalElements: number
+  number: number
 }
 const Apartment: FC = () => {
   const [apartments, setApartment] = useState<Apartment>(Object)
@@ -55,9 +57,9 @@ const Apartment: FC = () => {
   const [index, setIndex] = useState(1)
   const [textSearch, setTextSearch] = useState('')
   const [dataSearchs, setDatasSearch] = useState([])
-  const [countApartment, setCountApartment] = useState(0)
   const Navigate = useNavigate()
   const [err, setErr] = useState('')
+  const [count, setCount] = useState(0)
   useEffect(() => {
     const getApartments = async () => {
       setLoading(true)
@@ -68,14 +70,18 @@ const Apartment: FC = () => {
             pageNo: index
           }
         })
-        const resTotal = await baseAxios.get(`/apartments/count-apartment-occupied`)
+        const resCount = await baseAxios.get(`apartments/count-apartment-occupied`)
         setTimeout(() => {
-          setCountApartment(resTotal.data)
+          setCount(resCount.data)
           setApartment(res.data)
           setLoading(false)
         }, 500)
-      } catch (error) {
-        setErr('ERRR')
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setErr(error.message)
+        } else {
+          setErr('Unknown error')
+        }
       }
     }
     getApartments()
@@ -97,7 +103,6 @@ const Apartment: FC = () => {
   useEffect(() => {
     function closeMenuSearch(e: MouseEvent | TouchEvent) {
       const element = document.getElementById('menu_search')
-      console.log(element)
       if (e instanceof MouseEvent && e.target != element) {
         setShow(false)
       }
@@ -124,7 +129,7 @@ const Apartment: FC = () => {
         <div className="apartment-flex">
           <div className="apartment-flex-item">
             <h3>
-              Total apartments: {countApartment}/{apartments.totalElements}
+              Total apartments: {count}/{apartments.totalElements}
             </h3>
           </div>
           <div className="apartment-flex-item apartment-flex">
@@ -165,7 +170,7 @@ const Apartment: FC = () => {
                       )
                     })
                   ) : (
-                    <p>no data</p>
+                    <p>No data matching</p>
                   )}
                 </div>
               )}
@@ -174,7 +179,7 @@ const Apartment: FC = () => {
         </div>
         <ListViewApartment apartments={apartments.content} />
         <div>
-          <PagingBar currentPage={index} totalPages={10} onPageChange={setIndex} />
+          <PagingBar currentPage={index} totalPages={Math.ceil(Number(apartments.totalElements) / 10)} onPageChange={setIndex} />
         </div>
       </ApartmentStyled>
     </>

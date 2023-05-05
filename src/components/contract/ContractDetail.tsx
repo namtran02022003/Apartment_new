@@ -28,7 +28,6 @@ const ContractDetail: FC = () => {
   const [contract, setContract] = useState<contractFace>(Object)
   const [err, setErr] = useState('')
   const [loading, setLoading] = useState(true)
-  console.log(id)
   useEffect(() => {
     const getContract = async () => {
       try {
@@ -36,7 +35,7 @@ const ContractDetail: FC = () => {
         setTimeout(() => {
           setContract(res.data)
           setLoading(false)
-        })
+        }, 500)
       } catch (err) {
         console.log(err)
         setErr('có lỗi khi tải dữ liệu vui lòng thử lại sau')
@@ -67,8 +66,10 @@ const ContractDetail: FC = () => {
               <td>{contract.code}</td>
               <td>{contract.apartment.id}</td>
               <td>{contract.person.fullName}</td>
-              <td>{contract.apartment.area}</td>
-              <td>{Number(contract.priceApartment).toLocaleString()}</td>
+              <td>
+                {contract.apartment.area}m <sub>2</sub>
+              </td>
+              <td>{Number(contract.priceApartment).toLocaleString()} VND</td>
               <td>{moment(contract.startDate).format('DD/MM/YYYY')}</td>
               <td>{contract.status}</td>
             </tr>
