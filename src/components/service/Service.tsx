@@ -124,17 +124,17 @@ const Service: FC = () => {
   }
   useEffect(() => {
     const getDatasSearch = async () => {
-      const res = await baseAxios.get('/apartments/un-available', {
+      const res = await baseAxios.get('/apartments', {
         params: {
           pageSize: 100,
           pageNo: 1
         }
       })
       console.log(res.data)
-      const newDatas = res.data.map((apartment: { code: string | number; name: string }) => {
+      const newDatas = res.data.content.map((apartment: { apartmentCode: string | number; name: string }) => {
         return {
-          value: apartment.code,
-          label: apartment.name
+          value: apartment.apartmentCode,
+          label: apartment.apartmentCode
         }
       })
       setOptions(newDatas)

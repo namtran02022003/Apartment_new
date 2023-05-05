@@ -15,7 +15,7 @@ const SearchService: FC = () => {
     const getData = async () => {
       const res = await baseAxios.get(`bills/search`, {
         params: {
-          apartmentId: textSearch,
+          apartmentCode: textSearch,
           endDate: endDate,
           startDate: startDate
         }
