@@ -32,5 +32,17 @@ const GlobalStyles = createGlobalStyle`
   sub {
     vertical-align: super;
   }
+  .btn-to-home {
+    border: none;
+    padding: 8px 10px;
+    background: #00338D;
+    opacity: 0.8;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+    }
+  }
 `
 export default GlobalStyles

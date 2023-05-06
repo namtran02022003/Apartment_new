@@ -12,7 +12,7 @@ const Formstyled = styled.div`
   form {
     margin: auto;
     width: 700px;
-    padding: 15px 20px;
+    padding: 15px 30px;
     background: #fff;
     border-radius: 5px;
     h2 {
@@ -23,8 +23,8 @@ const Formstyled = styled.div`
       width: 100%;
       display: flex;
       &-item {
-        flex: 1;
         padding: 0 15px;
+        flex: 1;
         .btn-option-flag {
           display: block;
           margin: auto;
@@ -65,15 +65,16 @@ const Formstyled = styled.div`
     .btn-create-person {
       border: none;
       border-radius: 4px;
-      background: #61b561;
+      background: rgb(23, 53, 139);
+      cursor: pointer;
       width: 50%;
       padding: 10px 15px;
       margin: 20px auto;
       display: block;
+      color: #fff;
       cursor: pointer;
       &:hover {
-        background: green;
-        color: #fff;
+        background: rgb(19 32 68);
       }
     }
   }

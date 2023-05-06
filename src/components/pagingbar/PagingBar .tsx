@@ -8,7 +8,6 @@ const PagingBarStyled = styled.div`
     align-items: center;
     margin: 20px 200px 0 0;
   }
-
   .pagingButton {
     background-color: #fff;
     border: 1px solid #ddd;
@@ -75,11 +74,11 @@ const PagingBar: FC<{
   return (
     <PagingBarStyled>
       <div className="pagingBar">
-        <button disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
+        <button className="pagingButton" disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
           Prev
         </button>
         {pageButtons}
-        <button disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>
+        <button className="pagingButton" disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>
           Next
         </button>
       </div>

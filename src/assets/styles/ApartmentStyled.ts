@@ -57,9 +57,13 @@ const ApartmentStyled = styled.div`
         button {
           border-radius: 50%;
           border: 1px solid #ccc;
-          padding: 9px 9px;
+          padding: 7px;
           cursor: pointer;
-          margin: 0 10px;
+          margin: 4px 10px;
+          background: #fff;
+          &:hover {
+            background-color: #c8b4df;
+          }
           .icon-eye {
             color: blue;
           }
@@ -75,16 +79,28 @@ const ApartmentStyled = styled.div`
         }
       }
     }
-    table,
-    th,
-    td {
-      padding: 5px 10px;
+    table {
+      border: 1px solid rgb(243 230 230);
+      border-bottom: 2px solid #6666;
+    }
+    td,
+    th {
+      border-bottom: 1px solid rgb(229 221 221 / 52%);
     }
     td {
-      padding: 10px;
+      padding: 0 10px;
     }
     tr:nth-child(odd) {
-      background-color: rgb(239 227 227);
+      background-color: rgb(239 227 227 / 27%);
+    }
+    th {
+      border-bottom: 2px solid #ccc;
+      padding: 5px 10px;
+    }
+    tr td:nth-child(1) {
+      font-weight: 600;
+      color: black;
+      opacity: 0.8;
     }
   }
 `

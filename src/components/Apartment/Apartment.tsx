@@ -66,7 +66,7 @@ const Apartment: FC = () => {
       try {
         const res = await baseAxios.get(`/apartments`, {
           params: {
-            pageSize: 10,
+            pageSize: 15,
             pageNo: index
           }
         })

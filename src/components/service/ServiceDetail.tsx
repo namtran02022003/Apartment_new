@@ -24,6 +24,7 @@ interface PropsBillsFace {
         subTotal: string
       }
       consume: string
+      subTotal: string
     }
   ]
 }
@@ -35,25 +36,26 @@ const ServiceDetail: FC = () => {
     const getBillDetail = async () => {
       try {
         const res = await baseAxios.get(`bills/${id}`)
-        setLoading(false)
-        setBills(res.data)
+        setTimeout(() => {
+          setLoading(false)
+          setBills(res.data)
+        }, 500)
       } catch (error) {
         console.log(error)
       }
     }
-    setTimeout(() => {
-      getBillDetail()
-    }, 500)
+    getBillDetail()
   }, [id])
   return loading ? (
     <Loading />
   ) : (
     <ApartmentStyled>
+      <h2>Bill detail</h2>
       <div className="apartment-content">
         <table>
           <tbody>
             <tr>
-              <th>ID</th>
+              <th>Bill num</th>
               <th>Apartment ID</th>
               <th>
                 Electric num
@@ -74,11 +76,11 @@ const ServiceDetail: FC = () => {
                 {bills.billDetails[0].consume} = {Number(bills.billDetails[0].subTotal).toLocaleString()} VND
               </td>
               <td>
-                {bills.billDetails[1].consume} = {Number(bills.billDetails[0].subTotal).toLocaleString()} VND
+                {bills.billDetails[1].consume} = {Number(bills.billDetails[1].subTotal).toLocaleString()} VND
               </td>
               <td>{moment(bills.createdDate).format('DD/MM/YYYY')}</td>
-              <td>{bills.status}</td>
-              <td>{bills.total}</td>
+              <td>{bills.status ? 'Pain' : 'Unpain'}</td>
+              <td>{Number(bills.total).toLocaleString()} VND</td>
             </tr>
           </tbody>
         </table>

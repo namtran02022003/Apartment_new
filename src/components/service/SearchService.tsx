@@ -20,15 +20,20 @@ const SearchService: FC = () => {
           startDate: startDate
         }
       })
-      setLoading(false)
-      setData(res.data)
+      setTimeout(() => {
+        setLoading(false)
+        setData(res.data)
+      }, 500)
     }
     getData()
   }, [startDate, endDate, textSearch])
-  console.log(data)
-  return loading ? (
-    <Loading />
-  ) : (
+  if (loading) {
+    return <Loading />
+  }
+  if (!data.content.length) {
+    return <p>No data matching</p>
+  }
+  return (
     <ApartmentStyled>
       <h2>
         Bill from:

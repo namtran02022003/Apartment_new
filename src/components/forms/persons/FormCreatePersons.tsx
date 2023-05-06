@@ -138,43 +138,11 @@ const FormCreatePersons: FC = () => {
               }}
               err={messageErrs.email}
             />
-            <label htmlFor="gender">Gender:</label>
-            <div id="gender" className="dflex">
-              <span>
-                <input
-                  onChange={(e) => {
-                    setValues({ ...values, gender: e.target.value })
-                  }}
-                  checked={values.gender == 1}
-                  title="gender"
-                  type="radio"
-                  name="gender"
-                  value={1}
-                />
-                Male
-              </span>
-              <span>
-                <input
-                  onChange={(e) => {
-                    setValues({ ...values, gender: e.target.value })
-                  }}
-                  checked={values.gender == 0}
-                  title="gender"
-                  type="radio"
-                  name="gender"
-                  value={0}
-                />
-                Female
-              </span>
-            </div>
           </div>
           <div className="flex-item">
-            <label htmlFor="nameApartment">Name Apartment</label>
-            <Select id="nameApartment" value={values.apartmentId} onChange={handleChange} options={options} placeholder="Select a fruit" />
-            <p className="err-message">{messageErrs.apartmentId}</p>
             <Inputs
               name="cin"
-              label="Cin"
+              label="ID"
               type="text"
               placeholder="Enter IdCode"
               value={values.cin}
@@ -206,8 +174,16 @@ const FormCreatePersons: FC = () => {
             />
           </div>
         </div>
+        <div className="flex-item">
+          <label htmlFor="nameApartment">Name Apartment</label>
+          <Select id="nameApartment" value={values.apartmentId} onChange={handleChange} options={options} placeholder="Select a fruit" />
+          {messageErrs.apartmentId && <p className="err-message">{messageErrs.apartmentId}</p>}
+        </div>
         <button className="btn-create-person">{id ? 'Up date' : 'Create Presons'}</button>
       </form>
+      <button onClick={() => Navigate('/')} className="btn-to-home">
+        Back to home
+      </button>
     </Formstyled>
   )
 }

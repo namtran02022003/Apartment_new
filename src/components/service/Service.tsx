@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import baseAxios from '../../apis/ConfigAxios'
 import AlertMessage from '../alertMessage/AlertMessage'
 import Select from 'react-select'
+import PagingBar from '../pagingbar/PagingBar '
 const FromSortDateStyled = styled.form`
   display: flex;
   align-items: center;
@@ -15,7 +16,7 @@ const FromSortDateStyled = styled.form`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    span {
+    b {
       margin: 0 10px;
     }
   }
@@ -32,6 +33,7 @@ const FromSortDateStyled = styled.form`
     margin: 0 10px;
   }
   .selec_search_service {
+    margin: 0 5px;
     input[type='text'] {
       padding: 0 50px !important;
     }
@@ -69,12 +71,19 @@ interface PropsValueSearchFace {
   startDate: string
   endDate: string
 }
+interface PropsServiceFace {
+  content: []
+  totalElements: string
+}
 const Service: FC = () => {
-  const [services, setService] = useState([])
+  const [services, setService] = useState<PropsServiceFace>(Object)
+  const [index, setIndex] = useState(1)
   const [loading, setLoading] = useState(true)
   const [file, setFile] = useState<File | null>(null)
   const [show, setShow] = useState(false)
   const [option, setOptions] = useState([])
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState<unknown>()
   const [valueSearch, setValueSearch] = useState<PropsValueSearchFace>({
     textSearch: null,
     startDate: '',
@@ -85,38 +94,40 @@ const Service: FC = () => {
   useEffect(() => {
     const getService = async () => {
       try {
-        const res = await baseAxios.get('/bills ')
-        setService(res.data)
-      } catch (error) {
-        console.log(error)
+        const res = await baseAxios.get('/bills', {
+          params: {
+            pageSize: 10,
+            pageNo: index
+          }
+        })
+        setTimeout(() => {
+          setService(res.data)
+          setLoading(false)
+        })
+      } catch (error: unknown) {
+        setError(error)
       }
     }
-    setTimeout(() => {
-      getService()
-      setLoading(false)
-    }, 500)
-  }, [])
+    getService()
+  }, [index])
   const postFile = async () => {
     if (file) {
-      console.log('ok')
-      // kiểm tra xem file đã được chọn chưa
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('apartmentcode', 'ABC123') // thêm các thông tin khác vào form data
-      formData.append('email', 'example@gmail.com')
       try {
-        const res = await baseAxios.post('/bills/upload', formData) // gửi request POST đến server với form data
-        console.log(res)
+        await baseAxios.post('/bills/upload', formData)
+        setMessage('Import Success')
         setShow(true)
       } catch (error) {
         console.log(error)
+        setMessage('err')
       }
     }
   }
   const handleSubmit = async () => {
-    console.log(valueSearch)
     if (!valueSearch.endDate.trim() || !valueSearch.startDate.trim() || !valueSearch.textSearch) {
-      console.log('no')
+      setMessage('no value')
+      setShow(true)
     } else {
       const id = (valueSearch.textSearch as { value: number } | null)?.value
       Navigate(`/service_search/${valueSearch.startDate + '/' + valueSearch.endDate + '/' + id}`)
@@ -130,7 +141,6 @@ const Service: FC = () => {
           pageNo: 1
         }
       })
-      console.log(res.data)
       const newDatas = res.data.content.map((apartment: { apartmentCode: string | number; name: string }) => {
         return {
           value: apartment.apartmentCode,
@@ -141,21 +151,25 @@ const Service: FC = () => {
     }
     getDatasSearch()
   }, [])
+  console.log(services)
+  if (error) {
+    return <p>err</p>
+  }
   return loading ? (
     <Loading />
   ) : (
     <>
-      {show && <AlertMessage show={show} setShow={setShow} message="Import Success" />}
+      {show && <AlertMessage show={show} setShow={setShow} message={message} />}
       <ApartmentStyled>
         <div className="apartment-flex">
           <div className="apartment-flex-item apartment-flex">
             <FromSortDateStyled>
               <div className="div-item-search">
-                <span>From:</span>
+                <b>From:</b>
                 <input value={valueSearch.startDate} onChange={(e) => setValueSearch({ ...valueSearch, startDate: e.target.value })} type="date" title="from" />
               </div>
               <div className="div-item-search">
-                <span>To:</span>
+                <b>To:</b>
                 <input value={valueSearch.endDate} onChange={(e) => setValueSearch({ ...valueSearch, endDate: e.target.value })} type="date" title="to" />
               </div>
               <div className="">
@@ -166,6 +180,7 @@ const Service: FC = () => {
                   onChange={(option) => {
                     setValueSearch({ ...valueSearch, textSearch: option })
                   }}
+                  placeholder="Apartment code..."
                 />
               </div>
               <button type="button" onClick={() => handleSubmit()} className="btn-create">
@@ -187,7 +202,8 @@ const Service: FC = () => {
             </button>
           </div>
         </div>
-        <ListViewService services={services} />
+        <ListViewService services={services.content} />
+        <PagingBar currentPage={index} onPageChange={setIndex} totalPages={Math.ceil(Number(services.totalElements) / 10)} />
       </ApartmentStyled>
     </>
   )

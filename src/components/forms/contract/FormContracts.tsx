@@ -117,7 +117,8 @@ const FormContracts: FC = () => {
     getDatas()
   }, [])
   console.log(dataOptions)
-  const handlaChangeOptionsPersons = (e) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handlaChangeOptionsPersons = (e: any) => {
     setValues((pre) => {
       return {
         ...pre,
@@ -131,7 +132,8 @@ const FormContracts: FC = () => {
       person: ''
     })
   }
-  const handlaChangeOptionsApartments = (e) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handlaChangeOptionsApartments = (e: any) => {
     setValues((pre) => {
       return {
         ...pre,
@@ -145,14 +147,17 @@ const FormContracts: FC = () => {
       apartment: ''
     })
   }
-  const handleSubmit = async (e) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
     const newValues = {
       ...values,
       person: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         id: values.person.id.value
       },
       apartment: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         id: values.apartment.id.value
       }
     }
@@ -201,8 +206,7 @@ const FormContracts: FC = () => {
               priceApartment: ''
             })
           }}
-          min="0"
-          value={values.priceApartmen}
+          value={values.priceApartment}
           type="number"
           label="Price"
           placeholder="Enter price"
@@ -227,6 +231,9 @@ const FormContracts: FC = () => {
         </div>
         <button className="btn-create-contract" type="submit">
           submit
+        </button>
+        <button className="btn-to-home" onClick={() => Navigate('/')}>
+          Back to home
         </button>
       </form>
     </FormContractsStyled>

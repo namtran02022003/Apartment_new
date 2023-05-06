@@ -7,6 +7,7 @@ import backgroung_login from '../../../assets/images/background_login.png'
 import ValidateLogin from './ValidateLogin'
 import { useNavigate } from 'react-router-dom'
 import baseAxios from '../../../apis/ConfigAxios'
+import AlertMessage from '../../../components/alertMessage/AlertMessage'
 const LoginFormStyled = styled.div`
   background-image: url(${backgroung_login});
   background-size: cover;
@@ -20,7 +21,7 @@ const LoginFormStyled = styled.div`
     border: 1px solid #ccc;
     padding: 10px 15px;
     background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
+    border-radius: 10px;
     h2 {
       text-align: center;
     }
@@ -28,7 +29,8 @@ const LoginFormStyled = styled.div`
       position: relative;
     }
     #fa-eye-login {
-      top: 40%;
+      color: blue;
+      top: 42%;
       right: 0%;
       display: block;
       cursor: pointer;
@@ -88,6 +90,8 @@ const LoginForm: FC = () => {
     password: ''
   })
   const [type, setType] = useState(true)
+  const [show, setShow] = useState(false)
+  const [mess, setMess] = useState('')
   const [errMessage, setErrMessage] = useState<userFace>({
     username: '',
     password: ''
@@ -101,18 +105,17 @@ const LoginForm: FC = () => {
         const res = await baseAxios.post(`/login`, user)
         await localStorage.setItem('token', JSON.stringify(res.data.accessToken))
         Navigate('/')
-      } catch (error: unknown) {
-        if (error.response.status === 400) {
-          alert(error.response.data.message)
-        } else {
-          alert(error)
-        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        setMess(error?.response?.data?.message)
+        setShow(true)
       }
     }
   }
 
   return (
     <LoginFormStyled>
+      {show && <AlertMessage setShow={setShow} show={show} message={mess} />}
       <form onSubmit={handleSubmit}>
         <h2>Login</h2>
         <Inputs

@@ -6,22 +6,18 @@ interface AlertMessageProps {
   show: boolean
 }
 
-const AlertMessageWrapper = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
 const AlertMessageContent = styled.div`
+  position: fixed;
+  top: 10%;
+  right: 10%;
+  min-width: 300px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
   border-radius: 10px;
+  border: 1px solid red;
+  z-index: 1000;
+  background: #fff;
 `
 
 const AlertMessage: FC<AlertMessageProps> = ({ message, setShow, show }) => {
@@ -37,11 +33,9 @@ const AlertMessage: FC<AlertMessageProps> = ({ message, setShow, show }) => {
   return (
     <>
       {show && (
-        <AlertMessageWrapper>
-          <AlertMessageContent>
-            <p>{message}</p>
-          </AlertMessageContent>
-        </AlertMessageWrapper>
+        <AlertMessageContent>
+          <p>{message}</p>
+        </AlertMessageContent>
       )}
     </>
   )
