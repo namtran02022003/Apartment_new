@@ -4,36 +4,36 @@ interface AlertMessageProps {
   message: string
   setShow: React.Dispatch<React.SetStateAction<boolean>>
   show: boolean
+  color: string
 }
 
 const AlertMessageContent = styled.div`
   position: fixed;
-  top: 10%;
-  right: 10%;
-  min-width: 300px;
+  top: 5%;
+  right: 5%;
+  min-width: 200px;
   background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
   border-radius: 10px;
-  border: 1px solid red;
+  border: ${(props) => `2px solid ${props.color}`};
   z-index: 1000;
   background: #fff;
+  p {
+    color: ${(props) => `${props.color}`};
+  }
 `
 
-const AlertMessage: FC<AlertMessageProps> = ({ message, setShow, show }) => {
-  console.log(show)
+const AlertMessage: FC<AlertMessageProps> = ({ message, setShow, show, color }) => {
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    setTimeout(() => {
       setShow(false)
-      console.log('run')
     }, 2000)
-    return () => clearTimeout(timeoutId)
   }, [setShow])
 
   return (
     <>
       {show && (
-        <AlertMessageContent>
+        <AlertMessageContent color={color}>
           <p>{message}</p>
         </AlertMessageContent>
       )}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- <script>
+    var s = '123fg321'
+    function bbb() {
+      var index = -1
+      var lenght = s.length
+      for (let i = 0; i < Math.ceil(lenght / 2); i++) {
+        if (s[i] != s[lenght - 1 - i]) {
+          for (let j = i; j < Math.ceil(lenght / 2); j++) {
+            if (s[j] != s[lenght - 2 - j]) {
+              index = j;
+              break;
+            }
+          }
+          for (let j = i; j < Math.ceil(lenght / 2); j++) {
+            if (s[j + 1] != s[lenght - 1 - j]) {
+              index = lenght - 1 - j;
+              break;
+            }
+          }
+          if (index != -1) {
+            return index
+          }
+        }
+      }
+      return -1
+    }
+    console.log(bbb())
+  </script> -->
+<script>
+  function isPalindrome(s) {
+  return s === s.split("").reverse().join("");
+}
+
+function palindromeIndex(s) {
+  if (isPalindrome(s)) {
+    return -1;
+  }
+
+  const n = s.length;
+  for (let i = 0; i < Math.floor(n / 2); i++) {
+    if (s[i] !== s[n - i - 1]) {
+      if (isPalindrome(s.slice(0, i) + s.slice(i + 1))) {
+        return i;
+      } else if (isPalindrome(s.slice(0, n - i - 1) + s.slice(n - i))) {
+        return n - i - 1;
+      } else {
+        return -1;
+      }
+    }
+  }
+}
+</script>
+</body>
+
+</html>

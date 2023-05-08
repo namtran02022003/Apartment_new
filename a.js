@@ -1,5 +1,8 @@
-function sum(a, b, c) {
-  console.log(a, b, c)
-  return b - c + a
+var string = 'abcddcfba'
+
+var lenght = string.length
+for (let i = 0; i < lenght / 2; i++) {
+  if (string[i] != string[lenght - 1 - i]) {
+    console.log(string[i])
+  }
 }
-console.log(sum('23', 20 + 45, 35 + 10))

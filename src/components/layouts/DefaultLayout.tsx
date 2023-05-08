@@ -1,17 +1,28 @@
-import DefaultLayoutStyled from '../../assets/styles/DefaultLayout'
-import Sidebar from '../sidebar/Sidebar'
+import Header from '../header/Header'
+import SideBar from '../sideBar/SideBar'
+import styled from 'styled-components'
 import { FC } from 'react'
 interface Props {
   children?: JSX.Element
 }
+const DefaultLayoutStyled = styled.div`
+  display: flex;
+  .layout-container {
+    flex: 1;
+    &-content {
+      padding: 20px;
+    }
+  }
+`
 const DefaultLayout: FC<Props> = ({ children }) => {
   return (
     <DefaultLayoutStyled>
-      <div className="layout-content">
-        <div className="col-1">
-          <Sidebar />
-        </div>
-        <div className="col-9">{children}</div>
+      <div>
+        <SideBar />
+      </div>
+      <div className="layout-container">
+        <Header />
+        <div className="layout-container-content">{children}</div>
       </div>
     </DefaultLayoutStyled>
   )
