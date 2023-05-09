@@ -28,7 +28,8 @@ const Home: FC = () => {
   const [message, setMessage] = useState('')
   const [show, setShow] = useState(false)
   useEffect(() => {
-    const dataLocal = localStorage.getItem('user') || ''
+    const dataLocal = localStorage.getItem('user') || '{"tokenKey":"","fullName":""}'
+    console.log(dataLocal)
     const data = JSON.parse(dataLocal)
     setMessage(data.fullName)
     setShow(true)

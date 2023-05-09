@@ -3,4 +3,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,
   },
+  "[html]": {
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+  },
 }

@@ -4,7 +4,8 @@ const InputStyled = styled.input`
   border: 0.5px solid #ccc;
   background-color: #f5f5f5;
   padding: 5px 15px;
-  border-radius: 50px;
+  border-radius: 5px;
+  background: #fff;
   &:focus-within {
     outline: 0.5px solid rgb(202, 183, 183);
   }

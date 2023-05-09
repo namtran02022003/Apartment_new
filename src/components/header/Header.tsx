@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import avt from '../../assets/images/avt.svg'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const HeaderStyled = styled.header`
   width: 100%;
@@ -66,7 +68,29 @@ const HeaderStyled = styled.header`
 
 const Header: FC = () => {
   const [showPopup, setShowPopup] = useState(false)
-
+  const Navigate = useNavigate()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dataLocal = localStorage.getItem('user') || '{"tokenKey":"","fullName":""}'
+  console.log(dataLocal)
+  const data = JSON.parse(dataLocal)
+  const handleLogOut = async () => {
+    console.log(data.tokenKey)
+    try {
+      const res = await axios.get('http://localhost:8088/v1/users/logout', {
+        headers: {
+          'x-token': `${data.tokenKey}`
+        }
+      })
+      if (res.data.success && !res.data.errorCode) {
+        await localStorage.removeItem('user')
+        Navigate('/login')
+      } else {
+        console.log('errr')
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
   return (
     <HeaderStyled>
       <div className="header-content shadow">
@@ -95,12 +119,14 @@ const Header: FC = () => {
                 setShowPopup(!showPopup) // Khi click vào thẻ span, gọi hàm setShowPopup với giá trị ngược lại của biến showPopup
               }}
             >
-              <b>Douglas McGee</b>
+              <b>{data.fullName}</b>
               <img src={avt} alt="avt" />
             </span>
             {showPopup && ( // Sử dụng điều kiện showPopup để kiểm tra xem có hiển thị div hay không
               <div id="menu-user" className="position-absolute shadow">
-                <button className="btn btn-info w-100">Log out</button>
+                <button onClick={() => handleLogOut()} className="btn btn-info w-100">
+                  Log out
+                </button>
               </div>
             )}
           </div>
