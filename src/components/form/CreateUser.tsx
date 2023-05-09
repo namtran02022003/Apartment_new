@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { useState, FC, ChangeEvent } from 'react'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { InputStyled } from './Input'
+import { InputStyled } from '../../assets/styles/Input'
 import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import styled from 'styled-components'
@@ -20,9 +20,19 @@ const ImgFormStyled = styled.div`
     height: 11rem;
     object-fit: cover;
   }
+  input {
+    visibility: hidden;
+    display: none;
+  }
+  label {
+    background: green;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #fff;
+  }
 `
 const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
-  console.log('idddddddddddddddddd', id)
   const [typeInput, setTypeInput] = useState(true)
   const [showMessage, setShowMessage] = useState(false)
   const [file, setFile] = useState<string>('')
@@ -35,6 +45,7 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
   const onSubmit = async (data: unknown) => {
     // const res = await axios.post(`http://localhost:8088/v1/users/login`, data)
     // console.log(res)
+    console.log(file)
     console.log(data)
     setShowMessage(true)
   }
@@ -58,7 +69,10 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
             <div className="row">
               <div className="col-6">
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="firstName">First Name:</label>
+                  <label htmlFor="firstName">
+                    First Name:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="firstName"
                     type="text"
@@ -74,7 +88,10 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
                   {errors.firstName?.type === 'maxLength' && <p className="m-0 message_form">first Name must be no more than 250 characters long</p>}
                 </div>
                 <div className="my-2 position-relative">
-                  <label htmlFor="middleName">Middle Name:</label>
+                  <label htmlFor="middleName">
+                    Middle Name:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="middleName"
                     type="text"
@@ -88,7 +105,10 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
                   {errors.middleName?.type === 'required' && <p className="m-0 message_form">Please enter your Middle Name</p>}
                 </div>
                 <div className="my-2 position-relative">
-                  <label htmlFor="lastName">Last Name:</label>
+                  <label htmlFor="lastName">
+                    Last Name:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="lastName"
                     type="text"
@@ -102,7 +122,10 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
                   {errors.lastName?.type === 'required' && <p className="m-0 message_form">Please enter your Last Name</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="username">Username:</label>
+                  <label htmlFor="username">
+                    Username:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="usernemr"
                     type="text"
@@ -115,14 +138,20 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
                   {errors.userName?.type === 'minLength' && <p className="m-0 message_form">Username must be at least 8 characters long</p>}
                   {errors.userName?.type === 'required' && <p className="m-0 message_form">Please enter your username</p>}
                 </div>
-                <div className="my-4">
-                  <input type="file" onChange={(e) => handleImageChange(e)} title="enter file" />
-                </div>
               </div>
               <div className="col-6">
-                <ImgFormStyled className="avatar-form">{file && <img src={file} alt="avatar" />}</ImgFormStyled>
+                <ImgFormStyled className="avatar-form position-relative d-flex justify-content-around">
+                  <div className="my-4">
+                    <label htmlFor="file">Choose avatar</label>
+                    <input id="file" type="file" onChange={(e) => handleImageChange(e)} title="enter file" />
+                  </div>
+                  {file && <img src={file} alt="avatar" />}
+                </ImgFormStyled>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="email">Email:</label>
+                  <label htmlFor="email">
+                    Email:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="email"
                     type="text"
@@ -138,7 +167,10 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
                   {errors.email?.type === 'pattern' && <p className="m-0 message_form">Please enter correct email format</p>}
                 </div>
                 <div className="my-2 position-relative">
-                  <label htmlFor="middleName">Password:</label>
+                  <label htmlFor="middleName">
+                    Password:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="password"
                     type={typeInput ? 'password' : 'text'}
@@ -160,7 +192,7 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id }) => {
                 </div>
               </div>
             </div>
-            <div className="d-flex justify-content-end">
+            <div className="d-flex justify-content-end mt-3">
               <button onClick={() => setShow(!show)} type="button" className="mx-3 btn border">
                 Cancel
               </button>

@@ -1,10 +1,9 @@
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
-import { InputStyled } from '../form/Input'
+import { FC, useState } from 'react'
+import { InputStyled } from '../../assets/styles/Input'
 import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import styled from 'styled-components'
-import { useNavigate } from 'react-router-dom'
 import Select from 'react-select'
 const SelectStyled = styled.select`
   width: 100%;
@@ -27,9 +26,13 @@ const TextareaStyled = styled.textarea`
     outline: 0.5px solid rgb(202, 183, 183);
   }
 `
-export default function FormCreateApartment() {
+interface SignUpProps {
+  setShow: React.Dispatch<React.SetStateAction<boolean>>
+  show: boolean
+  id?: string
+}
+const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id }) => {
   const [showMessage, setShowMessage] = useState(false)
-  const Navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -43,14 +46,17 @@ export default function FormCreateApartment() {
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
-      <div className="w-50 bg-white rounded-3 form-content">
-        <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">Create new Apartment</h5>
+      <div className="w-75 animate bg-white rounded-3 form-content">
+        <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Apartment</h5>
         <div>
           <form className="p-3 login" onSubmit={handleSubmit(onSubmit)}>
             <div className="row">
               <div className="col-6">
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="apartmentCode">Apartment Code:</label>
+                  <label htmlFor="apartmentCode">
+                    Apartment Code:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="apartmentCode"
                     type="text"
@@ -66,7 +72,10 @@ export default function FormCreateApartment() {
                   {errors.apartmentCode?.type === 'maxLength' && <p className="m-0 message_form">Apartment Code must be no more than 50 characters long</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="apartmentName">Apartment Name:</label>
+                  <label htmlFor="apartmentName">
+                    Apartment Name:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="apartmentName"
                     type="text"
@@ -125,20 +134,13 @@ export default function FormCreateApartment() {
                 <TextareaStyled id="address" placeholder="Enter Address" {...register('address')} />
               </div>
             </div>
-            <div className="d-flex justify-content-between">
-              <div>
-                <button onClick={() => Navigate('/')} className="btn btn-primary">
-                  Back to home
-                </button>
-              </div>
-              <div>
-                <button type="button" className="mx-3 btn border">
-                  Cancel
-                </button>
-                <button type="submit" className="btn mx-3  btn-success">
-                  Create
-                </button>
-              </div>
+            <div className="d-flex justify-content-end mt-3">
+              <button onClick={() => setShow(!show)} type="button" className="mx-3 btn border">
+                Cancel
+              </button>
+              <button type="submit" className="btn mx-3  btn-success">
+                {id ? 'Update' : 'Create'}
+              </button>
             </div>
           </form>
         </div>
@@ -146,3 +148,5 @@ export default function FormCreateApartment() {
     </Forms>
   )
 }
+
+export default FormCreateApartment

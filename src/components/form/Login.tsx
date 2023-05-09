@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUser, faEye } from '@fortawesome/free-solid-svg-icons'
 import { Forms } from '../../assets/styles/Forms'
-import { InputStyled } from '../form/Input'
+import { InputStyled } from '../../assets/styles/Input'
 import { ButtonSubmit } from '../../assets/styles/Buttons'
 import AlertMessage from '../alertMessage/AlertMessage'
 import axios from 'axios'
@@ -49,9 +49,9 @@ export default function Login() {
     console.log(va)
   }, [va])
   return (
-    <Forms className="bg-form">
+    <Forms className="bg-form bg-white">
       {showMessage && <AlertMessage color={'red'} message={message} show={showMessage} setShow={setShowMessage} />}
-      <div className=" container form-content bg-white rounded-3">
+      <div className=" container form-content bg-white p-3 rounded-3">
         <div className="row px-3">
           <div className="col-lg-6 d-none d-lg-block ">
             <div className="p-3">

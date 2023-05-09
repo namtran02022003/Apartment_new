@@ -37,7 +37,7 @@ const PagingBarStyled = styled.div`
     cursor: default;
   }
 `
-const MAX_BUTTONS = 3
+const MAX_BUTTONS = 5
 
 const PagingBar: FC<{
   currentPage: number

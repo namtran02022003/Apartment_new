@@ -1,7 +1,6 @@
 import { FC, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
-import styled from 'styled-components'
 import { ThStyled } from '../../assets/styles/Th'
 import CreateUser from '../form/CreateUser'
 import ModalConfirm from '../alertMessage/ModalConfirm'
@@ -22,54 +21,8 @@ const dataFake = [
   { userName: 'name44', email: 'position', fullName: 'fullname', actflg: 'Active', id: '14', orderNo: '1', createdAt: '2023-10-05', updatedAt: '2023-11-05' },
   { userName: 'name55', email: 'position', fullName: 'fullname', actflg: 'Active', id: '15', orderNo: '1', createdAt: '2023-10-05', updatedAt: '2023-11-05' }
 ]
-const ToggleInputStyled = styled.label`
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 28px;
-  & input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: 0.4s;
-    transition: 0.4s;
-  }
-  .slider:before {
-    position: absolute;
-    content: '';
-    height: 20px;
-    width: 18px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: 0.4s;
-    transition: 0.4s;
-  }
-  input:checked + .slider {
-    background-color: #2196f3;
-  }
-  input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-  }
-  .slider.round {
-    border-radius: 34px;
-  }
-  .slider.round:before {
-    border-radius: 50%;
-  }
-`
-const Table: FC = () => {
+import { ToggleInputStyled } from '../../assets/styles/Input'
+const ListUser: FC = () => {
   const [showForm, setShowForm] = useState(false)
   const [showFormEdit, setShowFormEdit] = useState(false)
   const [id, setId] = useState('')
@@ -88,6 +41,8 @@ const Table: FC = () => {
   return (
     <div className="rounded-4">
       {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setShowForm={setShowModalConfirm} />}
+      {showForm && <CreateUser setShow={setShowForm} show={showForm} />}
+      {showFormEdit && <CreateUser setShow={setShowFormEdit} show={showFormEdit} id={id} />}
       <div className="shadow color-table">
         <div className="d-flex mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
           <h5>User List</h5>
@@ -99,25 +54,13 @@ const Table: FC = () => {
           <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
             <thead>
               <tr>
-                <ThStyled width="5%" className="th-sm">
-                  #
-                </ThStyled>
-                <ThStyled width="20%" className="th-sm">
-                  User Name
-                </ThStyled>
-                <ThStyled width="20%" className="th-sm">
-                  Full Name
-                </ThStyled>
-                <ThStyled width="20%" className="th-sm">
-                  Email
-                </ThStyled>
-                <ThStyled width="10%" className="th-sm">
-                  Created At
-                </ThStyled>
-                <ThStyled width="10%" className="th-sm">
-                  Update dAt
-                </ThStyled>
-                <ThStyled width="15%" className="text-center th-sm">
+                <ThStyled width="5%">#</ThStyled>
+                <ThStyled width="20%">User Name</ThStyled>
+                <ThStyled width="20%">Full Name</ThStyled>
+                <ThStyled width="20%">Email</ThStyled>
+                <ThStyled width="10%">Created At</ThStyled>
+                <ThStyled width="10%">Update dAt</ThStyled>
+                <ThStyled width="15%" className="text-center">
                   Actions
                 </ThStyled>
               </tr>
@@ -185,10 +128,8 @@ const Table: FC = () => {
           </div>
         </div>
       </div>
-      {showForm && <CreateUser setShow={setShowForm} show={showForm} />}
-      {showFormEdit && <CreateUser setShow={setShowFormEdit} show={showFormEdit} id={id} />}
     </div>
   )
 }
 
-export default Table
+export default ListUser
