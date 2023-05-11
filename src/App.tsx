@@ -3,19 +3,18 @@ import DefaultLayout from './components/layouts/DefaultLayout'
 import GlobalStyles from './assets/styles/GlobalStyled'
 import PublicRouters from './routers/Routers'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-interface face {
-  component: React.FC
-  layout?: React.FC | null
-  type?: string
-  path: string
-}
+import UseAuth from './routers/UseAuth'
+import Login from './components/form/Login'
+
 const App: FC = () => {
   return (
     <>
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          {PublicRouters.map((routes: face, index: number) => {
+          <Route path="/login" element={<Login />} />
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {PublicRouters.map((routes: any, index: number) => {
             let Layout: React.FC | typeof Fragment = DefaultLayout
             const Page = routes.component
             if (routes.layout) {
@@ -28,9 +27,11 @@ const App: FC = () => {
                 key={index}
                 path={routes.path}
                 element={
-                  <Layout>
-                    <Page />
-                  </Layout>
+                  <UseAuth>
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  </UseAuth>
                 }
               />
             )

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import FormCreateApartment from '../form/FormCreateApartment'
-import { ToggleInputStyled } from '../../assets/styles/Input'
+import TonggleInput from './ToggleInput'
 const dataFake = [
   {
     id: 1,
@@ -15,7 +15,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'InActive',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -31,7 +31,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -47,7 +47,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -63,7 +63,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -79,7 +79,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -95,7 +95,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -111,7 +111,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -127,7 +127,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -143,7 +143,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -159,7 +159,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -175,7 +175,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -191,7 +191,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -207,7 +207,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -223,7 +223,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -239,7 +239,7 @@ const dataFake = [
     roomNumber: 'string',
     address: 'string',
     note: 'string',
-    actflg: 'string',
+    actflg: 'Active',
     buildingId: 1,
     buildingName: 1,
     apartmentTypeId: 0,
@@ -249,31 +249,27 @@ const dataFake = [
 
 const Apartments: FC = () => {
   const [showForm, setShowForm] = useState(false)
-  const [showFormEdit, setShowFormEdit] = useState(false)
   const [id, setId] = useState('')
   const [showModalConfirm, setShowModalConfirm] = useState(false)
-  const handleChangeStatus = (status: string) => {
-    if (status == 'Active') {
-      console.log('call api')
-    } else {
-      console.log('k ')
-    }
-  }
+
   const handleEditApartment = (id: string) => {
     setId(id)
-    setShowFormEdit(true)
+    setShowForm(true)
   }
+  console.log('render')
   return (
     <div className="rounded-4">
       {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setShowForm={setShowModalConfirm} />}
-      {showForm && <FormCreateApartment setShow={setShowForm} show={showForm} />}
-      {showFormEdit && <FormCreateApartment setShow={setShowFormEdit} show={showFormEdit} id={id} />}
+      {showForm && <FormCreateApartment setShow={setShowForm} show={showForm} id={id} />}
       <div className="shadow color-table">
         <div className="d-flex mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
           <h5>Apartment List</h5>
-          <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
-            Create
-          </button>
+          <div className="d-flex align-items-center justify-content-between">
+            <input type="text" className="border rounded-2 py-1 px-2 me-2" placeholder="enter search" />
+            <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
+              Create
+            </button>
+          </div>
         </div>
         <div className="px-4 table-scroll">
           <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
@@ -303,10 +299,7 @@ const Apartments: FC = () => {
                     <td className="d-flex justify-content-around td-action">
                       <FontAwesomeIcon onClick={() => setShowModalConfirm(true)} className="btn-delete" icon={faTrash} />
                       <FontAwesomeIcon onClick={() => handleEditApartment(data.id.toLocaleString())} className="btn-edit" icon={faEdit} />
-                      <ToggleInputStyled className="switch">
-                        <input onChange={() => handleChangeStatus(data.actflg)} checked={data.actflg == 'Active' ? true : false} type="checkbox" title="s" />
-                        <span className="slider round"></span>
-                      </ToggleInputStyled>
+                      <TonggleInput actflg={data.actflg} />
                     </td>
                   </tr>
                 )

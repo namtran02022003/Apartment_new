@@ -6,7 +6,7 @@ const PagingBarStyled = styled.div`
     display: flex;
     justify-content: end;
     align-items: center;
-    margin: 20px 200px 0 0;
+    margin: 0 200px 0 0;
   }
   .pagingButton {
     background-color: #fff;
@@ -18,6 +18,7 @@ const PagingBarStyled = styled.div`
     text-align: center;
     text-decoration: none;
     transition: background-color 0.3s ease;
+    border-radius: 4px;
   }
 
   .pagingButton:hover {

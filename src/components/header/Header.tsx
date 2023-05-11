@@ -71,21 +71,18 @@ const Header: FC = () => {
   const Navigate = useNavigate()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dataLocal = localStorage.getItem('user') || '{"tokenKey":"","fullName":""}'
-  console.log(dataLocal)
   const data = JSON.parse(dataLocal)
   const handleLogOut = async () => {
-    console.log(data.tokenKey)
     try {
       const res = await axios.get('http://localhost:8088/v1/users/logout', {
         headers: {
           'x-token': `${data.tokenKey}`
         }
       })
+      console.log(res.data)
       if (res.data.success && !res.data.errorCode) {
-        await localStorage.removeItem('user')
+        localStorage.removeItem('user')
         Navigate('/login')
-      } else {
-        console.log('errr')
       }
     } catch (err) {
       console.log(err)
@@ -97,6 +94,15 @@ const Header: FC = () => {
         <div>
           <input type="text" placeholder="ddd" />
         </div>
+        <button onClick={() => Navigate('/list_user')} className="btn btn-info">
+          user
+        </button>
+        <button onClick={() => Navigate('/apartments')} className="btn btn-info">
+          apartment
+        </button>
+        <button onClick={() => Navigate('/buildings')} className="btn btn-info">
+          building
+        </button>
         <div className="header-content-item">
           <span>
             <FontAwesomeIcon icon={faBell} />

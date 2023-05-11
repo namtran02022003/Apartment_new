@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUser, faEye } from '@fortawesome/free-solid-svg-icons'
 import { Forms } from '../../assets/styles/Forms'
@@ -23,14 +23,13 @@ export default function Login() {
   const onSubmit = async (data: unknown) => {
     try {
       const res = await axios.post(`http://localhost:8088/v1/users/login`, data)
-      console.log(res)
       if (res.data.errorCode == 0 && res.data.success) {
         const dataUser = {
           tokenKey: res.data.item.tokenKey,
           fullName: res.data.item.fullName
         }
-        console.log(dataUser)
-        await localStorage.setItem('user', JSON.stringify(dataUser))
+        localStorage.setItem('user', JSON.stringify(dataUser))
+        localStorage.setItem('isLogin', JSON.stringify('true'))
         Navigate('/')
       } else {
         setMessage(res.data.message)
@@ -39,15 +38,7 @@ export default function Login() {
     } catch (error) {
       console.log(error)
     }
-    console.log(data)
   }
-  const [va, setVal] = useState('')
-  const id = 'ddddddddddddddd'
-  useEffect(() => {
-    setVal('sssssssss')
-    setMessage('')
-    console.log(va)
-  }, [va])
   return (
     <Forms className="bg-form bg-white">
       {showMessage && <AlertMessage color={'red'} message={message} show={showMessage} setShow={setShowMessage} />}
@@ -75,7 +66,6 @@ export default function Login() {
                     Username:
                   </label>
                   <InputStyled
-                    defaultValue={id ? id : ''}
                     id="username"
                     type="text"
                     placeholder="Enter Username"

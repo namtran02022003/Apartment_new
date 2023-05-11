@@ -5,10 +5,10 @@ const baseAxios = axios.create({
 })
 baseAxios.interceptors.request.use(
   (config) => {
-    const tokenLocal: string | null = localStorage.getItem('token')
-    const token: string | undefined = tokenLocal ? JSON.parse(tokenLocal) : undefined
+    const tokenLocal: string | null = localStorage.getItem('user')
+    const token: { tokenKey: string } | undefined = tokenLocal ? JSON.parse(tokenLocal) : undefined
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers['x-token'] = `${token?.tokenKey}`
     }
     return config
   },

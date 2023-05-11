@@ -29,10 +29,13 @@ const Home: FC = () => {
   const [show, setShow] = useState(false)
   useEffect(() => {
     const dataLocal = localStorage.getItem('user') || '{"tokenKey":"","fullName":""}'
-    console.log(dataLocal)
-    const data = JSON.parse(dataLocal)
-    setMessage(data.fullName)
-    setShow(true)
+    const isLogin = localStorage.getItem('isLogin')
+    if (isLogin) {
+      const data = JSON.parse(dataLocal)
+      setMessage(data.fullName)
+      setShow(true)
+      localStorage.removeItem('isLogin')
+    }
   }, [])
   return (
     <HomeStyled>

@@ -112,7 +112,7 @@ const GlobalStyles = createGlobalStyle`
     background: rgb(255, 255, 255);
   }
   .table-scroll {
-    height: 100vh;
+    height: 76vh;
     overflow-y: scroll;
     ::-webkit-scrollbar {
       width: 8px;

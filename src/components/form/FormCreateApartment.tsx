@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { InputStyled } from '../../assets/styles/Input'
 import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
@@ -31,18 +31,42 @@ interface SignUpProps {
   show: boolean
   id?: string
 }
+interface DataBuildingName {
+  label: string
+  value: string
+}
 const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id }) => {
   const [showMessage, setShowMessage] = useState(false)
+  const [errbdName, setErrBdName] = useState('')
+  const [dataBuildingName, setDataBuildingName] = useState<Array<DataBuildingName>>([])
+  const [buildingName, setBuildingName] = useState({
+    value: '',
+    label: ''
+  })
+  useEffect(() => {
+    const dataFake = [{ value: 'value1', label: 'label1' }]
+    setDataBuildingName(dataFake)
+  }, [])
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm()
   const onSubmit = async (data: unknown) => {
-    console.log(data)
-    setShowMessage(true)
+    console.log(buildingName)
+    if (buildingName.label && buildingName.value) {
+      console.log(data)
+      setShowMessage(true)
+    } else {
+      setErrBdName('Please enter your Building name')
+    }
   }
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hanDleChangeBuildingName = (e: any) => {
+    setErrBdName('')
+    setBuildingName(e)
+  }
+  console.log(buildingName)
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
@@ -91,7 +115,7 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id }) => {
                   {errors.apartmentName?.type === 'required' && <p className="m-0 message_form">Please enter your Apartment Name</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="location">Number of floors:</label>
+                  <label htmlFor="location">Location:</label>
                   <InputStyled id="location" type="text" placeholder="Enter Location" {...register('location')} />
                 </div>
               </div>
@@ -123,7 +147,8 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id }) => {
               </div>
               <div className="position-relative pb-1">
                 <label htmlFor="buildingname">Building Name</label>
-                <Select id="buildingname" />
+                <Select value={buildingName} options={dataBuildingName} onChange={(e) => hanDleChangeBuildingName(e)} id="buildingname" />
+                {errbdName && <p className="m-0 message_form">{errbdName}</p>}
               </div>
               <div className="position-relative">
                 <label htmlFor="note">Note:</label>
