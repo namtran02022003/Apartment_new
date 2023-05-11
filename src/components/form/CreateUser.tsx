@@ -35,6 +35,8 @@ interface SignUpProps {
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getUsers: any
+  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
+  setMess: React.Dispatch<React.SetStateAction<string>>
 }
 interface User {
   userName: string
@@ -47,7 +49,7 @@ interface User {
   tokenKey: string
   id: number
 }
-const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId }) => {
+const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setShowMes, setMess }) => {
   const [typeInput, setTypeInput] = useState(true)
   const [showMessage, setShowMessage] = useState(false)
   const [file, setFile] = useState<string>('')
@@ -67,7 +69,6 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId }) => 
   const onSubmit = async () => {
     const type = id ? false : true
     if (!(Object.keys(ValidateUser(user, setError, type)).length > 0)) {
-      console.log(user.imageUrl)
       const userData = {
         tokenKey: `${JSON.parse(localStorage.getItem('user') || '')?.tokenKey}`,
         imageUrl: file || user.imageUrl,
@@ -81,7 +82,10 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId }) => 
       }
       await baseAxios.post(`/users/insert-update`, userData)
       getUsers()
+      setMess(id ? 'Edit success' : 'Create success')
+      setShowMes(true)
       setShow(!show)
+      console.log('run')
     }
   }
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +111,7 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId }) => 
   }, [id])
   return (
     <Forms className="bg-form">
-      {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
+      {showMessage && <AlertMessage color={'green'} message={'ok'} show={showMessage} setShow={setShowMessage} />}
       <div className="w-75 form-content bg-white rounded-3 animate">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} user</h5>
         <div className="p-3">

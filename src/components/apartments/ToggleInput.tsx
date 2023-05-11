@@ -4,7 +4,7 @@ interface Props {
   actflg: string
 }
 const TonggleInput: FC<Props> = ({ actflg }) => {
-  const [check, setCheck] = useState(actflg == 'Active')
+  const [check, setCheck] = useState(actflg == 'Active' || actflg == 'Hoạt động')
   const handleChangeStatus = () => {
     if (check) {
       setCheck(false)

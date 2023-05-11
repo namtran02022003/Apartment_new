@@ -47,4 +47,20 @@ const ValidateUser = (user: user, setMessageErr: Dispatch<SetStateAction<object>
   return errs
 }
 
-export { ValidateUser }
+interface building {
+  buildingCode: string
+  buildingName: string
+}
+const ValidateBuilding = (values: building, setError: Dispatch<SetStateAction<object>>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const errs: any = {}
+  if (!values.buildingCode.trim()) {
+    errs.buildingCode = 'Invalid building code'
+  }
+  if (!values.buildingName.trim()) {
+    errs.buildingName = 'Invalid building name'
+  }
+  setError(errs)
+  return errs
+}
+export { ValidateUser, ValidateBuilding }

@@ -80,14 +80,16 @@ const ListUser: FC = () => {
       setMessages('err')
       setShowMessage(true)
     }
+    setId('')
   }
-  console.log(id)
   if (loading) return <Loading />
   return (
     <div className="rounded-4">
       {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
-      {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteUser} />}
-      {showForm && <CreateUser setShow={setShowForm} show={showForm} id={id} getUsers={getUsersList} setId={setId} />}
+      {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteUser} />}
+      {showForm && (
+        <CreateUser setShowMes={setShowMessage} setMess={setMessages} setShow={setShowForm} show={showForm} id={id} getUsers={getUsersList} setId={setId} />
+      )}
       <div className="shadow color-table">
         <div className="d-flex mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
           <h5>User List</h5>

@@ -5,8 +5,9 @@ interface PropsFace {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   action?: any
+  setId?: React.Dispatch<React.SetStateAction<string>>
 }
-const ModalConfirm: FC<PropsFace> = ({ showForm, setShowForm, action }) => {
+const ModalConfirm: FC<PropsFace> = ({ showForm, setId, setShowForm, action }) => {
   useEffect(() => {
     const element: HTMLElement | null = document.querySelector('.modal-create')
     function closeItem(e: MouseEvent<HTMLDivElement>) {
@@ -25,7 +26,15 @@ const ModalConfirm: FC<PropsFace> = ({ showForm, setShowForm, action }) => {
       <div className="content animate shadow rounded-3 position-relative pt-3">
         <p className="text-center">Do you want to delete user?</p>
         <div className="d-flex justify-content-around py-5">
-          <button onClick={() => setShowForm(!showForm)} className="btn w-25 btn-success">
+          <button
+            onClick={() => {
+              setShowForm(!showForm)
+              if (setId) {
+                setId('')
+              }
+            }}
+            className="btn w-25 btn-success"
+          >
             Cancel
           </button>
           <button

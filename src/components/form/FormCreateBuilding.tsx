@@ -1,9 +1,9 @@
-import { useForm } from 'react-hook-form'
-import { useState, FC } from 'react'
+import { useState, FC, useEffect } from 'react'
 import { InputStyled } from '../../assets/styles/Input'
-import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import styled from 'styled-components'
+import { ValidateBuilding } from './Validates'
+import baseAxios from '../../apis/ConfigAxios'
 const TextareaStyled = styled.textarea`
   width: 100%;
   padding: 10px;
@@ -18,28 +18,54 @@ const TextareaStyled = styled.textarea`
 `
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
+  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
+  setId: React.Dispatch<React.SetStateAction<string>>
+  setMess: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getBuildings: any
 }
-const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id }) => {
-  const [showMessage, setShowMessage] = useState(false)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm()
-  const onSubmit = async (data: unknown) => {
-    console.log(data)
-    setShowMessage(true)
+const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, setId, setMess, setShowMes }) => {
+  const [values, setValues] = useState({
+    buildingCode: '',
+    buildingName: '',
+    numberOfFloors: 0,
+    height: '',
+    acreage: '',
+    numberOfApartments: 0,
+    note: '',
+    address: ''
+  })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [errors, setError] = useState<any>({})
+  const onSubmit = async () => {
+    if (!(Object.keys(ValidateBuilding(values, setError)).length > 0)) {
+      await baseAxios.post('/buildings/insert-update', values)
+      getBuildings()
+      setMess(id ? 'Edit success' : 'Create success')
+      setShowMes(true)
+      setShow(!show)
+    }
   }
-
+  useEffect(() => {
+    const getBuilding = async () => {
+      const res = await baseAxios.get(`/buildings/${id}`)
+      if (res.status == 200) {
+        setValues(res.data.item)
+      }
+    }
+    if (id) {
+      getBuilding()
+    }
+  }, [id])
+  console.log(values)
   return (
     <Forms className="bg-form bg-form-create">
-      {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
       <div className="w-75 animate bg-white rounded-3 form-content">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Building</h5>
         <div className="p-3">
-          <form className="p-3 login" onSubmit={handleSubmit(onSubmit)}>
+          <form className="p-3 login">
             <div className="row">
               <div className="col-6">
                 <div className="my-2 position-relative pb-1">
@@ -48,18 +74,16 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id }) => {
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
-                    id="buildingCode"
+                    id="firstName"
                     type="text"
-                    placeholder="Enter Building Code"
-                    {...register('buildingCode', {
-                      required: true,
-                      maxLength: 250,
-                      min: 1
-                    })}
+                    placeholder="Enter First Name"
+                    value={values.buildingCode}
+                    onChange={(e) => {
+                      setValues({ ...values, buildingCode: e.target.value })
+                      setError({ ...errors, buildingCode: '' })
+                    }}
                   />
-                  {errors.buildingCode?.type === 'min' && <p className="m-0 message_form">Please enter your building Code</p>}
-                  {errors.buildingCode?.type === 'required' && <p className="m-0 message_form">Please enter your building Code</p>}
-                  {errors.buildingCode?.type === 'maxLength' && <p className="m-0 message_form">building Code must be no more than 250 characters long</p>}
+                  {errors.buildingCode && <p className="m-0 message_form">{errors.buildingCode}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="buildingName">
@@ -69,59 +93,104 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id }) => {
                   <InputStyled
                     id="buildingName"
                     type="text"
-                    placeholder="Enter Building Name"
-                    {...register('buildingName', {
-                      required: true,
-                      maxLength: 50,
-                      min: 1
-                    })}
+                    placeholder="Enter Building name"
+                    value={values.buildingName}
+                    onChange={(e) => {
+                      setValues({ ...values, buildingName: e.target.value })
+                      setError({ ...errors, buildingName: '' })
+                    }}
                   />
-                  {errors.buildingName?.type === 'min' && <p className="m-0 message_form">Please enter your Building Name</p>}
-                  {errors.buildingName?.type === 'maxLength' && <p className="m-0 message_form">Building Name must be no more than 250 characters long</p>}
-                  {errors.buildingName?.type === 'required' && <p className="m-0 message_form">Please enter your Building Name</p>}
+                  {errors.buildingName && <p className="m-0 message_form">{errors.buildingName}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="numberFloors">Number of floors:</label>
-                  <InputStyled id="numberFloors" type="number" min="0" placeholder="Enter Last Name" {...register('numberFloors')} />
+                  <InputStyled
+                    id="numberFloors"
+                    type="number"
+                    placeholder="Enter numberFloors"
+                    value={Number(values.numberOfFloors)}
+                    onChange={(e) => {
+                      setValues({ ...values, numberOfFloors: Number(e.target.value) })
+                    }}
+                  />
                 </div>
               </div>
               <div className="col-6">
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="height">Height:</label>
-                  <InputStyled id="height" type="text" placeholder="Enter Height" {...register('height')} />
+                  <InputStyled
+                    id="height"
+                    type="text"
+                    maxLength={50}
+                    placeholder="Enter height"
+                    value={values.height}
+                    onChange={(e) => {
+                      setValues({ ...values, height: e.target.value })
+                    }}
+                  />
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="acreage">Acreage:</label>
                   <InputStyled
+                    maxLength={50}
                     id="acreage"
                     type="text"
-                    placeholder="Enter Acreage"
-                    {...register('acreage', {
-                      maxLength: 250
-                    })}
+                    placeholder="Enter acreage"
+                    value={values.acreage}
+                    onChange={(e) => {
+                      setValues({ ...values, acreage: e.target.value })
+                    }}
                   />
-                  {errors.acreage?.type === 'maxLength' && <p className="m-0 message_form">Acreage must be no more than 250 characters long</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="numberApartment">Number of Apartment:</label>
-                  <InputStyled min="0" id="numberApartment" type="number" placeholder="Enter Username" {...register('numberApartment')} />
+                  <InputStyled
+                    id="numberApartment"
+                    type="number"
+                    placeholder="Enter numberApartment"
+                    value={Number(values.numberOfApartments)}
+                    onChange={(e) => {
+                      setValues({ ...values, numberOfApartments: Number(e.target.value) })
+                    }}
+                  />
                 </div>
               </div>
               <div className="position-relative">
                 <label htmlFor="address">Address:</label>
-                <TextareaStyled id="address" placeholder="Enter Address" {...register('address')} />
+                <TextareaStyled
+                  id="address"
+                  placeholder="Enter Address"
+                  value={values.address}
+                  onChange={(e) => {
+                    setValues({ ...values, address: e.target.value })
+                  }}
+                />
               </div>
               <div className="position-relative">
                 <label htmlFor="note">Note:</label>
-                <TextareaStyled id="note" placeholder="Enter Note" {...register('note')} />
+                <TextareaStyled
+                  id="note"
+                  placeholder="Enter Note"
+                  value={values.note}
+                  onChange={(e) => {
+                    setValues({ ...values, note: e.target.value })
+                  }}
+                />
               </div>
             </div>
             <div className="d-flex justify-content-end mt-3">
               <div>
-                <button onClick={() => setShow(!show)} type="button" className="mx-3 btn border">
+                <button
+                  onClick={() => {
+                    setShow(!show)
+                    setId('')
+                  }}
+                  type="button"
+                  className="mx-3 btn border"
+                >
                   Cancel
                 </button>
-                <button type="submit" className="btn mx-3  btn-success">
+                <button type="button" onClick={() => onSubmit()} className="btn mx-3  btn-success">
                   {id ? 'Update' : 'Create'}
                 </button>
               </div>
