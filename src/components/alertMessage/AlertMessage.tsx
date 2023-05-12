@@ -10,8 +10,8 @@ interface AlertMessageProps {
 const AlertMessageContent = styled.div`
   position: fixed;
   top: 5%;
-  right: 5%;
-  min-width: 200px;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;

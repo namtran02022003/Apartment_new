@@ -1,10 +1,11 @@
-import { useForm } from 'react-hook-form'
 import { FC, useEffect, useState } from 'react'
 import { InputStyled } from '../../assets/styles/Input'
 import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import styled from 'styled-components'
 import Select from 'react-select'
+import { ValidateApartment } from './Validates'
+import baseAxios from '../../apis/ConfigAxios'
 const SelectStyled = styled.select`
   width: 100%;
   padding: 9px 10px;
@@ -28,52 +29,123 @@ const TextareaStyled = styled.textarea`
 `
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
+  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
+  setId: React.Dispatch<React.SetStateAction<string>>
+  setMess: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getApartments: any
 }
 interface DataBuildingName {
   label: string
   value: string
 }
-const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id }) => {
+const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments, setId, setMess, setShowMes }) => {
   const [showMessage, setShowMessage] = useState(false)
-  const [errbdName, setErrBdName] = useState('')
-  const [dataBuildingName, setDataBuildingName] = useState<Array<DataBuildingName>>([])
-  const [buildingName, setBuildingName] = useState({
-    value: '',
-    label: ''
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [errors, setError] = useState<any>({})
+  const [typeApartments, setTypeApartments] = useState([])
+  const [apartments, setApartments] = useState({
+    apartmentCode: '',
+    apartmentName: '',
+    location: '',
+    acreage: '',
+    roomNumber: 0,
+    apartmentTypeId: 1,
+    note: '',
+    address: '',
+    buildingId: {
+      label: '',
+      value: ''
+    },
+    id: 0
   })
+  const [dataBuildingName, setDataBuildingName] = useState<Array<DataBuildingName>>([])
   useEffect(() => {
-    const dataFake = [{ value: 'value1', label: 'label1' }]
-    setDataBuildingName(dataFake)
+    const getBuildingsName = async () => {
+      const res = await baseAxios.get('/buildings/list', {
+        params: {
+          pageSize: 10,
+          pageNum: 1,
+          searchInput: 'b'
+        }
+      })
+      const dataOptionBuildingName = res.data.item.map((data: { id: string; buildingName: string }) => {
+        return {
+          value: data.id,
+          label: data.buildingName
+        }
+      })
+      setDataBuildingName(dataOptionBuildingName)
+    }
+    getBuildingsName()
   }, [])
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm()
-  const onSubmit = async (data: unknown) => {
-    console.log(buildingName)
-    if (buildingName.label && buildingName.value) {
-      console.log(data)
-      setShowMessage(true)
-    } else {
-      setErrBdName('Please enter your Building name')
+  const onSubmit = async () => {
+    if (!(Object.keys(ValidateApartment(apartments, setError)).length > 0)) {
+      const newApartments = {
+        ...apartments,
+        buildingId: apartments.buildingId.value,
+        roomNumber: apartments.roomNumber.toString()
+      }
+      try {
+        await baseAxios.post('/apartment/insert-update', newApartments)
+        getApartments()
+        setMess(id ? 'Edit success' : 'Create success')
+        setShowMes(true)
+        setShow(!show)
+        if (id) {
+          setId('')
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hanDleChangeBuildingName = (e: any) => {
-    setErrBdName('')
-    setBuildingName(e)
+    setApartments({
+      ...apartments,
+      buildingId: e
+    })
+    setError({ ...errors, buildingName: '' })
   }
-  console.log(buildingName)
+  useEffect(() => {
+    const getApartmentType = async () => {
+      try {
+        const res = await baseAxios.get('/master-data/apartment_type')
+        const data = res.data.item
+        setTypeApartments(data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getApartmentType()
+  }, [])
+  useEffect(() => {
+    const getApartment = async () => {
+      const res = await baseAxios.get(`/apartment/${id}`)
+      const preData = {
+        ...res.data.item,
+        buildingId: {
+          value: res.data.item.buildingId,
+          label: res.data.item.buildingName
+        }
+      }
+      setApartments(preData)
+    }
+    if (id) {
+      getApartment()
+    }
+  }, [id])
+  console.log(id)
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
       <div className="w-75 animate bg-white rounded-3 form-content">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Apartment</h5>
         <div>
-          <form className="p-3 login" onSubmit={handleSubmit(onSubmit)}>
+          <form className="p-3 login">
             <div className="row">
               <div className="col-6">
                 <div className="my-2 position-relative pb-1">
@@ -85,15 +157,14 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id }) => {
                     id="apartmentCode"
                     type="text"
                     placeholder="Enter Apartment Code"
-                    {...register('apartmentCode', {
-                      required: true,
-                      maxLength: 50,
-                      min: 1
-                    })}
+                    value={apartments.apartmentCode}
+                    maxLength={50}
+                    onChange={(e) => {
+                      setApartments({ ...apartments, apartmentCode: e.target.value })
+                      setError({ ...errors, apartmentCode: '' })
+                    }}
                   />
-                  {errors.apartmentCode?.type === 'min' && <p className="m-0 message_form">Please enter your Apartment Code</p>}
-                  {errors.apartmentCode?.type === 'required' && <p className="m-0 message_form">Please enter your Apartment Code</p>}
-                  {errors.apartmentCode?.type === 'maxLength' && <p className="m-0 message_form">Apartment Code must be no more than 50 characters long</p>}
+                  {errors.apartmentCode && <p className="m-0 message_form">{errors.apartmentCode}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="apartmentName">
@@ -103,20 +174,26 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id }) => {
                   <InputStyled
                     id="apartmentName"
                     type="text"
+                    maxLength={250}
                     placeholder="Enter Apartment Name"
-                    {...register('apartmentName', {
-                      required: true,
-                      maxLength: 250,
-                      min: 1
-                    })}
+                    value={apartments.apartmentName}
+                    onChange={(e) => {
+                      setApartments({ ...apartments, apartmentName: e.target.value })
+                      setError({ ...errors, apartmentName: '' })
+                    }}
                   />
-                  {errors.apartmentName?.type === 'min' && <p className="m-0 message_form">Please enter your Apartment Name</p>}
-                  {errors.apartmentName?.type === 'maxLength' && <p className="m-0 message_form">Apartment Name must be no more than 250 characters long</p>}
-                  {errors.apartmentName?.type === 'required' && <p className="m-0 message_form">Please enter your Apartment Name</p>}
+                  {errors.apartmentName && <p className="m-0 message_form">{errors.apartmentName}</p>}
                 </div>
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="location">Location:</label>
-                  <InputStyled id="location" type="text" placeholder="Enter Location" {...register('location')} />
+                <div className="position-relative pb-1">
+                  <label htmlFor="buildingname">Building Name</label>
+                  <Select
+                    placeholder="Select a building"
+                    value={apartments.buildingId}
+                    options={dataBuildingName}
+                    onChange={(e) => hanDleChangeBuildingName(e)}
+                    id="buildingname"
+                  />
+                  {errors.buildingId && <p className="m-0 message_form">{errors.buildingId}</p>}
                 </div>
               </div>
               <div className="col-6">
@@ -125,45 +202,95 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id }) => {
                   <InputStyled
                     id="acreage"
                     type="text"
+                    maxLength={50}
                     placeholder="Enter Acreage"
-                    {...register('acreage', {
-                      maxLength: 250
-                    })}
+                    value={apartments.acreage}
+                    onChange={(e) => {
+                      setApartments({ ...apartments, acreage: e.target.value })
+                    }}
                   />
-                  {errors.acreage?.type === 'maxLength' && <p className="m-0 message_form">Acreage must be no more than 250 characters long</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="roomNumber">Room Number:</label>
-                  <InputStyled min="0" id="roomNumber" type="number" placeholder="Enter Room Number" {...register('roomNumber')} />
+                  <InputStyled
+                    min="0"
+                    id="roomNumber"
+                    type="number"
+                    placeholder="Enter Room Number"
+                    value={apartments.roomNumber}
+                    onChange={(e) => {
+                      setApartments({ ...apartments, roomNumber: Number(e.target.value) })
+                    }}
+                  />
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="apartmentType">Apartment Type</label>
-                  <SelectStyled id="apartmentType" defaultValue={1} title="Apartment type">
-                    <option value={1}>1</option>
-                    <option value={2}>2</option>
-                    <option value={3}>3</option>
+                  <label htmlFor="apartmentTypeId">Apartment Type</label>
+                  <SelectStyled
+                    id="apartmentTypeId"
+                    value={apartments.apartmentTypeId}
+                    onChange={(e) => {
+                      setApartments({ ...apartments, apartmentTypeId: Number(e.target.value) })
+                    }}
+                    title="Apartment type"
+                  >
+                    {typeApartments.map((val: { id: number; name: string }) => {
+                      return (
+                        <option key={val.id} value={val.id}>
+                          {val.name}
+                        </option>
+                      )
+                    })}
                   </SelectStyled>
                 </div>
               </div>
-              <div className="position-relative pb-1">
-                <label htmlFor="buildingname">Building Name</label>
-                <Select value={buildingName} options={dataBuildingName} onChange={(e) => hanDleChangeBuildingName(e)} id="buildingname" />
-                {errbdName && <p className="m-0 message_form">{errbdName}</p>}
+              <div className="my-2 position-relative pb-1">
+                <label htmlFor="location">Location:</label>
+                <InputStyled
+                  id="location"
+                  type="text"
+                  maxLength={500}
+                  placeholder="Enter Location"
+                  value={apartments.location}
+                  onChange={(e) => {
+                    setApartments({ ...apartments, location: e.target.value })
+                  }}
+                />
               </div>
               <div className="position-relative">
                 <label htmlFor="note">Note:</label>
-                <TextareaStyled id="note" placeholder="Enter Note" {...register('note')} />
+                <TextareaStyled
+                  id="note"
+                  placeholder="Enter Note"
+                  value={apartments.note}
+                  onChange={(e) => {
+                    setApartments({ ...apartments, note: e.target.value })
+                  }}
+                />
               </div>
               <div className="position-relative">
                 <label htmlFor="address">Address:</label>
-                <TextareaStyled id="address" placeholder="Enter Address" {...register('address')} />
+                <TextareaStyled
+                  id="address"
+                  placeholder="Enter Address"
+                  value={apartments.address}
+                  onChange={(e) => {
+                    setApartments({ ...apartments, address: e.target.value })
+                  }}
+                />
               </div>
             </div>
             <div className="d-flex justify-content-end mt-3">
-              <button onClick={() => setShow(!show)} type="button" className="mx-3 btn border">
+              <button
+                onClick={() => {
+                  setShow(!show)
+                  setId('')
+                }}
+                type="button"
+                className="mx-3 btn border"
+              >
                 Cancel
               </button>
-              <button type="submit" className="btn mx-3  btn-success">
+              <button onClick={() => onSubmit()} type="button" className="btn mx-3  btn-success">
                 {id ? 'Update' : 'Create'}
               </button>
             </div>

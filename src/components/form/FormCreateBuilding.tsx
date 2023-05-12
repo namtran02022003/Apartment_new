@@ -46,6 +46,9 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, 
       setMess(id ? 'Edit success' : 'Create success')
       setShowMes(true)
       setShow(!show)
+      if (id) {
+        setId('')
+      }
     }
   }
   useEffect(() => {
@@ -59,7 +62,6 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, 
       getBuilding()
     }
   }, [id])
-  console.log(values)
   return (
     <Forms className="bg-form bg-form-create">
       <div className="w-75 animate bg-white rounded-3 form-content">

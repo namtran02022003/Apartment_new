@@ -85,7 +85,9 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
       setMess(id ? 'Edit success' : 'Create success')
       setShowMes(true)
       setShow(!show)
-      console.log('run')
+      if (id) {
+        setId('')
+      }
     }
   }
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +111,8 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
       getUser()
     }
   }, [id])
+  console.log(id)
+  console.log(user.imageUrl)
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message={'ok'} show={showMessage} setShow={setShowMessage} />}
@@ -128,6 +132,7 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
                     type="text"
                     placeholder="Enter First Name"
                     value={user.firstName}
+                    maxLength={50}
                     onChange={(e) => {
                       setUser({ ...user, firstName: e.target.value })
                       setError({ ...errors, firstName: '' })
@@ -142,6 +147,7 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
                   </label>
                   <InputStyled
                     value={user.middleName}
+                    maxLength={50}
                     onChange={(e) => {
                       setUser({ ...user, middleName: e.target.value })
                       setError({ ...errors, middleName: '' })
@@ -159,6 +165,7 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
                   </label>
                   <InputStyled
                     id="lastName"
+                    maxLength={50}
                     value={user.lastName}
                     onChange={(e) => {
                       setUser({ ...user, lastName: e.target.value })
@@ -176,6 +183,7 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
                   </label>
                   <InputStyled
                     disabled={!!id}
+                    maxLength={250}
                     value={user.userName}
                     onChange={(e) => {
                       setUser({ ...user, userName: e.target.value })
@@ -189,12 +197,12 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
                 </div>
               </div>
               <div className="col-6">
-                <ImgFormStyled className="avatar-form position-relative d-flex justify-content-around">
-                  <div className="my-4">
+                <ImgFormStyled className="avatar-form position-relative text-center">
+                  {<img src={file || user.imageUrl} alt="avatar" />}
+                  <div>
                     <label htmlFor="file">Choose avatar</label>
                     <input id="file" type="file" onChange={(e) => handleImageChange(e)} title="enter file" />
                   </div>
-                  {id ? <img src={user.imageUrl} alt="avatar" /> : <img src={file} alt="avatar" />}
                 </ImgFormStyled>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="email">
@@ -203,6 +211,7 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
                   </label>
                   <InputStyled
                     disabled={!!id}
+                    maxLength={250}
                     value={user.email}
                     onChange={(e) => {
                       setUser({ ...user, email: e.target.value })

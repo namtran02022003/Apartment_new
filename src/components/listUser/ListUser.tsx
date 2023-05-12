@@ -7,8 +7,7 @@ import CreateUser from '../form/CreateUser'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import baseAxios from '../../apis/ConfigAxios'
 import Loading from '../others/Loading'
-import TonggleInput from '../apartments/ToggleInput'
-import PagingBar from '../pagingbar/PagingBar '
+import { TonggleInput, PagingBar } from '../../common/CommonComponent'
 import AlertMessage from '../alertMessage/AlertMessage'
 export interface User {
   userName: string
@@ -92,7 +91,7 @@ const ListUser: FC = () => {
       )}
       <div className="shadow color-table">
         <div className="d-flex mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
-          <h5>User List</h5>
+          <h5>Users List</h5>
           <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
             Create
           </button>
@@ -101,7 +100,9 @@ const ListUser: FC = () => {
           <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
             <thead>
               <tr>
-                <ThStyled width="5%">#</ThStyled>
+                <ThStyled className="text-center" width="5%">
+                  #
+                </ThStyled>
                 <ThStyled width="20%">User Name</ThStyled>
                 <ThStyled width="20%">Full Name</ThStyled>
                 <ThStyled width="20%">Email</ThStyled>
@@ -116,12 +117,12 @@ const ListUser: FC = () => {
               {usersList.item?.map((data) => {
                 return (
                   <tr key={data.userName}>
-                    <td>{data.orderNo}</td>
+                    <td className="text-center">{data.orderNo}</td>
                     <td>{data.userName}</td>
                     <td>{data.fullName}</td>
                     <td>{data.email}</td>
-                    <td>{moment(data.createdAt).format('DD/MM/YYYY')}</td>
-                    <td>{moment(data.updatedAt).format('DD/MM/YYYY')}</td>
+                    <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
+                    <td>{moment(data.updatedAt).format('DD/MM/YYYY hh:mm:ss')}</td>
                     <td className="d-flex justify-content-around td-action">
                       <FontAwesomeIcon
                         onClick={() => {
@@ -140,7 +141,15 @@ const ListUser: FC = () => {
             </tbody>
           </table>
           <div className="d-flex justify-content-between table-bottom">
-            <div>Showing 1 to 50 of 57 entries</div>
+            <div>
+              {`Showing
+              ${params.pageNum}
+              to
+              ${params.pageSize}
+              of
+              ${usersList.totalRecords}
+              entries`}
+            </div>
             <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(usersList.totalRecords) / 10)} onPageChange={setPageNum} />
           </div>
         </div>

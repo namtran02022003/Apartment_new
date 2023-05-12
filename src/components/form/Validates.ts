@@ -40,7 +40,9 @@ const ValidateUser = (user: user, setMessageErr: Dispatch<SetStateAction<object>
     if (!user.email.trim()) {
       errs.email = 'Invalid email'
     } else if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(user.email.trim())) {
-      errs.email = 'Email không hợp lệ!'
+      errs.email = 'Invalid email!'
+    } else if (user.email.trim().length > 250) {
+      errs.email = 'Please enter no more than 250 characters'
     }
   }
   setMessageErr(errs)
@@ -63,4 +65,28 @@ const ValidateBuilding = (values: building, setError: Dispatch<SetStateAction<ob
   setError(errs)
   return errs
 }
-export { ValidateUser, ValidateBuilding }
+
+interface apartment {
+  apartmentCode: string
+  apartmentName: string
+  buildingId?: {
+    label: string
+    value: string
+  }
+}
+const ValidateApartment = (apartment: apartment, setError: Dispatch<SetStateAction<object>>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const errs: any = {}
+  if (!apartment.apartmentCode.trim()) {
+    errs.apartmentCode = 'Invalid apartment code'
+  }
+  if (!apartment.apartmentName.trim()) {
+    errs.apartmentName = 'Invalid apartment name'
+  }
+  if (!apartment.buildingId?.value) {
+    errs.buildingId = 'Invalid building name'
+  }
+  setError(errs)
+  return errs
+}
+export { ValidateUser, ValidateBuilding, ValidateApartment }

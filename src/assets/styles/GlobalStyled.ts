@@ -54,6 +54,7 @@ const GlobalStyles = createGlobalStyle`
     color: #fff;
     padding: 5px 10px;
     border-radius: 3px;
+    cursor: pointer;
     &:hover {
       background: rgb(219 51 68);
     }
@@ -62,6 +63,7 @@ const GlobalStyles = createGlobalStyle`
     border: 1px solid green;
     color: #fff;
     padding: 5px 10px;
+    cursor: pointer;
     border-radius: 3px;
     &:hover {
       background: rgb(47 155 51);
@@ -157,7 +159,9 @@ const GlobalStyles = createGlobalStyle`
     ::-ms-scrollbar-thumb:hover {
       background-color: #555;
     }
-    
+  }
+  .color-red {
+    color: red;
   }
 `
 export default GlobalStyles

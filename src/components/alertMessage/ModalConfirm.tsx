@@ -25,7 +25,7 @@ const ModalConfirm: FC<PropsFace> = ({ showForm, setId, setShowForm, action }) =
     <ModalConfirmStyled className="modal-create">
       <div className="content animate shadow rounded-3 position-relative pt-3">
         <p className="text-center">Do you want to delete user?</p>
-        <div className="d-flex justify-content-around py-5">
+        <div className="d-flex justify-content-center py-5">
           <button
             onClick={() => {
               setShowForm(!showForm)
@@ -33,7 +33,7 @@ const ModalConfirm: FC<PropsFace> = ({ showForm, setId, setShowForm, action }) =
                 setId('')
               }
             }}
-            className="btn w-25 btn-success"
+            className="btn w-25 mx-2 btn-success"
           >
             Cancel
           </button>
@@ -42,7 +42,7 @@ const ModalConfirm: FC<PropsFace> = ({ showForm, setId, setShowForm, action }) =
               action()
               setShowForm(!showForm)
             }}
-            className="btn w-25 btn-danger"
+            className="btn w-25 mx-2 btn-danger"
           >
             Yes
           </button>

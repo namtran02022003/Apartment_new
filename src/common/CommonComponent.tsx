@@ -1,5 +1,24 @@
-import { FC } from 'react'
+import { ToggleInputStyled } from '../assets/styles/Input'
+import { FC, useState } from 'react'
 import styled from 'styled-components'
+interface Props {
+  actflg: string
+}
+const TonggleInput: FC<Props> = ({ actflg }) => {
+  const [check, setCheck] = useState(actflg == 'Active' || actflg == 'Hoạt động')
+  const handleChangeStatus = () => {
+    if (check) {
+      setCheck(false)
+      console.log('okkkkkk')
+    }
+  }
+  return (
+    <ToggleInputStyled className="switch">
+      <input onChange={() => handleChangeStatus()} checked={check} type="checkbox" title="check user" />
+      <span className="slider round"></span>
+    </ToggleInputStyled>
+  )
+}
 
 const PagingBarStyled = styled.div`
   .pagingBar {
@@ -87,4 +106,4 @@ const PagingBar: FC<{
   )
 }
 
-export default PagingBar
+export { TonggleInput, PagingBar }
