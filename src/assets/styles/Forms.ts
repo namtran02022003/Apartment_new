@@ -36,7 +36,6 @@ const Forms = styled.div`
   }
   .login label {
     margin: 15px 0 5px 0;
-    opacity: 0.8;
   }
   .text_a {
     margin: 15px 0;

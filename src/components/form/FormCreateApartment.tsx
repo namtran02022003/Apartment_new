@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import Select from 'react-select'
 import { ValidateApartment } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
-const SelectStyled = styled.select`
+export const SelectStyled = styled.select`
   width: 100%;
   padding: 9px 10px;
   border-radius: 5px;

@@ -89,4 +89,24 @@ const ValidateApartment = (apartment: apartment, setError: Dispatch<SetStateActi
   setError(errs)
   return errs
 }
-export { ValidateUser, ValidateBuilding, ValidateApartment }
+interface services {
+  servicesCode: string
+  servicesName: string
+  servicesPrice: number
+}
+const ValidateServices = (services: services, setError: Dispatch<SetStateAction<object>>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const errs: any = {}
+  if (!services.servicesCode.trim()) {
+    errs.servicesCode = 'Invalid services code'
+  }
+  if (!services.servicesName.trim()) {
+    errs.servicesName = 'Invalid services name'
+  }
+  if (!services.servicesPrice) {
+    errs.servicesPrice = 'Invalid services price'
+  }
+  setError(errs)
+  return errs
+}
+export { ValidateUser, ValidateBuilding, ValidateApartment, ValidateServices }

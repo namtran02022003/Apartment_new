@@ -94,15 +94,6 @@ const Header: FC = () => {
         <div>
           <input type="text" placeholder="ddd" />
         </div>
-        <button onClick={() => Navigate('/list_user')} className="btn btn-info">
-          user
-        </button>
-        <button onClick={() => Navigate('/apartments')} className="btn btn-info">
-          apartment
-        </button>
-        <button onClick={() => Navigate('/buildings')} className="btn btn-info">
-          building
-        </button>
         <div className="header-content-item">
           <span>
             <FontAwesomeIcon icon={faBell} />

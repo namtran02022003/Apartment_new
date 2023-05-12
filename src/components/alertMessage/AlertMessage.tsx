@@ -13,7 +13,7 @@ const AlertMessageContent = styled.div`
   left: 50%;
   transform: translateX(-50%);
   background-color: #fff;
-  padding: 20px;
+  padding: 10px 20px;
   border-radius: 10px;
   border: ${(props) => `2px solid ${props.color}`};
   z-index: 1000;

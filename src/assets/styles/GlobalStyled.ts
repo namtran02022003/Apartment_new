@@ -69,6 +69,12 @@ const GlobalStyles = createGlobalStyle`
       background: rgb(47 155 51);
     }
   }
+  input::placeholder {
+    opacity: 0.9;
+  }
+  select::placeholder {
+    opacity: 0.5;
+  } 
   .bg-form-create {
     background: #f3eded;
   }

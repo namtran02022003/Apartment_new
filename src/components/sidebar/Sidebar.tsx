@@ -47,11 +47,11 @@ const listMenu = [
           {
             heading: 'LOGIN SCREENS',
             menus: [
-              { text: 'Login', url: '/login' },
-              { text: 'Rigester', url: '/signup' },
-              { text: 'Create apartment', url: '/create_apartment' },
-              { text: 'Create building', url: '/create_building' },
-              { text: 'List user', url: '/table' }
+              { text: 'Users List', url: '/users-list' },
+              { text: 'Apartments', url: '/apartments' },
+              { text: 'Buildings', url: '/buildings' },
+              { text: 'Services', url: '/services' },
+              { text: 'Residents', url: '/residents' }
             ]
           }
         ]
