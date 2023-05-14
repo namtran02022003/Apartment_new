@@ -49,6 +49,7 @@ const Apartments: FC = () => {
     setParams({ ...params, pageNum: index })
   }
   const handleEditApartment = (id: string) => {
+    console.log('apartment', id)
     setId(id)
     setShowForm(true)
   }
@@ -74,19 +75,19 @@ const Apartments: FC = () => {
   }, [getApartments])
 
   const deleteApartment = async () => {
-    console.log(id)
     try {
       await baseAxios.delete(`/apartment/${id}`)
       setMessages('delete success')
       setShowMessage(true)
       getApartments()
+      setId('')
     } catch (error) {
       console.log(error)
       setMessages('err')
       setShowMessage(true)
     }
-    setId('')
   }
+  console.log(apartments)
   if (loading) return <Loading />
   return (
     <div className="rounded-4">

@@ -107,10 +107,6 @@ export default function Login() {
                 <div className="text-center">
                   <ButtonSubmit type="submit">Login</ButtonSubmit>
                 </div>
-                <p>Or signup using:</p>
-                <button onClick={() => Navigate('/signup')} type="button" className="btn">
-                  signup
-                </button>
               </form>
             </div>
           </div>

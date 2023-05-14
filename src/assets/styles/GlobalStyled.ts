@@ -72,9 +72,6 @@ const GlobalStyles = createGlobalStyle`
   input::placeholder {
     opacity: 0.9;
   }
-  select::placeholder {
-    opacity: 0.5;
-  } 
   .bg-form-create {
     background: #f3eded;
   }
@@ -119,7 +116,36 @@ const GlobalStyles = createGlobalStyle`
     box-shadow: 0px -1px 0px 0px rgb(227 204 204 / 50%);
     background: rgb(255, 255, 255);
   }
-  .table-scroll {
+  .color-red {
+    color: red;
+  }
+  td {
+    white-space: nowrap;
+  }
+  .table-scroll-x {
+    width: 1280px;
+    overflow-x: scroll;::-webkit-scrollbar {
+      width: 8px;
+      background-color: #f5f5f5;
+      height: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background-color: #aaa;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #555;
+    }
+  }
+  // .t-stiky {
+  //   position: sticky;
+  //   right: 0;
+  //   background: white;
+  //   z-index: 555;
+  // }
+  .table-scroll-y {
     height: 76vh;
     overflow-y: scroll;
     ::-webkit-scrollbar {
@@ -135,39 +161,9 @@ const GlobalStyles = createGlobalStyle`
     ::-webkit-scrollbar-thumb:hover {
       background-color: #555;
     }
-    
-    /* Firefox */
-    ::-moz-scrollbar {
-      width: 8px;
-      background-color: #f5f5f5;
-    }
-    
-    ::-moz-scrollbar-thumb {
-      background-color: #aaa;
-      border-radius: 10px;
-    }
-    
-    ::-moz-scrollbar-thumb:hover {
-      background-color: #555;
-    }
-    
-    /* Edge */
-    ::-ms-scrollbar {
-      width: 8px;
-      background-color: #f5f5f5;
-    }
-    
-    ::-ms-scrollbar-thumb {
-      background-color: #aaa;
-      border-radius: 10px;
-    }
-    
-    ::-ms-scrollbar-thumb:hover {
-      background-color: #555;
-    }
   }
-  .color-red {
-    color: red;
+  @media only screen and (max-width: 1280px) {
+    
   }
 `
 export default GlobalStyles

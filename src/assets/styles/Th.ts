@@ -4,6 +4,7 @@ interface Props {
 }
 const ThStyled = styled.th<Props>`
   width: ${(props) => props.width};
+  white-space: nowrap;
 `
 
 export { ThStyled }

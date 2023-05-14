@@ -51,7 +51,8 @@ const listMenu = [
               { text: 'Apartments', url: '/apartments' },
               { text: 'Buildings', url: '/buildings' },
               { text: 'Services', url: '/services' },
-              { text: 'Residents', url: '/residents' }
+              { text: 'Residents', url: '/residents' },
+              { text: 'Contracts', url: '/contracts' }
             ]
           }
         ]

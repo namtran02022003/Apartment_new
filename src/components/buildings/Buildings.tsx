@@ -70,12 +70,12 @@ const Buildings: FC = () => {
       setMessages('delete success')
       setShowMessage(true)
       getBuildings()
+      setId('')
     } catch (error) {
       console.log(error)
       setMessages('err')
       setShowMessage(true)
     }
-    setId('')
   }
   if (loading) return <Loading />
   return (

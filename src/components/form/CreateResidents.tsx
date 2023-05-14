@@ -2,10 +2,11 @@ import { FC, useState, useEffect } from 'react'
 import { InputStyled } from '../../assets/styles/Input'
 import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
-// import { ValidateServices } from './Validates'
+import { ValidateResident } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
 import { SelectStyled } from './FormCreateApartment'
 import Select from 'react-select'
+import * as moment from 'moment'
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
   setShowMes: React.Dispatch<React.SetStateAction<boolean>>
@@ -24,7 +25,8 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
   const [showMessage, setShowMessage] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
-  const [residents, setResidents] = useState({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [residents, setResidents] = useState<any>({
     id: 0,
     fullName: '',
     email: '',
@@ -32,8 +34,8 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
     gender: 0,
     phoneNumber: '',
     idNo: '',
-    idDate: '',
-    idPlace: '',
+    idDate: '2023-05-11T08:26:38.914Z',
+    idPlace: 'oki',
     nationId: {
       value: 0,
       label: ''
@@ -62,52 +64,67 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
     residentTypes: []
   })
   const onSubmit = async () => {
-    console.log(residents)
-    // if (!(Object.keys(ValidateServices(residents, setError)).length > 0)) {
-    //   try {
-    //     await baseAxios.post('/services/insert-update', residents)
-    //     getResidents()
-    //     setMess(id ? 'Edit success' : 'Create success')
-    //     setShowMes(true)
-    //     setShow(!show)
-    //     if (id) {
-    //       setId('')
-    //     }
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // }
+    if (!(Object.keys(ValidateResident(residents, setError)).length > 0)) {
+      const newResident = {
+        ...residents,
+        nationId: residents.nationId.value,
+        provinceId: residents.provinceId.value,
+        districtId: residents.districtId.value,
+        wardId: residents.wardId.value
+      }
+      try {
+        await baseAxios.post('/residents/insert-update', newResident)
+        getResidents()
+        setMess(id ? 'Edit success' : 'Create success')
+        setShowMes(true)
+        setShow(!show)
+        if (id) {
+          setId('')
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
-  // useEffect(() => {
-  //   const getService = async () => {
-  //     const res = await baseAxios.get(`/residents/${id}`)
-  //     setResidents(res.data.item)
-  //   }
-  //   if (id) {
-  //     getService()
-  //   }
-  // }, [id])
-  // useEffect(() => {
-  //   const getDataMasters = async () => {
-  //     try {
-  //       const resGender = await baseAxios.get('master-data/gender')
-  //       const resNation = await baseAxios.get('master-data/nation')
-  //       const resProvince = await baseAxios.get('master-data/province')
-  //       const resDistrict = await baseAxios.get('master-data/district')
-  //       const resWard = await baseAxios.get('master-data/ward')
-  //       const resResidentType = await baseAxios.get('master-data/resident-type')
-  //       console.log(resGender.data)
-  //       console.log(resNation.data)
-  //       console.log(resProvince.data)
-  //       console.log(resDistrict.data)
-  //       console.log(resWard.data)
-  //       console.log(resResidentType.data)
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   }
-  //   getDataMasters()
-  // }, [])
+  useEffect(() => {
+    const getResident = async () => {
+      const res = await baseAxios.get(`/residents/${id}`)
+      const data = res.data.item
+      const newResident = {
+        id: data.id,
+        email: data.email,
+        fullName: data.fullName,
+        gender: data.gender,
+        address: data.address,
+        birthDate: data.birthDate,
+        idNo: data.idNo,
+        residentType: data.residentType,
+        phoneNumber: data.phoneNumber,
+        idDate: '2023-05-11T08:26:38.914Z',
+        idPlace: 'oki',
+        nationId: {
+          value: data.nationId,
+          label: data.nationName
+        },
+        provinceId: {
+          value: data.provinceId,
+          label: data.provinceName
+        },
+        districtId: {
+          value: data.districtId,
+          label: data.districtName
+        },
+        wardId: {
+          value: data.wardId,
+          label: data.wardName
+        }
+      }
+      setResidents(newResident)
+    }
+    if (id) {
+      getResident()
+    }
+  }, [id])
   useEffect(() => {
     const getGender = async () => {
       const res = await baseAxios.get('master-data/gender')
@@ -204,6 +221,7 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
       getWard()
     }
   }, [residents.districtId])
+  console.log(moment(residents.birthDate).format('YYYY-MM-DD'))
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
@@ -228,7 +246,7 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                       setError({ ...errors, fullName: '' })
                     }}
                   />
-                  {errors.servicesCode && <p className="m-0 message_form">{errors.servicesCode}</p>}
+                  {errors.fullName && <p className="m-0 message_form">{errors.fullName}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="email">
@@ -245,7 +263,7 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                       setError({ ...errors, email: '' })
                     }}
                   />
-                  {errors.servicesCode && <p className="m-0 message_form">{errors.servicesCode}</p>}
+                  {errors.email && <p className="m-0 message_form">{errors.email}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="birthDate">
@@ -256,7 +274,7 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                     id="birthDate"
                     type="date"
                     placeholder="Enter birthDate"
-                    value={residents.birthDate}
+                    value={moment(residents.birthDate).format('YYYY-MM-DD')}
                     onChange={(e) => {
                       setResidents({ ...residents, birthDate: e.target.value })
                       setError({ ...errors, birthDate: '' })
@@ -265,7 +283,10 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.birthDate && <p className="m-0 message_form">{errors.birthDate}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="gender">Gender</label>
+                  <label htmlFor="gender">
+                    Gender
+                    <span className="color-red">*</span>
+                  </label>
                   <SelectStyled
                     id="gender"
                     value={residents.gender}
@@ -340,7 +361,10 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.address && <p className="m-0 message_form">{errors.address}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="residentType">Resident Type:</label>
+                  <label htmlFor="residentType">
+                    Resident Type:
+                    <span className="color-red">*</span>
+                  </label>
                   <SelectStyled
                     id="residentType"
                     value={residents.residentType}
@@ -363,7 +387,10 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
               </div>
               <div className="col-4">
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="nation">Nation:</label>
+                  <label htmlFor="nation">
+                    Nation:
+                    <span className="color-red">*</span>
+                  </label>
                   <Select
                     placeholder="Select a nation"
                     value={residents.nationId.value ? residents.nationId : 0}
@@ -378,7 +405,10 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.nationId && <p className="m-0 message_form">{errors.nationId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="provinceId">Province:</label>
+                  <label htmlFor="provinceId">
+                    Province:
+                    <span className="color-red">*</span>
+                  </label>
                   <Select
                     placeholder="Select a province"
                     value={residents.provinceId.value ? residents.provinceId : 0}
@@ -393,9 +423,12 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.provinceId && <p className="m-0 message_form">{errors.provinceId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="districtId">District:</label>
+                  <label htmlFor="districtId">
+                    District:
+                    <span className="color-red">*</span>
+                  </label>
                   <Select
-                    placeholder="Select a province"
+                    placeholder="Select a district"
                     value={residents.districtId.value ? residents.districtId : 0}
                     options={masterDatas.districts}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -408,7 +441,10 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.districtId && <p className="m-0 message_form">{errors.districtId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="wardId">WardI:</label>
+                  <label htmlFor="wardId">
+                    Ward:
+                    <span className="color-red">*</span>
+                  </label>
                   <Select
                     placeholder="Select a ward"
                     value={residents.wardId.value ? residents.wardId : 0}

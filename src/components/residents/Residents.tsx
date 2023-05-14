@@ -10,13 +10,29 @@ import { TonggleInput, PagingBar } from '../../common/CommonComponent'
 import AlertMessage from '../alertMessage/AlertMessage'
 import CreateResident from '../form/CreateResidents'
 export interface User {
-  userName: string
+  id: number
+  fullName: string
   email: string
+  birthDate: string
+  gender: number
+  genderName: string
+  phoneNumber: string
+  idNo: string
+  idDate: string
+  idPlace: string
+  nationId: number
+  nationName: string
+  provinceId: number
+  provinceName: string
+  districtId: number
+  districtName: string
+  wardId: number
+  wardName: string
+  address: string
   createdAt: string
   updatedAt: string
-  orderNo: number
-  fullName: string
-  id: string
+  residentType: number
+  residentTypeName: string
   actflg: string
 }
 interface usersListFace {
@@ -35,6 +51,7 @@ const Residents: FC = () => {
   const [residents, setResidents] = useState<usersListFace>({})
   const [messages, setMessages] = useState('')
   const [showMessage, setShowMessage] = useState(false)
+  const [errorPage, setErrorPage] = useState('')
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
@@ -54,11 +71,10 @@ const Residents: FC = () => {
         }
       })
       setResidents(res.data)
-      setLoading(false)
-    } catch (error) {
-      console.log('err', error)
-      console.log(setParams)
+    } catch (error: unknown) {
+      setErrorPage((error as Error).message)
     }
+    setLoading(false)
   }, [params.pageNum, params.pageSize, params.searchInput])
   useEffect(() => {
     setTimeout(() => {
@@ -68,24 +84,25 @@ const Residents: FC = () => {
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
-  const deleteUser = async () => {
+  const deleteResident = async () => {
     try {
-      await baseAxios.delete(`/users/${id}`)
-      setMessages('success')
+      await baseAxios.delete(`/residents/${id}`)
+      setMessages('delete success')
       setShowMessage(true)
       getResidents()
+      setId('')
     } catch (error) {
       console.log(error)
       setMessages('err')
       setShowMessage(true)
     }
-    setId('')
   }
   if (loading) return <Loading />
+  if (errorPage) return <div>{errorPage}</div>
   return (
     <div className="rounded-4">
       {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
-      {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteUser} />}
+      {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteResident} />}
       {showForm && (
         <CreateResident
           setShowMes={setShowMessage}
@@ -99,68 +116,76 @@ const Residents: FC = () => {
       )}
       <div className="shadow color-table">
         <div className="d-flex mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
-          <h5>Users List</h5>
+          <h5>Resident List</h5>
           <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
             Create
           </button>
         </div>
-        <div className="px-4 table-scroll">
-          <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-            <thead>
-              <tr>
-                <ThStyled className="text-center" width="5%">
-                  #
-                </ThStyled>
-                <ThStyled width="20%">User Name</ThStyled>
-                <ThStyled width="20%">Full Name</ThStyled>
-                <ThStyled width="20%">Email</ThStyled>
-                <ThStyled width="10%">Created At</ThStyled>
-                <ThStyled width="10%">Update dAt</ThStyled>
-                <ThStyled width="15%" className="text-center">
-                  Actions
-                </ThStyled>
-              </tr>
-            </thead>
-            <tbody>
-              {residents.item?.map((data) => {
-                return (
-                  <tr key={data.userName}>
-                    <td className="text-center">{data.orderNo}</td>
-                    <td>{data.userName}</td>
-                    <td>{data.fullName}</td>
-                    <td>{data.email}</td>
-                    <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
-                    <td>{moment(data.updatedAt).format('DD/MM/YYYY hh:mm:ss')}</td>
-                    <td className="d-flex justify-content-around td-action">
-                      <FontAwesomeIcon
-                        onClick={() => {
-                          setShowModalConfirm(true)
-                          setId(data.id)
-                        }}
-                        className=" btn-delete"
-                        icon={faTrash}
-                      />
-                      <FontAwesomeIcon onClick={() => handleEditUser(data.id)} className="btn-edit" icon={faEdit} />
-                      <TonggleInput actflg={data.actflg} />
-                    </td>
+        {residents.totalRecords ? (
+          <div className="px-4 table-scroll-y">
+            <div className="table-scroll-x">
+              <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+                <thead>
+                  <tr>
+                    <ThStyled className="text-center">#</ThStyled>
+                    <ThStyled>Full Name</ThStyled>
+                    <ThStyled>Email</ThStyled>
+                    <ThStyled>Phone Number</ThStyled>
+                    <ThStyled>ID Code</ThStyled>
+                    <ThStyled>Gender</ThStyled>
+                    <ThStyled>Address</ThStyled>
+                    <ThStyled>Resident Type</ThStyled>
+                    <ThStyled>Create dAt</ThStyled>
+                    <ThStyled className="text-center t-stiky">Actions</ThStyled>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
-          <div className="d-flex justify-content-between table-bottom">
-            <div>
-              {`Showing
-              ${params.pageNum}
-              to
-              ${params.pageSize}
-              of
-              ${residents.totalRecords}
-              entries`}
+                </thead>
+                <tbody>
+                  {residents.item?.map((data) => {
+                    return (
+                      <tr key={data.id}>
+                        <td className="text-center">{data.id}</td>
+                        <td>{data.fullName}</td>
+                        <td>{data.email}</td>
+                        <td>{data.phoneNumber}</td>
+                        <td>{data.idNo}</td>
+                        <td>{data.genderName}</td>
+                        <td>{data.address}</td>
+                        <td>{data.residentTypeName}</td>
+                        <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
+                        <td className="d-flex t-stiky justify-content-around td-action">
+                          <FontAwesomeIcon
+                            onClick={() => {
+                              setShowModalConfirm(true)
+                              setId(data.id.toString())
+                            }}
+                            className=" btn-delete"
+                            icon={faTrash}
+                          />
+                          <FontAwesomeIcon onClick={() => handleEditUser(data.id.toString())} className="btn-edit" icon={faEdit} />
+                          <TonggleInput actflg={data.actflg} />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
-            <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(residents.totalRecords) / 10)} onPageChange={setPageNum} />
+            <div className="d-flex justify-content-between table-bottom">
+              <div>
+                {`Showing
+             ${params.pageNum}
+             to
+             ${params.pageSize}
+             of
+             ${residents.totalRecords}
+             entries`}
+              </div>
+              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(residents.totalRecords) / 10)} onPageChange={setPageNum} />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="p-4">No data matching</div>
+        )}
       </div>
     </div>
   )

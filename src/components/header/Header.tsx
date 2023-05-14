@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import avt from '../../assets/images/avt.svg'
-import axios from 'axios'
+import baseAxios from '../../apis/ConfigAxios'
 import { useNavigate } from 'react-router-dom'
 
 const HeaderStyled = styled.header`
@@ -74,16 +74,9 @@ const Header: FC = () => {
   const data = JSON.parse(dataLocal)
   const handleLogOut = async () => {
     try {
-      const res = await axios.get('http://localhost:8088/v1/users/logout', {
-        headers: {
-          'x-token': `${data.tokenKey}`
-        }
-      })
-      console.log(res.data)
-      if (res.data.success && !res.data.errorCode) {
-        localStorage.removeItem('user')
-        Navigate('/login')
-      }
+      await baseAxios.get('/users/logout')
+      localStorage.removeItem('user')
+      Navigate('/login')
     } catch (err) {
       console.log(err)
     }

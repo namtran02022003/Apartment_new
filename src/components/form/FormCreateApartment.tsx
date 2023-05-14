@@ -42,6 +42,7 @@ interface DataBuildingName {
   value: string
 }
 const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments, setId, setMess, setShowMes }) => {
+  console.log('form create', id)
   const [showMessage, setShowMessage] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
@@ -125,6 +126,7 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
   useEffect(() => {
     const getApartment = async () => {
       const res = await baseAxios.get(`/apartment/${id}`)
+      console.log(res)
       const preData = {
         ...res.data.item,
         buildingId: {
@@ -138,7 +140,6 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
       getApartment()
     }
   }, [id])
-  console.log(id)
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
@@ -185,10 +186,13 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                   {errors.apartmentName && <p className="m-0 message_form">{errors.apartmentName}</p>}
                 </div>
                 <div className="position-relative pb-1">
-                  <label htmlFor="buildingname">Building Name</label>
+                  <label htmlFor="buildingname">
+                    Building Name
+                    <span className="color-red">*</span>
+                  </label>
                   <Select
                     placeholder="Select a building"
-                    value={apartments.buildingId}
+                    value={apartments.buildingId.value ? apartments.buildingId : 0}
                     options={dataBuildingName}
                     onChange={(e) => hanDleChangeBuildingName(e)}
                     id="buildingname"
@@ -198,7 +202,10 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
               </div>
               <div className="col-6">
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="acreage">Acreage:</label>
+                  <label htmlFor="acreage">
+                    Acreage:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
                     id="acreage"
                     type="text"
@@ -207,8 +214,10 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                     value={apartments.acreage}
                     onChange={(e) => {
                       setApartments({ ...apartments, acreage: e.target.value })
+                      setError({ ...errors, acreage: '' })
                     }}
                   />
+                  {errors.acreage && <p className="m-0 message_form">{errors.acreage}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="roomNumber">Room Number:</label>

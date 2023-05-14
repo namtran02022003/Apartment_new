@@ -52,6 +52,7 @@ interface User {
 const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setShowMes, setMess }) => {
   const [typeInput, setTypeInput] = useState(true)
   const [showMessage, setShowMessage] = useState(false)
+  const [err, setErr] = useState('')
   const [file, setFile] = useState<string>('')
   const [user, setUser] = useState<User>({
     firstName: '',
@@ -80,13 +81,23 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
         password: id ? '' : user.password,
         id: user.id
       }
-      await baseAxios.post(`/users/insert-update`, userData)
-      getUsers()
-      setMess(id ? 'Edit success' : 'Create success')
-      setShowMes(true)
-      setShow(!show)
-      if (id) {
-        setId('')
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res: any = await baseAxios.post(`/users/insert-update`, userData)
+        if (res.data.success && res.data.errorCode == 0) {
+          getUsers()
+          setMess(id ? 'Edit success' : 'Create success')
+          setShowMes(true)
+          setShow(!show)
+          if (id) {
+            setId('')
+          }
+        } else if (res.data.errorCode == 409) {
+          setErr(res.data.message)
+          setShowMessage(true)
+        }
+      } catch (error) {
+        console.log(error)
       }
     }
   }
@@ -111,11 +122,9 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
       getUser()
     }
   }, [id])
-  console.log(id)
-  console.log(user.imageUrl)
   return (
     <Forms className="bg-form">
-      {showMessage && <AlertMessage color={'green'} message={'ok'} show={showMessage} setShow={setShowMessage} />}
+      {showMessage && <AlertMessage color={'green'} message={err} show={showMessage} setShow={setShowMessage} />}
       <div className="w-75 form-content bg-white rounded-3 animate">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} user</h5>
         <div className="p-3">
