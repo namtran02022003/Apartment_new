@@ -15,8 +15,9 @@ interface SignUpProps {
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getContracts: any
+  disabled: boolean
 }
-const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, setId, setMess, setShowMes }) => {
+const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, setId, setMess, setShowMes, disabled }) => {
   const [showMessage, setShowMessage] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
@@ -76,7 +77,32 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
   useEffect(() => {
     const getContrac = async () => {
       const res = await baseAxios.get(`/contracts/${id}`)
-      setContracts(res.data.item)
+      const data = res.data.item
+      const preData = {
+        id: data.id,
+        contractNo: data.contractNo,
+        endDate: data.endDate,
+        startDate: data.startDate,
+        signerDate: data.signerDate,
+        residentId: {
+          value: data.residentId,
+          label: data.residentName
+        },
+        contractType: {
+          value: data.contractType,
+          label: data.contractTypeName
+        },
+        buildingId: {
+          value: data.buildingId,
+          label: data.buildingName
+        },
+        apartmentId: {
+          value: data.apartmentId,
+          label: data.apartmentName
+        }
+      }
+      console.log(preData)
+      setContracts(preData)
     }
     if (id) {
       getContrac()
@@ -85,7 +111,6 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
   useEffect(() => {
     const getResidents = async () => {
       const res = await baseAxios.get('master-data/resident')
-      console.log(res)
       const newData = res.data.item.map((resident: { id: number; name: string }) => ({
         label: resident.name,
         value: resident.id
@@ -117,8 +142,21 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
         contractType: newData
       }))
     }
+    try {
+      getResidents()
+      getBuildingId()
+      getContractType()
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
+  useEffect(() => {
     const getApartmentId = async () => {
-      const res = await baseAxios.get('master-data/apartment_type')
+      const res = await baseAxios.get('master-data/apartment', {
+        params: {
+          buildingId: contracts.buildingId.value
+        }
+      })
       const newData = res.data.item.map((apartment: { id: number; name: string }) => ({
         label: apartment.name,
         value: apartment.id
@@ -128,15 +166,8 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
         apartmentId: newData
       }))
     }
-    try {
-      getResidents()
-      getApartmentId()
-      getBuildingId()
-      getContractType()
-    } catch (error) {
-      console.log(error)
-    }
-  }, [])
+    getApartmentId()
+  }, [contracts.buildingId.value])
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
@@ -152,6 +183,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
+                    disabled={disabled}
                     id="contractNo"
                     type="text"
                     placeholder="Enter contract no"
@@ -170,6 +202,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
+                    disabled={disabled}
                     id="startDate"
                     type="date"
                     placeholder="Enter startDate"
@@ -187,6 +220,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
+                    disabled={disabled}
                     id="endDate"
                     type="date"
                     placeholder="Enter end date"
@@ -204,6 +238,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
+                    disabled={disabled}
                     id="signerDate"
                     type="date"
                     placeholder="Enter signer date"
@@ -223,6 +258,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                     <span className="color-red">*</span>
                   </label>
                   <Select
+                    isDisabled={disabled}
                     placeholder="Select a resident name"
                     value={contracts.residentId.value ? contracts.residentId : 0}
                     options={masterDatas.residentId}
@@ -236,29 +272,12 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                   {errors.residentId && <p className="m-0 message_form">{errors.residentId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="apartmentId">
-                    Apartment Name:
-                    <span className="color-red">*</span>
-                  </label>
-                  <Select
-                    placeholder="Select a apartment name"
-                    value={contracts.apartmentId.value ? contracts.apartmentId : 0}
-                    options={masterDatas.apartmentId}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(e: any) => {
-                      setContracts({ ...contracts, apartmentId: e })
-                      setError({ ...errors, apartmentId: '' })
-                    }}
-                    id="apartmentId"
-                  />
-                  {errors.apartmentId && <p className="m-0 message_form">{errors.apartmentId}</p>}
-                </div>
-                <div className="my-2 position-relative pb-1">
                   <label htmlFor="buildingId">
                     Building Name:
                     <span className="color-red">*</span>
                   </label>
                   <Select
+                    isDisabled={disabled}
                     placeholder="Select a building name"
                     value={contracts.buildingId.value ? contracts.buildingId : 0}
                     options={masterDatas.buildingId}
@@ -272,11 +291,31 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                   {errors.buildingId && <p className="m-0 message_form">{errors.buildingId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
+                  <label htmlFor="apartmentId">
+                    Apartment Name:
+                    <span className="color-red">*</span>
+                  </label>
+                  <Select
+                    isDisabled={disabled}
+                    placeholder="Select a apartment name"
+                    value={contracts.apartmentId.value ? contracts.apartmentId : 0}
+                    options={masterDatas.apartmentId}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onChange={(e: any) => {
+                      setContracts({ ...contracts, apartmentId: e })
+                      setError({ ...errors, apartmentId: '' })
+                    }}
+                    id="apartmentId"
+                  />
+                  {errors.apartmentId && <p className="m-0 message_form">{errors.apartmentId}</p>}
+                </div>
+                <div className="my-2 position-relative pb-1">
                   <label htmlFor="contractType">
                     Contract Type:
                     <span className="color-red">*</span>
                   </label>
                   <Select
+                    isDisabled={disabled}
                     placeholder="Select a contract type name"
                     value={contracts.contractType.value ? contracts.contractType : 0}
                     options={masterDatas.contractType}
@@ -302,7 +341,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
               >
                 Cancel
               </button>
-              <button onClick={() => onSubmit()} type="button" className="btn mx-3  btn-success">
+              <button disabled={disabled} onClick={() => onSubmit()} type="button" className="btn mx-3  btn-success">
                 {id ? 'Update' : 'Create'}
               </button>
             </div>

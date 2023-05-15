@@ -34,6 +34,8 @@ const GlobalStyles = createGlobalStyle`
     padding: 10px !important;
     border-bottom: 3px solid #e3e6f0 !important;
     border-top: 2px solid #e3e6f0 !important;
+    text-align: center;
+    white-space: nowrap;
   }
   table {
     border-bottom: 3px solid #e3e6f0 !important;
@@ -104,14 +106,12 @@ const GlobalStyles = createGlobalStyle`
     top: -1px;
     z-index: 122;
     background: #fff;
-    border-bottom: 2px solid #ccc;
-    tr {
-      box-shadow: inset -2px 4px 10px -10px rgba(0, 0, 0, 0.5), inset -1px -4px 10px -10px rgba(0, 0, 0, 0.5);
-    }
+    border-bottom: 1px solid #ccc;
   }
   .table-bottom {
     position: sticky;
     padding-top: 10px;
+    padding-bottom: 10px;
     bottom: 0px;
     box-shadow: 0px -1px 0px 0px rgb(227 204 204 / 50%);
     background: rgb(255, 255, 255);
@@ -123,8 +123,8 @@ const GlobalStyles = createGlobalStyle`
     white-space: nowrap;
   }
   .table-scroll-x {
-    width: 1280px;
-    overflow-x: scroll;::-webkit-scrollbar {
+    overflow-x: auto;
+    ::-webkit-scrollbar {
       width: 8px;
       background-color: #f5f5f5;
       height: 10px;
@@ -147,7 +147,7 @@ const GlobalStyles = createGlobalStyle`
   // }
   .table-scroll-y {
     height: 76vh;
-    overflow-y: scroll;
+    overflow-y: auto;
     ::-webkit-scrollbar {
       width: 8px;
       background-color: #f5f5f5;
@@ -162,8 +162,20 @@ const GlobalStyles = createGlobalStyle`
       background-color: #555;
     }
   }
-  @media only screen and (max-width: 1280px) {
-    
+  .round-top {
+    border-radius: 10px 10px 0 0;
+  }
+  .select-show-item-page {
+    border: 1px solid #6666;
+    border-radius: 3px;
+    cursor: pointer;
+    &:focus-within {
+      outline: 1px solid #ccc;
+    }
+  }
+  .select-fee {
+    width: 200px;
+    z-index: 221;
   }
 `
 export default GlobalStyles

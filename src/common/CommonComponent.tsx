@@ -25,19 +25,17 @@ const PagingBarStyled = styled.div`
     display: flex;
     justify-content: end;
     align-items: center;
-    margin: 0 200px 0 0;
+    margin: 0 20px 0 0;
   }
   .pagingButton {
     background-color: #fff;
     border: 1px solid #ddd;
     color: #333;
     cursor: pointer;
-    margin: 0 5px;
-    padding: 5px 10px;
+    padding: 0 10px;
     text-align: center;
     text-decoration: none;
     transition: background-color 0.3s ease;
-    border-radius: 4px;
   }
 
   .pagingButton:hover {
@@ -49,7 +47,9 @@ const PagingBarStyled = styled.div`
     border-color: #007bff;
     color: #fff;
   }
-
+  .a {
+    border-radius: 4px;
+  }
   .pagingButton:disabled {
     background-color: #fff;
     border-color: #ddd;
@@ -94,11 +94,11 @@ const PagingBar: FC<{
   return (
     <PagingBarStyled>
       <div className="pagingBar">
-        <button className="pagingButton" disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
+        <button className="pagingButton a" disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
           Prev
         </button>
         {pageButtons}
-        <button className="pagingButton" disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>
+        <button className="pagingButton a" disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>
           Next
         </button>
       </div>

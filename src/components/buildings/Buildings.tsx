@@ -7,6 +7,7 @@ import baseAxios from '../../apis/ConfigAxios'
 import { TonggleInput, PagingBar } from '../../common/CommonComponent'
 import AlertMessage from '../alertMessage/AlertMessage'
 import Loading from '../others/Loading'
+import { InputStyled } from '../../assets/styles/Input'
 interface buildingFace {
   id: number | string
   acreage: string
@@ -39,7 +40,7 @@ const Buildings: FC = () => {
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
-    searchInput: 'b'
+    searchInput: ''
   })
   const handleEditBuilding = (id: string) => {
     setId(id)
@@ -77,9 +78,10 @@ const Buildings: FC = () => {
       setShowMessage(true)
     }
   }
+  console.log(buildings)
   if (loading) return <Loading />
   return (
-    <div className="rounded-4">
+    <>
       {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm setId={setId} showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteBuilding} />}
       {showForm && (
@@ -93,70 +95,105 @@ const Buildings: FC = () => {
           getBuildings={getBuildings}
         />
       )}
-      <div className="shadow color-table">
-        <div className="d-flex mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
+      <div className="shadow rounded-4 color-table">
+        <div className="d-flex round-top mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
           <h5>Buildings List</h5>
           <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
             Create
           </button>
         </div>
-        <div className="table-scroll px-4">
-          <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-            <thead>
-              <tr>
-                <th className="text-center">ID</th>
-                <th>Building Code</th>
-                <th>Building Name</th>
-                <th>Acreage</th>
-                <th>Height</th>
-                <th>Address</th>
-                <th className="text-center">Person Num</th>
-                <th className="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {buildings.item?.map((data) => {
-                return (
-                  <tr key={data.id}>
-                    <td className="text-center">{data.orderNo}</td>
-                    <td>{data.buildingCode}</td>
-                    <td>{data.buildingName}</td>
-                    <td>{data.acreage}</td>
-                    <td>{data.height}</td>
-                    <td>{data.address}</td>
-                    <td className="text-center">{data.numberOfApartments}</td>
-                    <td className="d-flex justify-content-around td-action">
-                      <FontAwesomeIcon
-                        onClick={() => {
-                          setShowModalConfirm(true)
-                          setId(data.id.toString())
-                        }}
-                        className="btn-delete"
-                        icon={faTrash}
-                      />
-                      <FontAwesomeIcon onClick={() => handleEditBuilding(data.id.toString())} className="btn-edit" icon={faEdit} />
-                      <TonggleInput actflg={data.actflg} />
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-          <div className="d-flex justify-content-between table-bottom">
-            <div>
-              {`Showing
-              ${params.pageNum}
-              to
-              ${params.pageSize}
-              of
-              ${buildings.totalRecords}
-              entries`}
-            </div>
-            <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(buildings.totalRecords) / 10)} onPageChange={setPageNum} />
+        <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
+          <div>
+            show
+            <select
+              onChange={(e) => {
+                setParams({ ...params, pageSize: Number(e.target.value) })
+              }}
+              value={params.pageSize}
+              className="select-show-item-page mx-1"
+              title="show total item"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            entries
           </div>
+          <form>
+            <label className="me-1" htmlFor="search">
+              Search
+            </label>
+            <InputStyled
+              onChange={(e) => setParams({ ...params, searchInput: e.target.value })}
+              className="d-inline-block w-auto"
+              id="search"
+              type="text"
+              placeholder="enter search"
+            />
+          </form>
         </div>
+        {buildings.totalRecords ? (
+          <div className="table-scroll px-4">
+            <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th className="text-center">ID</th>
+                  <th>Building Code</th>
+                  <th>Building Name</th>
+                  <th>Acreage</th>
+                  <th>Height</th>
+                  <th>Address</th>
+                  <th className="text-center">Person Num</th>
+                  <th className="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {buildings.item?.map((data) => {
+                  return (
+                    <tr key={data.id}>
+                      <td className="text-center">{data.orderNo}</td>
+                      <td>{data.buildingCode}</td>
+                      <td>{data.buildingName}</td>
+                      <td>{data.acreage}</td>
+                      <td>{data.height}</td>
+                      <td>{data.address}</td>
+                      <td className="text-center">{data.numberOfApartments}</td>
+                      <td className="d-flex justify-content-around td-action">
+                        <FontAwesomeIcon
+                          onClick={() => {
+                            setShowModalConfirm(true)
+                            setId(data.id.toString())
+                          }}
+                          className="btn-delete"
+                          icon={faTrash}
+                        />
+                        <FontAwesomeIcon onClick={() => handleEditBuilding(data.id.toString())} className="btn-edit" icon={faEdit} />
+                        <TonggleInput actflg={data.actflg} />
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            <div className="d-flex justify-content-between table-bottom">
+              <div>
+                {`Showing
+             ${params.pageNum}
+             to
+             ${params.pageSize}
+             of
+             ${buildings.totalRecords}
+             entries`}
+              </div>
+              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(buildings.totalRecords) / 10)} onPageChange={setPageNum} />
+            </div>
+          </div>
+        ) : (
+          <div className="p-4">No data matching</div>
+        )}
       </div>
-    </div>
+    </>
   )
 }
 

@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFaceLaughWink, faTachometerAlt, faCog, faWrench, faFolder, faChartBar, faTable } from '@fortawesome/free-solid-svg-icons'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { SideBarStyled } from '../../assets/styles/SideBar'
 const listMenu = [
   {
@@ -52,7 +52,8 @@ const listMenu = [
               { text: 'Buildings', url: '/buildings' },
               { text: 'Services', url: '/services' },
               { text: 'Residents', url: '/residents' },
-              { text: 'Contracts', url: '/contracts' }
+              { text: 'Contracts', url: '/contracts' },
+              { text: 'Service Fee', url: '/service-fee' }
             ]
           }
         ]
@@ -63,6 +64,7 @@ const listMenu = [
   }
 ]
 const SideBar: FC = () => {
+  const Navigate = useNavigate()
   const handleClick = (name: string | number) => {
     document.querySelector(`.menu-toggle${name}`)?.classList.toggle('toggle-display')
   }
@@ -78,7 +80,7 @@ const SideBar: FC = () => {
           <sub>2</sub>
         </span>
       </div>
-      <div className="div-icon bd-bottom text-white opacity-100">
+      <div role="button" onKeyPress={() => h()} tabIndex={0} onClick={() => Navigate('/')} className="div-icon bd-bottom text-white opacity-100">
         <FontAwesomeIcon icon={faTachometerAlt} />
         <span>Dashboard</span>
       </div>

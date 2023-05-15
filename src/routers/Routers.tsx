@@ -5,6 +5,7 @@ import Buildings from '../components/buildings/Buildings'
 import Services from '../components/services/Services'
 import Residents from '../components/residents/Residents'
 import Contracts from '../components/contracts/Contracts'
+import ServiceFee from '../components/servicefee/ServiceFee'
 const PublicRouters = [
   { path: '/', component: Home },
   { path: '/users-list', component: ListUser },
@@ -12,7 +13,8 @@ const PublicRouters = [
   { path: '/buildings', component: Buildings },
   { path: '/services', component: Services },
   { path: '/residents', component: Residents },
-  { path: '/contracts', component: Contracts }
+  { path: '/contracts', component: Contracts },
+  { path: '/service-fee', component: ServiceFee }
 ]
 
 export default PublicRouters

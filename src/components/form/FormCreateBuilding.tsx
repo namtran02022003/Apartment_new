@@ -76,6 +76,7 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, 
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
+                    disabled={!!id}
                     id="firstName"
                     type="text"
                     placeholder="Enter First Name"

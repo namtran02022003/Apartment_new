@@ -65,17 +65,11 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
   const [dataBuildingName, setDataBuildingName] = useState<Array<DataBuildingName>>([])
   useEffect(() => {
     const getBuildingsName = async () => {
-      const res = await baseAxios.get('/buildings/list', {
-        params: {
-          pageSize: 10,
-          pageNum: 1,
-          searchInput: 'b'
-        }
-      })
-      const dataOptionBuildingName = res.data.item.map((data: { id: string; buildingName: string }) => {
+      const res = await baseAxios.get('/master-data/building')
+      const dataOptionBuildingName = res.data.item.map((data: { id: string; name: string }) => {
         return {
           value: data.id,
-          label: data.buildingName
+          label: data.name
         }
       })
       setDataBuildingName(dataOptionBuildingName)
@@ -155,6 +149,7 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
+                    disabled={!!id}
                     id="apartmentCode"
                     type="text"
                     placeholder="Enter Apartment Code"

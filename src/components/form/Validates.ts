@@ -227,4 +227,38 @@ const ValidateContract = (contract: contract, setError: Dispatch<SetStateAction<
   setError(errs)
   return errs
 }
-export { ValidateUser, ValidateBuilding, ValidateApartment, ValidateServices, ValidateResident, ValidateContract }
+
+interface serviceFee {
+  id: number
+  periodId: dataSelectSearch
+  residentId: dataSelectSearch
+  buildingId: dataSelectSearch
+  apartmentId: dataSelectSearch
+  electricityNumber: number
+  waterMumber: number
+}
+const ValidateServiceFee = (serviceFee: serviceFee, setError: Dispatch<SetStateAction<object>>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const errs: any = {}
+  if (!serviceFee.periodId.value) {
+    errs.periodId = 'Invalid period'
+  }
+  if (!serviceFee.residentId.value) {
+    errs.residentId = 'Invalid resident name'
+  }
+  if (!serviceFee.buildingId.value) {
+    errs.buildingId = 'Invalid building name'
+  }
+  if (!serviceFee.apartmentId.value) {
+    errs.apartmentId = 'Invalid apartment name'
+  }
+  if (!serviceFee.waterMumber) {
+    errs.waterMumber = 'Invalid water number '
+  }
+  if (!serviceFee.electricityNumber) {
+    errs.electricityNumber = 'Invalid electricity number'
+  }
+  setError(errs)
+  return errs
+}
+export { ValidateUser, ValidateBuilding, ValidateApartment, ValidateServices, ValidateResident, ValidateContract, ValidateServiceFee }

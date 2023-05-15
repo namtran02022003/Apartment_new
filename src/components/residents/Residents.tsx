@@ -9,6 +9,7 @@ import Loading from '../others/Loading'
 import { TonggleInput, PagingBar } from '../../common/CommonComponent'
 import AlertMessage from '../alertMessage/AlertMessage'
 import CreateResident from '../form/CreateResidents'
+import { InputStyled } from '../../assets/styles/Input'
 export interface User {
   id: number
   fullName: string
@@ -100,7 +101,7 @@ const Residents: FC = () => {
   if (loading) return <Loading />
   if (errorPage) return <div>{errorPage}</div>
   return (
-    <div className="rounded-4">
+    <>
       {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteResident} />}
       {showForm && (
@@ -114,12 +115,43 @@ const Residents: FC = () => {
           setId={setId}
         />
       )}
-      <div className="shadow color-table">
-        <div className="d-flex mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
+      <div className="shadow rounded-4 color-table">
+        <div className="d-flex mb-4 round-top bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
           <h5>Resident List</h5>
           <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
             Create
           </button>
+        </div>
+        <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
+          <div>
+            show
+            <select
+              onChange={(e) => {
+                setParams({ ...params, pageSize: Number(e.target.value) })
+              }}
+              value={params.pageSize}
+              className="select-show-item-page mx-1"
+              title="show total item"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            entries
+          </div>
+          <form>
+            <label className="me-1" htmlFor="search">
+              Search
+            </label>
+            <InputStyled
+              onChange={(e) => setParams({ ...params, searchInput: e.target.value })}
+              className="d-inline-block w-auto"
+              id="search"
+              type="text"
+              placeholder="enter search"
+            />
+          </form>
         </div>
         {residents.totalRecords ? (
           <div className="px-4 table-scroll-y">
@@ -187,7 +219,7 @@ const Residents: FC = () => {
           <div className="p-4">No data matching</div>
         )}
       </div>
-    </div>
+    </>
   )
 }
 
