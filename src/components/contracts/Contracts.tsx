@@ -1,13 +1,13 @@
 import { FC, useCallback, useEffect, useState } from 'react'
 import * as moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faEdit, faCircleCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ThStyled } from '../../assets/styles/Th'
 import CreateContracts from '../form/CreateContracts'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import baseAxios from '../../apis/ConfigAxios'
 import Loading from '../others/Loading'
-import { TonggleInput, PagingBar } from '../../common/CommonComponent'
+import { PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import AlertMessage from '../alertMessage/AlertMessage'
 import { InputStyled } from '../../assets/styles/Input'
 export interface Contract {
@@ -40,6 +40,7 @@ const Contracts: FC = () => {
   const [messages, setMessages] = useState('')
   const [showMessage, setShowMessage] = useState(false)
   const [disabled, setDisabled] = useState(false)
+  const [showConfirmChangeStatus, setShowConfirmChangeStatus] = useState(false)
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
@@ -74,12 +75,17 @@ const Contracts: FC = () => {
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
-  const deleteUser = async () => {
+  const deleteContact = async (id: number) => {
     try {
-      await baseAxios.delete(`/users/${id}`)
-      setMessages('success')
-      setShowMessage(true)
-      getContracts()
+      const res = await baseAxios.delete(`/contracts/${id}`)
+      if (res.data.errorCode == 0) {
+        setMessages('success')
+        setShowMessage(true)
+        getContracts()
+      } else {
+        setMessages(res.data.message)
+        setShowMessage(true)
+      }
       setId('')
     } catch (error) {
       console.log(error)
@@ -87,14 +93,45 @@ const Contracts: FC = () => {
       setShowMessage(true)
     }
   }
-  console.log(contracts)
+  const ChangeStatusContract = async () => {
+    try {
+      const res = await baseAxios.post(`/contracts/active-inactive`, {
+        id: Number(id),
+        actflg: 'I'
+      })
+      if (res.data.errorCode == 0) {
+        setMessages('success')
+        setShowMessage(true)
+        getContracts()
+      } else {
+        setMessages(res.data.message)
+        setShowMessage(true)
+      }
+      setId('')
+    } catch (error) {
+      console.log(error)
+      setMessages('err')
+      setShowMessage(true)
+    }
+  }
+  console.log(disabled)
   if (loading) return <Loading />
   return (
     <>
       {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
-      {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteUser} />}
+      {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteContact} />}
+      {showConfirmChangeStatus && (
+        <ModalConfirm
+          text="do you want change status"
+          showForm={showConfirmChangeStatus}
+          setId={setId}
+          setShowForm={setShowConfirmChangeStatus}
+          action={ChangeStatusContract}
+        />
+      )}
       {showForm && (
         <CreateContracts
+          setDisable={setDisabled}
           disabled={disabled}
           setShowMes={setShowMessage}
           setMess={setMessages}
@@ -106,21 +143,10 @@ const Contracts: FC = () => {
         />
       )}
       <div className="shadow rounded-4 color-table">
-        <div className="d-flex round-top mb-4 bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
-          <h5>Contract List</h5>
-          <button
-            onClick={() => {
-              setShowForm(true)
-              setDisabled(false)
-            }}
-            className="btn btn-primary px-3 me-3"
-          >
-            Create
-          </button>
-        </div>
+        <HeadingPage setShowForm={setShowForm} heading="Contract List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
           <div>
-            show
+            Show
             <select
               onChange={(e) => {
                 setParams({ ...params, pageSize: Number(e.target.value) })
@@ -149,20 +175,21 @@ const Contracts: FC = () => {
             />
           </form>
         </div>
-        {contracts.totalRecords ? (
-          <div className="px-4 table-scroll">
-            <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-              <thead>
-                <tr>
-                  <ThStyled>Contract No</ThStyled>
-                  <ThStyled>Building Name</ThStyled>
-                  <ThStyled>Apartment Name</ThStyled>
-                  <ThStyled>Resident Name</ThStyled>
-                  <ThStyled>Start Date</ThStyled>
-                  <ThStyled>End Date</ThStyled>
-                  <ThStyled className="text-center">Actions</ThStyled>
-                </tr>
-              </thead>
+        <div className="px-4 table-scroll">
+          <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+            <thead>
+              <tr>
+                <ThStyled className="text-center">#</ThStyled>
+                <ThStyled>Building Name</ThStyled>
+                <ThStyled>Apartment Name</ThStyled>
+                <ThStyled>Resident Name</ThStyled>
+                <ThStyled>Start Date</ThStyled>
+                <ThStyled>End Date</ThStyled>
+                <ThStyled>Status</ThStyled>
+                <ThStyled className="text-center">Actions</ThStyled>
+              </tr>
+            </thead>
+            {contracts.totalRecords ? (
               <tbody>
                 {contracts.item?.map((data) => {
                   return (
@@ -173,8 +200,10 @@ const Contracts: FC = () => {
                       <td>{data.residentName}</td>
                       <td>{moment(data.startDate).format('DD/MM/YYYY hh:mm:ss')}</td>
                       <td>{moment(data.endDate).format('DD/MM/YYYY hh:mm:ss')}</td>
+                      <td>{data.actflg ? data.actflg : 'Pendding'}</td>
                       <td className="d-flex justify-content-around td-action">
                         <FontAwesomeIcon
+                          title="Delete contract"
                           onClick={() => {
                             setShowModalConfirm(true)
                             setId(data.id.toString())
@@ -182,14 +211,32 @@ const Contracts: FC = () => {
                           className=" btn-delete"
                           icon={faTrash}
                         />
-                        <FontAwesomeIcon onClick={() => handleEditContract(data.id.toString(), data.actflg)} className="btn-edit" icon={faEdit} />
-                        <TonggleInput actflg={data.actflg} />
+                        <FontAwesomeIcon
+                          title="Edit contract"
+                          onClick={() => handleEditContract(data.id.toString(), data.actflg)}
+                          className="btn-edit"
+                          icon={faEdit}
+                        />
+                        <FontAwesomeIcon
+                          onClick={() => {
+                            setId(data.id.toString())
+                            setShowConfirmChangeStatus(true)
+                          }}
+                          title="Confirm contract"
+                          className="btn-check-contract"
+                          icon={faCircleCheck}
+                        />
+                        <FontAwesomeIcon title="Remove contract" className="btn-remove-contract" icon={faXmark} />
                       </td>
                     </tr>
                   )
                 })}
               </tbody>
-            </table>
+            ) : (
+              <NodataMatching count={7} />
+            )}
+          </table>
+          {!!contracts.totalRecords && (
             <div className="d-flex justify-content-between table-bottom">
               <div>
                 {`Showing
@@ -200,12 +247,10 @@ const Contracts: FC = () => {
              ${contracts.totalRecords}
              entries`}
               </div>
-              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(contracts.totalRecords) / 10)} onPageChange={setPageNum} />
+              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(contracts.totalRecords) / params.pageSize)} onPageChange={setPageNum} />
             </div>
-          </div>
-        ) : (
-          <div className="p-4">No data matching</div>
-        )}
+          )}
+        </div>
       </div>
     </>
   )

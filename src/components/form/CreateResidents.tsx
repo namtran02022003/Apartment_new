@@ -34,8 +34,8 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
     gender: 0,
     phoneNumber: '',
     idNo: '',
-    idDate: '2023-05-11T08:26:38.914Z',
-    idPlace: 'oki',
+    idDate: '',
+    idPlace: '',
     nationId: {
       value: 0,
       label: ''
@@ -64,6 +64,7 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
     residentTypes: []
   })
   const onSubmit = async () => {
+    console.log(residents)
     if (!(Object.keys(ValidateResident(residents, setError)).length > 0)) {
       const newResident = {
         ...residents,
@@ -100,8 +101,8 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
         idNo: data.idNo,
         residentType: data.residentType,
         phoneNumber: data.phoneNumber,
-        idDate: '2023-05-11T08:26:38.914Z',
-        idPlace: 'oki',
+        idDate: data.idDate,
+        idPlace: data.idPlace,
         nationId: {
           value: data.nationId,
           label: data.nationName
@@ -221,7 +222,6 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
       getWard()
     }
   }, [residents.districtId])
-  console.log(moment(residents.birthDate).format('YYYY-MM-DD'))
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
@@ -266,6 +266,24 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.email && <p className="m-0 message_form">{errors.email}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
+                  <label htmlFor="phoneNumber">
+                    Phone Number:
+                    <span className="color-red">*</span>
+                  </label>
+                  <InputStyled
+                    id="phoneNumber"
+                    type="text"
+                    placeholder="Enter phone number"
+                    value={residents.phoneNumber}
+                    maxLength={50}
+                    onChange={(e) => {
+                      setResidents({ ...residents, phoneNumber: e.target.value })
+                      setError({ ...errors, phoneNumber: '' })
+                    }}
+                  />
+                  {errors.phoneNumber && <p className="m-0 message_form">{errors.phoneNumber}</p>}
+                </div>
+                <div className="my-2 position-relative pb-1">
                   <label htmlFor="birthDate">
                     Birth of Date:
                     <span className="color-red">*</span>
@@ -282,6 +300,25 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   />
                   {errors.birthDate && <p className="m-0 message_form">{errors.birthDate}</p>}
                 </div>
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="idDate">
+                    ID Date:
+                    <span className="color-red">*</span>
+                  </label>
+                  <InputStyled
+                    id="idDate"
+                    type="date"
+                    placeholder="Enter idDate"
+                    value={moment(residents.idDate).format('YYYY-MM-DD')}
+                    onChange={(e) => {
+                      setResidents({ ...residents, idDate: e.target.value })
+                      setError({ ...errors, idDate: '' })
+                    }}
+                  />
+                  {errors.idDate && <p className="m-0 message_form">{errors.idDate}</p>}
+                </div>
+              </div>
+              <div className="col-4">
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="gender">
                     Gender
@@ -306,26 +343,6 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   </SelectStyled>
                   {errors.gender && <p className="m-0 message_form">{errors.gender}</p>}
                 </div>
-              </div>
-              <div className="col-4">
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="phoneNumber">
-                    Phone Number:
-                    <span className="color-red">*</span>
-                  </label>
-                  <InputStyled
-                    id="phoneNumber"
-                    type="text"
-                    placeholder="Enter phone number"
-                    value={residents.phoneNumber}
-                    maxLength={50}
-                    onChange={(e) => {
-                      setResidents({ ...residents, phoneNumber: e.target.value })
-                      setError({ ...errors, phoneNumber: '' })
-                    }}
-                  />
-                  {errors.phoneNumber && <p className="m-0 message_form">{errors.phoneNumber}</p>}
-                </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="idNo">
                     ID Code:
@@ -342,6 +359,29 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                     }}
                   />
                   {errors.idNo && <p className="m-0 message_form">{errors.idNo}</p>}
+                </div>
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="residentType">
+                    Resident Type:
+                    <span className="color-red">*</span>
+                  </label>
+                  <SelectStyled
+                    id="residentType"
+                    value={residents.residentType}
+                    onChange={(e) => {
+                      setResidents({ ...residents, residentType: Number(e.target.value) })
+                    }}
+                    title="Apartment type"
+                  >
+                    {masterDatas.residentTypes.map((type: { id: number; name: string }) => {
+                      return (
+                        <option key={type.id} value={type.id}>
+                          {type.name}
+                        </option>
+                      )
+                    })}
+                  </SelectStyled>
+                  {errors.residentType && <p className="m-0 message_form">{errors.residentType}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="address">
@@ -361,28 +401,21 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.address && <p className="m-0 message_form">{errors.address}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="residentType">
-                    Resident Type:
+                  <label htmlFor="idPlace">
+                    ID Place:
                     <span className="color-red">*</span>
                   </label>
-                  <SelectStyled
-                    id="residentType"
-                    value={residents.residentType}
+                  <InputStyled
+                    id="idPlace"
+                    type="text"
+                    placeholder="Enter id place"
+                    value={residents.idPlace}
                     onChange={(e) => {
-                      setResidents({ ...residents, residentType: Number(e.target.value) })
+                      setResidents({ ...residents, idPlace: e.target.value })
+                      setError({ ...errors, idPlace: '' })
                     }}
-                    title="Apartment type"
-                  >
-                    <option value={0}>Resident type</option>
-                    {masterDatas.residentTypes.map((type: { id: number; name: string }) => {
-                      return (
-                        <option key={type.id} value={type.id}>
-                          {type.name}
-                        </option>
-                      )
-                    })}
-                  </SelectStyled>
-                  {errors.residentType && <p className="m-0 message_form">{errors.residentType}</p>}
+                  />
+                  {errors.idPlace && <p className="m-0 message_form">{errors.idPlace}</p>}
                 </div>
               </div>
               <div className="col-4">

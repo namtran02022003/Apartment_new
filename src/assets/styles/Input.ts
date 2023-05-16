@@ -54,7 +54,7 @@ const InputStyled = styled.input`
   width: 100%;
   border: 0.5px solid #ccc;
   background-color: #f5f5f5;
-  padding: 5px 15px;
+  padding: 6px 15px;
   border-radius: 5px;
   background: #fff;
   &:focus-within {

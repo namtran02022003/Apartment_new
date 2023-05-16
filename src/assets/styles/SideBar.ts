@@ -3,7 +3,7 @@ const SideBarStyled = styled.div`
   color: #fff;
   height: 100%;
   min-height: 100vh;
-  width: 14rem;
+  width: 15rem;
   background-color: rgb(78, 115, 223);
   padding: 20px 15px;
   .logo-home {
@@ -15,7 +15,6 @@ const SideBarStyled = styled.div`
     padding-bottom: 20px;
     &-icon {
       font-size: 2rem;
-      transform: rotate(-15deg);
       margin-right: 10px;
     }
     span {

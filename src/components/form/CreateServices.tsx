@@ -53,6 +53,7 @@ const CreateServices: FC<SignUpProps> = ({ show, setShow, id, getServices, setId
       getService()
     }
   }, [id])
+  console.log(services)
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}

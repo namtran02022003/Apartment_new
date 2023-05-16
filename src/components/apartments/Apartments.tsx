@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import ModalConfirm from '../alertMessage/ModalConfirm'
-import { TonggleInput, PagingBar } from '../../common/CommonComponent'
+import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import baseAxios from '../../apis/ConfigAxios'
 import AlertMessage from '../alertMessage/AlertMessage'
 import FormCreateApartment from '../form/FormCreateApartment'
@@ -77,10 +77,15 @@ const Apartments: FC = () => {
 
   const deleteApartment = async () => {
     try {
-      await baseAxios.delete(`/apartment/${id}`)
-      setMessages('delete success')
-      setShowMessage(true)
-      getApartments()
+      const res = await baseAxios.delete(`/apartment/${id}`)
+      if (res.data.errorCode == 0) {
+        setMessages('delete success')
+        setShowMessage(true)
+        getApartments()
+      } else {
+        setMessages(res.data.message)
+        setShowMessage(true)
+      }
       setId('')
     } catch (error) {
       console.log(error)
@@ -88,6 +93,13 @@ const Apartments: FC = () => {
       setShowMessage(true)
     }
   }
+  const ChangeStatus = async (id: number) => {
+    await baseAxios.post(`/apartment/active-inactive`, {
+      id: id,
+      actflg: 'I'
+    })
+  }
+  console.log(apartments)
   if (loading) return <Loading />
   return (
     <>
@@ -105,17 +117,10 @@ const Apartments: FC = () => {
         />
       )}
       <div className="shadow rounded-4 color-table">
-        <div className="d-flex mb-4 round-top bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
-          <h5>Apartment List</h5>
-          <div className="d-flex align-items-center justify-content-between">
-            <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
-              Create
-            </button>
-          </div>
-        </div>
+        <HeadingPage setShowForm={setShowForm} heading="Apartment List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
           <div>
-            show
+            Show
             <select
               onChange={(e) => {
                 setParams({ ...params, pageSize: Number(e.target.value) })
@@ -144,21 +149,21 @@ const Apartments: FC = () => {
             />
           </form>
         </div>
-        {apartments.totalRecords ? (
-          <div className="px-4 table-scroll">
-            <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-              <thead>
-                <tr>
-                  <th className="text-center">ID</th>
-                  <th>Apartment Code</th>
-                  <th>Apartment Name</th>
-                  <th>Acreage</th>
-                  <th>Location</th>
-                  <th>Address</th>
-                  <th className="text-center">Room Number</th>
-                  <th className="text-center th-sm">Actions</th>
-                </tr>
-              </thead>
+        <div className="px-4 table-scroll">
+          <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+            <thead>
+              <tr>
+                <th className="text-center">ID</th>
+                <th>Apartment Code</th>
+                <th>Apartment Name</th>
+                <th>Acreage</th>
+                <th>Location</th>
+                <th>Address</th>
+                <th className="text-center">Room Number</th>
+                <th className="text-center th-sm">Actions</th>
+              </tr>
+            </thead>
+            {apartments.totalRecords ? (
               <tbody>
                 {apartments.item?.map((data) => {
                   return (
@@ -180,13 +185,17 @@ const Apartments: FC = () => {
                           icon={faTrash}
                         />
                         <FontAwesomeIcon onClick={() => handleEditApartment(data.id.toString())} className="btn-edit" icon={faEdit} />
-                        <TonggleInput actflg={data.actflg} />
+                        <TonggleInput action={() => ChangeStatus(data.id)} actflg={data.actflg} />
                       </td>
                     </tr>
                   )
                 })}
               </tbody>
-            </table>
+            ) : (
+              <NodataMatching count={8} />
+            )}
+          </table>
+          {!!apartments.totalRecords && (
             <div className="d-flex justify-content-between table-bottom">
               <div>
                 {`Showing
@@ -197,12 +206,10 @@ const Apartments: FC = () => {
               ${apartments.totalRecords}
               entries`}
               </div>
-              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(apartments.totalRecords) / 10)} onPageChange={setPageNum} />
+              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(apartments.totalRecords) / params.pageSize)} onPageChange={setPageNum} />
             </div>
-          </div>
-        ) : (
-          <div className="p-4">No data matching</div>
-        )}
+          )}
+        </div>
       </div>
     </>
   )

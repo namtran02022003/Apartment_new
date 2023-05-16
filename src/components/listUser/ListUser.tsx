@@ -7,7 +7,7 @@ import CreateUser from '../form/CreateUser'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import baseAxios from '../../apis/ConfigAxios'
 import Loading from '../others/Loading'
-import { TonggleInput, PagingBar } from '../../common/CommonComponent'
+import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import AlertMessage from '../alertMessage/AlertMessage'
 import { InputStyled } from '../../assets/styles/Input'
 export interface User {
@@ -82,6 +82,14 @@ const ListUser: FC = () => {
       setShowMessage(true)
     }
   }
+
+  const ChangeStatus = async (id: number) => {
+    await baseAxios.post(`/users/active-inactive`, {
+      id: id,
+      actflg: 'I'
+    })
+  }
+  console.log(usersList)
   if (loading) return <Loading />
   return (
     <>
@@ -91,15 +99,10 @@ const ListUser: FC = () => {
         <CreateUser setShowMes={setShowMessage} setMess={setMessages} setShow={setShowForm} show={showForm} id={id} getUsers={getUsersList} setId={setId} />
       )}
       <div className="shadow rounded-4 color-table">
-        <div className="d-flex mb-4 round-top bg-heading-table px-4 py-2 justify-content-between align-items-center">
-          <h5>Users List</h5>
-          <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
-            Create
-          </button>
-        </div>
+        <HeadingPage setShowForm={setShowForm} heading="Users List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
           <div>
-            show
+            Show
             <select
               onChange={(e) => {
                 setParams({ ...params, pageSize: Number(e.target.value) })
@@ -128,28 +131,28 @@ const ListUser: FC = () => {
             />
           </form>
         </div>
-        {usersList.totalRecords ? (
-          <div className="px-4 table-scroll">
-            <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-              <thead>
-                <tr>
-                  <ThStyled className="text-center" width="5%">
-                    #
-                  </ThStyled>
-                  <ThStyled width="20%">User Name</ThStyled>
-                  <ThStyled width="20%">Full Name</ThStyled>
-                  <ThStyled width="20%">Email</ThStyled>
-                  <ThStyled width="10%">Created At</ThStyled>
-                  <ThStyled width="10%">Update dAt</ThStyled>
-                  <ThStyled width="15%" className="text-center">
-                    Actions
-                  </ThStyled>
-                </tr>
-              </thead>
+        <div className="px-4 table-scroll">
+          <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+            <thead>
+              <tr>
+                <ThStyled className="text-center" width="5%">
+                  #
+                </ThStyled>
+                <ThStyled width="20%">User Name</ThStyled>
+                <ThStyled width="20%">Full Name</ThStyled>
+                <ThStyled width="20%">Email</ThStyled>
+                <ThStyled width="10%">Created At</ThStyled>
+                <ThStyled width="10%">Update dAt</ThStyled>
+                <ThStyled width="15%" className="text-center">
+                  Actions
+                </ThStyled>
+              </tr>
+            </thead>
+            {usersList.totalRecords ? (
               <tbody>
                 {usersList.item?.map((data) => {
                   return (
-                    <tr key={data.userName}>
+                    <tr key={data.id}>
                       <td className="text-center">{data.orderNo}</td>
                       <td>{data.userName}</td>
                       <td>{data.fullName}</td>
@@ -166,13 +169,17 @@ const ListUser: FC = () => {
                           icon={faTrash}
                         />
                         <FontAwesomeIcon onClick={() => handleEditUser(data.id)} className="btn-edit" icon={faEdit} />
-                        <TonggleInput actflg={data.actflg} />
+                        <TonggleInput action={() => ChangeStatus(Number(data.id))} actflg={data.actflg} />
                       </td>
                     </tr>
                   )
                 })}
               </tbody>
-            </table>
+            ) : (
+              <NodataMatching count={7} />
+            )}
+          </table>
+          {!!usersList.totalRecords && (
             <div className="d-flex justify-content-between table-bottom">
               <div>
                 {`Showing
@@ -183,12 +190,10 @@ const ListUser: FC = () => {
              ${usersList.totalRecords}
              entries`}
               </div>
-              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(usersList.totalRecords) / 10)} onPageChange={setPageNum} />
+              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(usersList.totalRecords) / params.pageSize)} onPageChange={setPageNum} />
             </div>
-          </div>
-        ) : (
-          <div className="p-4">No data matching </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   )

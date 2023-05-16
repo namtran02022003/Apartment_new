@@ -32,13 +32,10 @@ const GlobalStyles = createGlobalStyle`
   }
   th {
     padding: 10px !important;
-    border-bottom: 3px solid #e3e6f0 !important;
-    border-top: 2px solid #e3e6f0 !important;
     text-align: center;
     white-space: nowrap;
   }
   table {
-    border-bottom: 3px solid #e3e6f0 !important;
     td {
       padding: 0.75rem !important;
     }
@@ -60,7 +57,30 @@ const GlobalStyles = createGlobalStyle`
     &:hover {
       background: rgb(219 51 68);
     }
-  }.btn-edit {
+  }
+  .btn-check-contract {
+    background: rgb(94 195 61);
+    border: 1px solid green;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    &:hover {
+      background: rgb(108 167 88);
+    }
+  }
+  .btn-remove-contract {
+    background: rgb(94 195 61);
+    border: 1px solid green;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    &:hover {
+      background: rgb(108 167 88);
+    }
+  }
+  .btn-edit {
     background: rgb(109 191 112);
     border: 1px solid green;
     color: #fff;
@@ -145,8 +165,8 @@ const GlobalStyles = createGlobalStyle`
   //   background: white;
   //   z-index: 555;
   // }
-  .table-scroll-y {
-    height: 76vh;
+  .table-scroll-y, table-scroll {
+    height: 68vh;
     overflow-y: auto;
     ::-webkit-scrollbar {
       width: 8px;
@@ -177,5 +197,11 @@ const GlobalStyles = createGlobalStyle`
     width: 200px;
     z-index: 221;
   }
+  .table-scroll {
+    padding-bottom: 2px;
+  }
+  .flex-grow-02 {
+    flex-grow: 0.2 !important;
+}
 `
 export default GlobalStyles

@@ -28,7 +28,7 @@ interface Service {
   createdAt: string
   updatedAt: string
 }
-const ServiceFee: FC = () => {
+const ServiceManagement: FC = () => {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [id, setId] = useState('')
@@ -70,8 +70,8 @@ const ServiceFee: FC = () => {
         params: {
           pageSize: params.pageSize,
           pageNum: params.pageNum,
-          buildingid: params.buildingId.value,
-          apartmentId: params.apartmentId.value,
+          buildingid: 0,
+          apartmentId: 0,
           periodId: params.periodId.value
         }
       })
@@ -79,7 +79,7 @@ const ServiceFee: FC = () => {
     } catch (error) {
       console.log(error)
     }
-  }, [params.pageSize, params.pageNum, params.periodId.value, params.apartmentId.value, params.buildingId.value])
+  }, [params.pageSize, params.pageNum, params.periodId.value])
   useEffect(() => {
     setTimeout(() => {
       getServicesFee()
@@ -153,7 +153,8 @@ const ServiceFee: FC = () => {
       }
     }
     getApartments()
-  }, [params.buildingId.value, id])
+  }, [params.buildingId.value])
+  console.log(servicesFee)
   if (loading) return <Loading />
   return (
     <>
@@ -171,7 +172,7 @@ const ServiceFee: FC = () => {
         />
       )}
       <div className="shadow rounded-4 color-table">
-        <HeadingPage setShowForm={setShowForm} heading="Service Fee List" />
+        <HeadingPage isDisable={true} setShowForm={setShowForm} heading="Service Management List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
           <div>
             Show
@@ -201,27 +202,9 @@ const ServiceFee: FC = () => {
               }}
               className="select-fee"
             />
-            <Select
-              placeholder="select building"
-              options={masterDataSelects.buildingId}
-              value={params.buildingId.value ? params.buildingId : 0}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: any) => {
-                setParams({ ...params, buildingId: e })
-              }}
-              className="select-fee"
-            />
-            <Select
-              placeholder="select apartment"
-              options={masterDataSelects.apartmentId}
-              value={params.apartmentId.value ? params.apartmentId : 0}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: any) => {
-                setParams({ ...params, apartmentId: e })
-              }}
-              className="select-fee"
-            />
             <button className="btn btn-primary px-3">Search</button>
+            <button className="btn btn-primary px-3">Export csv</button>
+            <button className="btn btn-primary px-3">tinh</button>
           </div>
         </div>
         <div className="px-4 table-scroll">
@@ -233,8 +216,8 @@ const ServiceFee: FC = () => {
                 <th>Apartment Name</th>
                 <th>Period</th>
                 <th>Resident Name</th>
-                <th>Electricity Number</th>
-                <th>Water Number</th>
+                <th>Electricity Price</th>
+                <th>Water Price</th>
                 <th className="text-center">Create At</th>
                 {/* <th className="text-center">Update At</th> */}
                 <th className="text-center th-sm">Actions</th>
@@ -294,4 +277,4 @@ const ServiceFee: FC = () => {
   )
 }
 
-export default ServiceFee
+export default ServiceManagement

@@ -1,14 +1,17 @@
 import { ToggleInputStyled } from '../assets/styles/Input'
-import { FC, useState } from 'react'
-import styled from 'styled-components'
+import { Dispatch, SetStateAction, FC, useState } from 'react'
+import { PagingBarStyled } from '../assets/styles/PagingBar'
 interface Props {
   actflg: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  action?: any
 }
-const TonggleInput: FC<Props> = ({ actflg }) => {
+const TonggleInput: FC<Props> = ({ actflg, action }) => {
   const [check, setCheck] = useState(actflg == 'Active' || actflg == 'Hoạt động')
   const handleChangeStatus = () => {
     if (check) {
       setCheck(false)
+      action()
       console.log('okkkkkk')
     }
   }
@@ -20,43 +23,6 @@ const TonggleInput: FC<Props> = ({ actflg }) => {
   )
 }
 
-const PagingBarStyled = styled.div`
-  .pagingBar {
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    margin: 0 20px 0 0;
-  }
-  .pagingButton {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    color: #333;
-    cursor: pointer;
-    padding: 0 10px;
-    text-align: center;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-  }
-
-  .pagingButton:hover {
-    background-color: #f5f5f5;
-  }
-
-  .pagingButton.active {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: #fff;
-  }
-  .a {
-    border-radius: 4px;
-  }
-  .pagingButton:disabled {
-    background-color: #fff;
-    border-color: #ddd;
-    color: #ddd;
-    cursor: default;
-  }
-`
 const MAX_BUTTONS = 5
 
 const PagingBar: FC<{
@@ -105,5 +71,34 @@ const PagingBar: FC<{
     </PagingBarStyled>
   )
 }
+interface HeadingPage {
+  setShowForm: Dispatch<SetStateAction<boolean>>
+  heading: string
+  isDisable?: boolean
+}
+const HeadingPage: FC<HeadingPage> = ({ setShowForm, heading, isDisable }) => {
+  return (
+    <div className="d-flex mb-4 round-top bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
+      <h5>{heading}</h5>
+      <button disabled={isDisable} onClick={() => setShowForm(true)} className="btn btn-primary px-3 ">
+        Create
+      </button>
+    </div>
+  )
+}
+interface NodataProps {
+  count: number
+}
+const NodataMatching: FC<NodataProps> = ({ count }) => {
+  return (
+    <tbody>
+      <tr>
+        <td className="text-center" colSpan={count}>
+          No data matching
+        </td>
+      </tr>
+    </tbody>
+  )
+}
 
-export { TonggleInput, PagingBar }
+export { TonggleInput, PagingBar, HeadingPage, NodataMatching }

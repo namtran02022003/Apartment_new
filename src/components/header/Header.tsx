@@ -84,9 +84,7 @@ const Header: FC = () => {
   return (
     <HeaderStyled>
       <div className="header-content shadow">
-        <div>
-          <input type="text" placeholder="ddd" />
-        </div>
+        <div></div>
         <div className="header-content-item">
           <span>
             <FontAwesomeIcon icon={faBell} />

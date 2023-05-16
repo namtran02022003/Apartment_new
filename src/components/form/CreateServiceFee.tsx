@@ -16,7 +16,6 @@ interface SignUpProps {
   getServicesFee: any
 }
 const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee, setId, setMess, setShowMes }) => {
-  console.log(id)
   const [showMessage, setShowMessage] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
@@ -177,11 +176,12 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
     }
     getResidents()
   }, [])
+  console.log(servicesFee.apartmentId)
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
       <div className="w-50 animate bg-white rounded-3 form-content">
-        <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Service</h5>
+        <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Service Fee</h5>
         <div>
           <form className="p-3 login">
             <div className="row">
@@ -205,44 +205,6 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
                   {errors.periodId && <p className="m-0 message_form">{errors.periodId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="serviceName">
-                    Resident Name:
-                    <span className="color-red">*</span>
-                  </label>
-                  <Select
-                    placeholder="Select a period"
-                    value={servicesFee.residentId.value ? servicesFee.residentId : 0}
-                    options={masterDataSelects.residentId}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(e: any) => {
-                      setServicesFee({ ...servicesFee, residentId: e })
-                      setError({ ...errors, residentId: '' })
-                    }}
-                    id="apartmentId"
-                  />
-                  {errors.residentId && <p className="m-0 message_form">{errors.residentId}</p>}
-                </div>
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="servicesPrice">
-                    Building Name:
-                    <span className="color-red">*</span>
-                  </label>
-                  <Select
-                    placeholder="Select a period"
-                    value={servicesFee.buildingId.value ? servicesFee.buildingId : 0}
-                    options={masterDataSelects.buildingId}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(e: any) => {
-                      setServicesFee({ ...servicesFee, buildingId: e })
-                      setError({ ...errors, buildingId: '' })
-                    }}
-                    id="apartmentId"
-                  />
-                  {errors.buildingId && <p className="m-0 message_form">{errors.buildingId}</p>}
-                </div>
-              </div>
-              <div className="col-6">
-                <div className="my-2 position-relative pb-1">
                   <label htmlFor="apartmentname">
                     Apartment Name:
                     <span className="color-red">*</span>
@@ -262,7 +224,7 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="servicesPrice">
-                    electricity Number:
+                    Electricity Number:
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
@@ -278,6 +240,44 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
                     }}
                   />
                   {errors.electricityNumber && <p className="m-0 message_form">{errors.electricityNumber}</p>}
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="servicesPrice">
+                    Building Name:
+                    <span className="color-red">*</span>
+                  </label>
+                  <Select
+                    placeholder="Select a period"
+                    value={servicesFee.buildingId.value ? servicesFee.buildingId : 0}
+                    options={masterDataSelects.buildingId}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onChange={(e: any) => {
+                      setServicesFee({ ...servicesFee, buildingId: e })
+                      setError({ ...errors, buildingId: '' })
+                    }}
+                    id="apartmentId"
+                  />
+                  {errors.buildingId && <p className="m-0 message_form">{errors.buildingId}</p>}
+                </div>
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="serviceName">
+                    Resident Name:
+                    <span className="color-red">*</span>
+                  </label>
+                  <Select
+                    placeholder="Select a period"
+                    value={servicesFee.residentId.value ? servicesFee.residentId : 0}
+                    options={masterDataSelects.residentId}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onChange={(e: any) => {
+                      setServicesFee({ ...servicesFee, residentId: e })
+                      setError({ ...errors, residentId: '' })
+                    }}
+                    id="apartmentId"
+                  />
+                  {errors.residentId && <p className="m-0 message_form">{errors.residentId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="waterNum">

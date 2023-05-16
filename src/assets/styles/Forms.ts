@@ -12,7 +12,8 @@ const Forms = styled.div`
   bottom: 0;
   left: 0;
   .title_page {
-    color: #0e0d0d !important;
+    color: #084298;
+    font-weight: bold;
   }
   .login {
     border-radius: 10px;
@@ -62,6 +63,9 @@ const Forms = styled.div`
   }
   .icon-eye-password:hover {
     background: #ccc;
+  }
+  .content-login {
+    height: 350px !important;
   }
 `
 

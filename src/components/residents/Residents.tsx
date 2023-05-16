@@ -6,7 +6,7 @@ import { ThStyled } from '../../assets/styles/Th'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import baseAxios from '../../apis/ConfigAxios'
 import Loading from '../others/Loading'
-import { TonggleInput, PagingBar } from '../../common/CommonComponent'
+import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import AlertMessage from '../alertMessage/AlertMessage'
 import CreateResident from '../form/CreateResidents'
 import { InputStyled } from '../../assets/styles/Input'
@@ -116,15 +116,10 @@ const Residents: FC = () => {
         />
       )}
       <div className="shadow rounded-4 color-table">
-        <div className="d-flex mb-4 round-top bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
-          <h5>Resident List</h5>
-          <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
-            Create
-          </button>
-        </div>
+        <HeadingPage setShowForm={setShowForm} heading="Resident List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
           <div>
-            show
+            Show
             <select
               onChange={(e) => {
                 setParams({ ...params, pageSize: Number(e.target.value) })
@@ -153,24 +148,23 @@ const Residents: FC = () => {
             />
           </form>
         </div>
-        {residents.totalRecords ? (
-          <div className="px-4 table-scroll-y">
-            <div className="table-scroll-x">
-              <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-                <thead>
-                  <tr>
-                    <ThStyled className="text-center">#</ThStyled>
-                    <ThStyled>Full Name</ThStyled>
-                    <ThStyled>Email</ThStyled>
-                    <ThStyled>Phone Number</ThStyled>
-                    <ThStyled>ID Code</ThStyled>
-                    <ThStyled>Gender</ThStyled>
-                    <ThStyled>Address</ThStyled>
-                    <ThStyled>Resident Type</ThStyled>
-                    <ThStyled>Create dAt</ThStyled>
-                    <ThStyled className="text-center t-stiky">Actions</ThStyled>
-                  </tr>
-                </thead>
+        <div className="px-4 table-scroll-y">
+          <div className="table-scroll-x">
+            <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <ThStyled className="text-center">#</ThStyled>
+                  <ThStyled>Full Name</ThStyled>
+                  <ThStyled>Email</ThStyled>
+                  <ThStyled>Phone Number</ThStyled>
+                  <ThStyled>ID Code</ThStyled>
+                  <ThStyled>Address</ThStyled>
+                  <ThStyled>Resident Type</ThStyled>
+                  <ThStyled>Create dAt</ThStyled>
+                  <ThStyled className="text-center t-stiky">Actions</ThStyled>
+                </tr>
+              </thead>
+              {residents.totalRecords ? (
                 <tbody>
                   {residents.item?.map((data) => {
                     return (
@@ -180,7 +174,6 @@ const Residents: FC = () => {
                         <td>{data.email}</td>
                         <td>{data.phoneNumber}</td>
                         <td>{data.idNo}</td>
-                        <td>{data.genderName}</td>
                         <td>{data.address}</td>
                         <td>{data.residentTypeName}</td>
                         <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
@@ -200,24 +193,26 @@ const Residents: FC = () => {
                     )
                   })}
                 </tbody>
-              </table>
-            </div>
+              ) : (
+                <NodataMatching count={10} />
+              )}
+            </table>
+          </div>
+          {!!residents.totalRecords && (
             <div className="d-flex justify-content-between table-bottom">
               <div>
                 {`Showing
-             ${params.pageNum}
-             to
-             ${params.pageSize}
-             of
-             ${residents.totalRecords}
-             entries`}
+            ${params.pageNum}
+            to
+            ${params.pageSize}
+            of
+            ${residents.totalRecords}
+            entries`}
               </div>
-              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(residents.totalRecords) / 10)} onPageChange={setPageNum} />
+              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(residents.totalRecords) / params.pageSize)} onPageChange={setPageNum} />
             </div>
-          </div>
-        ) : (
-          <div className="p-4">No data matching</div>
-        )}
+          )}
+        </div>
       </div>
     </>
   )

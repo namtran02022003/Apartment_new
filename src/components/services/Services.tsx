@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import ModalConfirm from '../alertMessage/ModalConfirm'
-import { TonggleInput, PagingBar } from '../../common/CommonComponent'
+import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import baseAxios from '../../apis/ConfigAxios'
 import AlertMessage from '../alertMessage/AlertMessage'
 import CreateServices from '../form/CreateServices'
@@ -97,18 +97,10 @@ const Services: FC = () => {
         />
       )}
       <div className="shadow rounded-4 color-table">
-        <div className="d-flex mb-4 round-top bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
-          <h5>Service List</h5>
-          <div className="d-flex align-items-center justify-content-between">
-            <input type="text" className="border rounded-2 py-1 px-2 me-2" placeholder="enter search" />
-            <button onClick={() => setShowForm(true)} className="btn btn-primary px-3 me-3">
-              Create
-            </button>
-          </div>
-        </div>
+        <HeadingPage isDisable={true} setShowForm={setShowForm} heading="Service List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
           <div>
-            show
+            Show
             <select
               onChange={(e) => {
                 setParams({ ...params, pageSize: Number(e.target.value) })
@@ -137,29 +129,29 @@ const Services: FC = () => {
             />
           </form>
         </div>
-        {services.totalRecords ? (
-          <div className="px-4 table-scroll">
-            <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-              <thead>
-                <tr>
-                  <th className="text-center">#</th>
-                  <th>Service Code</th>
-                  <th>Service Name</th>
-                  <th>Service Price</th>
-                  <th>Note</th>
-                  <th className="text-center">Create At</th>
-                  <th className="text-center">Update At</th>
-                  <th className="text-center th-sm">Actions</th>
-                </tr>
-              </thead>
+        <div className="px-4 table-scroll">
+          <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+            <thead>
+              <tr>
+                <th className="text-center">#</th>
+                <th>Service Code</th>
+                <th>Service Name</th>
+                <th>Service Price (VND)</th>
+                <th>Note</th>
+                <th className="text-center">Create At</th>
+                <th className="text-center">Update At</th>
+                <th className="text-center th-sm">Actions</th>
+              </tr>
+            </thead>
+            {services.totalRecords ? (
               <tbody>
                 {services.item?.map((data) => {
                   return (
                     <tr key={data.id}>
-                      <td className="text-center">{data.id}</td>
+                      <td className="text-center">{data.orderNo}</td>
                       <td>{data.servicesCode}</td>
                       <td>{data.servicesName}</td>
-                      <td>{data.servicesPrice} VND</td>
+                      <td className="text-end">{data.servicesPrice.toLocaleString()}</td>
                       <td>{data.note}</td>
                       <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
                       <td>{moment(data.updatedAt).format('DD/MM/YYYY hh:mm:ss')}</td>
@@ -179,23 +171,25 @@ const Services: FC = () => {
                   )
                 })}
               </tbody>
-            </table>
+            ) : (
+              <NodataMatching count={8} />
+            )}
+          </table>
+          {!!services.totalRecords && (
             <div className="d-flex justify-content-between table-bottom">
               <div>
                 {`Showing
-             ${params.pageNum}
-             to
-             ${params.pageSize}
-             of
-             ${services.totalRecords}
-             entries`}
+            ${params.pageNum}
+            to
+            ${params.pageSize}
+            of
+            ${services.totalRecords}
+            entries`}
               </div>
-              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(services.totalRecords) / 10)} onPageChange={setPageNum} />
+              <PagingBar currentPage={params.pageNum} totalPages={Math.ceil(Number(services.totalRecords) / params.pageSize)} onPageChange={setPageNum} />
             </div>
-          </div>
-        ) : (
-          <div className="p-4">No data matching</div>
-        )}
+          )}
+        </div>
       </div>
     </>
   )

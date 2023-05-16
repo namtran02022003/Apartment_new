@@ -1,36 +1,36 @@
 import { FC } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFaceLaughWink, faTachometerAlt, faCog, faWrench, faFolder, faChartBar, faTable } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faTachometerAlt, faCog, faWrench, faChartBar, faUser } from '@fortawesome/free-solid-svg-icons'
 import { Link, useNavigate } from 'react-router-dom'
 import { SideBarStyled } from '../../assets/styles/SideBar'
 const listMenu = [
   {
-    heading: 'INTERFACE',
     item: [
       {
         icon: faCog,
-        text: 'Component',
+        text: 'Setting',
         menu: [
           {
-            heading: 'CUSTOM COMPONENT',
             menus: [
-              { text: 'Buttona', url: '' },
-              { text: 'Cards', url: '' }
+              { text: 'Service list', url: '/services' },
+              { text: 'Nation list (developer)', url: '' },
+              { text: 'Province list (developer)', url: '' },
+              { text: 'District list (developer)', url: '' },
+              { text: 'Ward list (developer)', url: '' }
             ]
           }
         ]
       },
       {
         icon: faWrench,
-        text: 'Utilities',
+        text: 'Management',
         menu: [
           {
-            heading: 'CUSTOM Utilities',
             menus: [
-              { text: 'Colors', url: '' },
-              { text: 'Borders', url: '' },
-              { text: 'Annimations', url: '' },
-              { text: 'Other', url: '' }
+              { text: 'Buildings management', url: '/buildings' },
+              { text: 'Apartments management', url: '/apartments' },
+              { text: 'Residents management', url: '/residents' },
+              { text: 'Contracts management', url: '/contracts' }
             ]
           }
         ]
@@ -38,28 +38,28 @@ const listMenu = [
     ]
   },
   {
-    heading: 'ADDONS',
     item: [
       {
-        icon: faFolder,
-        text: 'Pages',
+        icon: faChartBar,
+        text: 'Service-management',
         menu: [
           {
-            heading: 'LOGIN SCREENS',
             menus: [
-              { text: 'Users List', url: '/users-list' },
-              { text: 'Apartments', url: '/apartments' },
-              { text: 'Buildings', url: '/buildings' },
-              { text: 'Services', url: '/services' },
-              { text: 'Residents', url: '/residents' },
-              { text: 'Contracts', url: '/contracts' },
-              { text: 'Service Fee', url: '/service-fee' }
+              { text: 'Service management ', url: '/service-fee' },
+              { text: 'Service Fee management ', url: '/service-management' }
             ]
           }
         ]
       },
-      { icon: faChartBar, text: 'Charts' },
-      { icon: faTable, text: 'Table' }
+      {
+        icon: faUser,
+        text: 'User-management',
+        menu: [
+          {
+            menus: [{ text: 'User management ', url: '/users-list' }]
+          }
+        ]
+      }
     ]
   }
 ]
@@ -74,20 +74,16 @@ const SideBar: FC = () => {
   return (
     <SideBarStyled>
       <div className="logo-home">
-        <FontAwesomeIcon className="logo-home-icon" icon={faFaceLaughWink} />
-        <span>
-          Sb Admin
-          <sub>2</sub>
-        </span>
+        <FontAwesomeIcon className="logo-home-icon" icon={faHome} />
+        <span>Management</span>
       </div>
       <div role="button" onKeyPress={() => h()} tabIndex={0} onClick={() => Navigate('/')} className="div-icon bd-bottom text-white opacity-100">
         <FontAwesomeIcon icon={faTachometerAlt} />
         <span>Dashboard</span>
       </div>
-      {listMenu.map((menu) => {
+      {listMenu.map((menu, index) => {
         return (
-          <div className="menu-item" key={menu.heading}>
-            <p>{menu.heading}</p>
+          <div className="menu-item" key={index}>
             {menu.item.map((item) => {
               return (
                 <div key={item.text}>
@@ -97,10 +93,9 @@ const SideBar: FC = () => {
                   </div>
                   {item.menu ? (
                     <div className={`menu-toggle menu-toggle${item.text}`}>
-                      {item.menu.map((mn) => {
+                      {item.menu.map((mn, index) => {
                         return (
-                          <div className="menu-toggle-content" key={mn.heading}>
-                            <p>{mn.heading}</p>
+                          <div className="menu-toggle-content" key={index}>
                             {mn.menus.map((menu) => {
                               return (
                                 <Link key={menu.text} to={menu.url}>

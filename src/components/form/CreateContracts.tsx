@@ -16,8 +16,9 @@ interface SignUpProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getContracts: any
   disabled: boolean
+  setDisable: React.Dispatch<React.SetStateAction<boolean>>
 }
-const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, setId, setMess, setShowMes, disabled }) => {
+const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, setId, setMess, setShowMes, disabled, setDisable }) => {
   const [showMessage, setShowMessage] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
@@ -152,7 +153,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
   }, [])
   useEffect(() => {
     const getApartmentId = async () => {
-      const res = await baseAxios.get('master-data/apartment', {
+      const res = await baseAxios.get('master-data/apartment-data', {
         params: {
           buildingId: contracts.buildingId.value
         }
@@ -168,6 +169,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
     }
     getApartmentId()
   }, [contracts.buildingId.value])
+  console.log(masterDatas)
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
@@ -202,6 +204,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
+                    max={contracts.endDate}
                     disabled={disabled}
                     id="startDate"
                     type="date"
@@ -215,40 +218,42 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                   {errors.startDate && <p className="m-0 message_form">{errors.startDate}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="endDate">
-                    End Date:
+                  <label htmlFor="buildingId">
+                    Building Name:
                     <span className="color-red">*</span>
                   </label>
-                  <InputStyled
-                    disabled={disabled}
-                    id="endDate"
-                    type="date"
-                    placeholder="Enter end date"
-                    value={moment(contracts.endDate).format('YYYY-MM-DD')}
-                    onChange={(e) => {
-                      setContracts({ ...contracts, endDate: e.target.value })
-                      setError({ ...errors, endDate: '' })
+                  <Select
+                    isDisabled={disabled}
+                    placeholder="Select a building name"
+                    value={contracts.buildingId.value ? contracts.buildingId : 0}
+                    options={masterDatas.buildingId}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onChange={(e: any) => {
+                      setContracts({ ...contracts, buildingId: e })
+                      setError({ ...errors, buildingId: '' })
                     }}
+                    id="buildingId"
                   />
-                  {errors.endDate && <p className="m-0 message_form">{errors.endDate}</p>}
+                  {errors.buildingId && <p className="m-0 message_form">{errors.buildingId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="signerDate">
-                    Signer Date:
+                  <label htmlFor="contractType">
+                    Contract Type:
                     <span className="color-red">*</span>
                   </label>
-                  <InputStyled
-                    disabled={disabled}
-                    id="signerDate"
-                    type="date"
-                    placeholder="Enter signer date"
-                    value={moment(contracts.signerDate).format('YYYY-MM-DD')}
-                    onChange={(e) => {
-                      setContracts({ ...contracts, signerDate: e.target.value })
-                      setError({ ...errors, signerDate: '' })
+                  <Select
+                    isDisabled={disabled}
+                    placeholder="Select a contract type name"
+                    value={contracts.contractType.value ? contracts.contractType : 0}
+                    options={masterDatas.contractType}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onChange={(e: any) => {
+                      setContracts({ ...contracts, contractType: e })
+                      setError({ ...errors, contractType: '' })
                     }}
+                    id="contractType"
                   />
-                  {errors.signerDate && <p className="m-0 message_form">{errors.signerDate}</p>}
+                  {errors.contractType && <p className="m-0 message_form">{errors.contractType}</p>}
                 </div>
               </div>
               <div className="col-6">
@@ -272,23 +277,23 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                   {errors.residentId && <p className="m-0 message_form">{errors.residentId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="buildingId">
-                    Building Name:
+                  <label htmlFor="endDate">
+                    End Date:
                     <span className="color-red">*</span>
                   </label>
-                  <Select
-                    isDisabled={disabled}
-                    placeholder="Select a building name"
-                    value={contracts.buildingId.value ? contracts.buildingId : 0}
-                    options={masterDatas.buildingId}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(e: any) => {
-                      setContracts({ ...contracts, buildingId: e })
-                      setError({ ...errors, buildingId: '' })
+                  <InputStyled
+                    min={contracts.startDate}
+                    disabled={disabled}
+                    id="endDate"
+                    type="date"
+                    placeholder="Enter end date"
+                    value={moment(contracts.endDate).format('YYYY-MM-DD')}
+                    onChange={(e) => {
+                      setContracts({ ...contracts, endDate: e.target.value })
+                      setError({ ...errors, endDate: '' })
                     }}
-                    id="buildingId"
                   />
-                  {errors.buildingId && <p className="m-0 message_form">{errors.buildingId}</p>}
+                  {errors.endDate && <p className="m-0 message_form">{errors.endDate}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="apartmentId">
@@ -310,23 +315,24 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                   {errors.apartmentId && <p className="m-0 message_form">{errors.apartmentId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="contractType">
-                    Contract Type:
+                  <label htmlFor="signerDate">
+                    Signer Date:
                     <span className="color-red">*</span>
                   </label>
-                  <Select
-                    isDisabled={disabled}
-                    placeholder="Select a contract type name"
-                    value={contracts.contractType.value ? contracts.contractType : 0}
-                    options={masterDatas.contractType}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(e: any) => {
-                      setContracts({ ...contracts, contractType: e })
-                      setError({ ...errors, contractType: '' })
+                  <InputStyled
+                    min={contracts.startDate}
+                    max={contracts.endDate}
+                    disabled={disabled}
+                    id="signerDate"
+                    type="date"
+                    placeholder="Enter signer date"
+                    value={moment(contracts.signerDate).format('YYYY-MM-DD')}
+                    onChange={(e) => {
+                      setContracts({ ...contracts, signerDate: e.target.value })
+                      setError({ ...errors, signerDate: '' })
                     }}
-                    id="contractType"
                   />
-                  {errors.contractType && <p className="m-0 message_form">{errors.contractType}</p>}
+                  {errors.signerDate && <p className="m-0 message_form">{errors.signerDate}</p>}
                 </div>
               </div>
             </div>
@@ -335,6 +341,7 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
                 onClick={() => {
                   setShow(!show)
                   setId('')
+                  setDisable(false)
                 }}
                 type="button"
                 className="mx-3 btn border"
