@@ -6,11 +6,12 @@ import { ValidateContract } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
 import * as moment from 'moment'
 import Select from 'react-select'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
-  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
   setId: React.Dispatch<React.SetStateAction<string>>
-  setMess: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,8 +19,10 @@ interface SignUpProps {
   disabled: boolean
   setDisable: React.Dispatch<React.SetStateAction<boolean>>
 }
-const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, setId, setMess, setShowMes, disabled, setDisable }) => {
+const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, setId, disabled, setDisable }) => {
   const [showMessage, setShowMessage] = useState(false)
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
   const [contracts, setContracts] = useState({
@@ -51,7 +54,14 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
     contractType: [],
     apartmentId: []
   })
-
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const onSubmit = async () => {
     if (!(Object.keys(ValidateContract(contracts, setError)).length > 0)) {
       const newData = {
@@ -62,16 +72,25 @@ const CreateContracts: FC<SignUpProps> = ({ show, setShow, id, getContracts, set
         apartmentId: contracts.apartmentId.value
       }
       try {
-        await baseAxios.post('/contracts/insert-update', newData)
-        getContracts()
-        setMess(id ? 'Edit success' : 'Create success')
-        setShowMes(true)
-        setShow(!show)
-        if (id) {
-          setId('')
+        const res = await baseAxios.post('/contracts/insert-update', newData)
+        if (res.data.success && res.data.errorCode == 0) {
+          getContracts()
+          if (id) {
+            showToasts('Edit success', 'green')
+          } else {
+            showToasts('Create success', 'green')
+          }
+          setShow(!show)
+          if (id) {
+            setId('')
+          }
+        } else if (res.data.errorCode == 401) {
+          Navigate('/login')
+        } else {
+          showToasts(res.data.message, 'red')
         }
       } catch (error) {
-        console.log(error)
+        showToasts(error as string, 'red')
       }
     }
   }

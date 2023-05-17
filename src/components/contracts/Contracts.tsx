@@ -8,8 +8,10 @@ import ModalConfirm from '../alertMessage/ModalConfirm'
 import baseAxios from '../../apis/ConfigAxios'
 import Loading from '../others/Loading'
 import { PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
-import AlertMessage from '../alertMessage/AlertMessage'
 import { InputStyled } from '../../assets/styles/Input'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 export interface Contract {
   id: number
   contractNo: string
@@ -32,13 +34,13 @@ interface contractsList {
 }
 
 const Contracts: FC = () => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const [id, setId] = useState('')
   const [showModalConfirm, setShowModalConfirm] = useState(false)
   const [loading, setLoading] = useState(true)
   const [contracts, setContractsList] = useState<contractsList>({})
-  const [messages, setMessages] = useState('')
-  const [showMessage, setShowMessage] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [showConfirmChangeStatus, setShowConfirmChangeStatus] = useState(false)
   const [typeAction, setTypeAction] = useState('')
@@ -47,6 +49,14 @@ const Contracts: FC = () => {
     pageNum: 1,
     searchInput: ''
   })
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const handleEditContract = (id: string, flag: string | null) => {
     setDisabled(!!flag)
     setId(id)
@@ -76,22 +86,20 @@ const Contracts: FC = () => {
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
-  const deleteContact = async (id: number) => {
+  const deleteContact = async () => {
     try {
       const res = await baseAxios.delete(`/contracts/${id}`)
       if (res.data.errorCode == 0) {
-        setMessages('success')
-        setShowMessage(true)
+        showToasts('Delete success', 'green')
         getContracts()
+      } else if (res.data.errorCode == 401) {
+        Navigate('/login')
       } else {
-        setMessages(res.data.message)
-        setShowMessage(true)
+        showToasts(res.data.message, 'green')
       }
       setId('')
     } catch (error) {
-      console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
   }
   const ChangeStatusContract = async () => {
@@ -101,29 +109,23 @@ const Contracts: FC = () => {
         actflg: typeAction
       })
       if (res.data.errorCode == 0) {
-        setMessages('success')
-        setShowMessage(true)
+        showToasts('Change success', 'green')
         getContracts()
       } else {
-        setMessages(res.data.message)
-        setShowMessage(true)
+        showToasts(res.data.message, 'green')
       }
       setId('')
     } catch (error) {
-      console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
   }
-  console.log(disabled)
   if (loading) return <Loading />
   return (
     <>
-      {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteContact} />}
       {showConfirmChangeStatus && (
         <ModalConfirm
-          text="do you want change status"
+          text="Do you want change status?"
           showForm={showConfirmChangeStatus}
           setId={setId}
           setShowForm={setShowConfirmChangeStatus}
@@ -131,17 +133,7 @@ const Contracts: FC = () => {
         />
       )}
       {showForm && (
-        <CreateContracts
-          setDisable={setDisabled}
-          disabled={disabled}
-          setShowMes={setShowMessage}
-          setMess={setMessages}
-          setShow={setShowForm}
-          show={showForm}
-          id={id}
-          getContracts={getContracts}
-          setId={setId}
-        />
+        <CreateContracts setDisable={setDisabled} disabled={disabled} setShow={setShowForm} show={showForm} id={id} getContracts={getContracts} setId={setId} />
       )}
       <div className="shadow rounded-4 color-table">
         <HeadingPage setShowForm={setShowForm} heading="Contract List" />

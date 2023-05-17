@@ -4,12 +4,14 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import { PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import baseAxios from '../../apis/ConfigAxios'
-import AlertMessage from '../alertMessage/AlertMessage'
 import CreateServicesFee from '../form/CreateServiceFee'
 import Loading from '../others/Loading'
 import * as moment from 'moment'
 import Select from 'react-select'
 import { saveAs } from 'file-saver'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 interface Services {
   item?: [Service]
   message?: string | null
@@ -45,12 +47,12 @@ interface Service {
   updatedAt: string
 }
 const ServiceManagement: FC = () => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [id, setId] = useState('')
   const [showModalConfirm, setShowModalConfirm] = useState(false)
-  const [messages, setMessages] = useState('')
-  const [showMessage, setShowMessage] = useState(false)
   const [servicesFee, setServicesFee] = useState<Services>({})
   const [masterDataSelects, setMasterDataSelects] = useState({
     periodId: [],
@@ -76,6 +78,14 @@ const ServiceManagement: FC = () => {
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const getServicesFee = useCallback(async () => {
     try {
       const res = await baseAxios.get(`/summary/list`, {
@@ -99,15 +109,19 @@ const ServiceManagement: FC = () => {
     }, 500)
   }, [getServicesFee])
   const deleteServiceFee = async () => {
+    const res = await baseAxios.delete(`/summary/${id}`)
     try {
-      await baseAxios.delete(`/summary/${id}`)
-      setMessages('delete success')
-      setShowMessage(true)
-      getServicesFee()
+      if (res.data.errorCode == 0) {
+        showToasts('Delete success', 'green')
+        getServicesFee()
+      } else if (res.data.errorCode == 401) {
+        Navigate('/login')
+      } else {
+        showToasts(res.data.message, 'green')
+      }
+      setId('')
     } catch (error) {
-      console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
     setId('')
   }
@@ -177,48 +191,58 @@ const ServiceManagement: FC = () => {
       const csvContent = '\ufeff' + res.data
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
       saveAs(blob, 'building-services.csv')
-      setMessages('dowaload success')
-      setShowMessage(true)
+      showToasts('dowaload success', 'green')
     } catch (error) {
-      setMessages(error as string)
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
   }
   const sendAllEmail = async () => {
-    await baseAxios.get('/summary/sendmail-list', {
+    const res = await baseAxios.get('/summary/sendmail-list', {
       params: {
         periodId: params.periodId.value
       }
     })
-    setMessages('send email success')
-    setShowMessage(true)
+    if (res.data.errorCode == 0) {
+      showToasts('Send success', 'green')
+    } else if (res.data.errorCode == 401) {
+      Navigate('/login')
+    } else {
+      showToasts(res.data.message, 'red')
+    }
   }
   const sendMail = async (id: number) => {
-    await baseAxios.get('/summary/sendmail', {
+    try {
+      await baseAxios.get('/summary/sendmail', {
+        params: {
+          summaryId: id
+        }
+      })
+      showToasts('Send mail success', 'green')
+    } catch (error) {
+      showToasts(error as string, 'red')
+    }
+  }
+  const Caculate = async () => {
+    const res = await baseAxios.get('/summary/caculator', {
       params: {
-        summaryId: id
+        pariodId: params.periodId.value
       }
     })
-    setMessages('send email success')
-    setShowMessage(true)
+    console.log(res)
+    if (res.data.errCode == 0) {
+      showToasts('Success', 'green')
+      getServicesFee()
+    } else if (res.data.errCode == 401) {
+      Navigate('/login')
+    } else {
+      showToasts(res.data.message, 'green')
+    }
   }
-  console.log(servicesFee)
   if (loading) return <Loading />
   return (
     <>
-      {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm setId={setId} showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteServiceFee} />}
-      {showForm && (
-        <CreateServicesFee
-          setMess={setMessages}
-          setShowMes={setShowMessage}
-          setId={setId}
-          setShow={setShowForm}
-          show={showForm}
-          id={id}
-          getServicesFee={getServicesFee}
-        />
-      )}
+      {showForm && <CreateServicesFee setId={setId} setShow={setShowForm} show={showForm} id={id} getServicesFee={getServicesFee} />}
       <div className="shadow rounded-4 color-table">
         <HeadingPage isDisable={true} setShowForm={setShowForm} heading="Service Management List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
@@ -267,7 +291,9 @@ const ServiceManagement: FC = () => {
             <button onClick={() => exportCsv()} disabled={!params.periodId.value} className="btn btn-primary px-3">
               Export csv
             </button>
-            <button className="btn btn-primary px-3">Calculator</button>
+            <button onClick={() => Caculate()} className="btn btn-primary px-3">
+              Calculate
+            </button>
             <button onClick={() => sendAllEmail()} disabled={!params.periodId.value} className="btn btn-primary px-3">
               Send Email
             </button>
@@ -279,15 +305,16 @@ const ServiceManagement: FC = () => {
               <thead>
                 <tr>
                   <th className="text-center">#</th>
-                  <th>Building Name</th>
-                  <th>Apartment Name</th>
+                  <th>Building name</th>
+                  <th>Apartment name</th>
                   <th>Period</th>
-                  <th>Resident Name</th>
-                  <th>Electricity Price</th>
-                  <th>Water Price</th>
-                  <th>Cleaning Price</th>
-                  <th>Motorcycle Price</th>
-                  <th>Car Price</th>
+                  <th>Resident name</th>
+                  <th>Electricity fee</th>
+                  <th>Water fee</th>
+                  <th>Cleaning fee</th>
+                  <th>Motorcycle fee</th>
+                  <th>Car fee</th>
+                  <th>Service fee</th>
                   <th className="text-center">Create At</th>
                   {/* <th className="text-center">Update At</th> */}
                   <th className="text-center th-sm">Actions</th>
@@ -303,11 +330,12 @@ const ServiceManagement: FC = () => {
                         <td>{data.apartmentName}</td>
                         <td>{data.periodName}</td>
                         <td>{data.residentName}</td>
-                        <td className="text-center">{data.electricityNumber}</td>
-                        <td className="text-center">{data.waterMumber}</td>
-                        <td className="text-center">{data.cleaningFee}</td>
-                        <td className="text-center">{data.motorcycleDeposit}</td>
-                        <td className="text-center">{data.carDeposit}</td>
+                        <td className="text-end">{data.electricityMoney}</td>
+                        <td className="text-end">{data.waterMoney}</td>
+                        <td className="text-end">{data.cleaningFee}</td>
+                        <td className="text-end">{data.motorcycleDeposit}</td>
+                        <td className="text-end">{data.carDeposit}</td>
+                        <td className="text-end">{data.serviceFee.toLocaleString()}</td>
                         <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
                         {/* <td>{moment(data.updatedAt).format('DD/MM/YYYY hh:mm:ss')}</td> */}
                         <td className="d-flex justify-content-around td-action">

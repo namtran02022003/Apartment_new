@@ -5,17 +5,20 @@ import { Forms } from '../../assets/styles/Forms'
 import { ValidateServiceFee } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
 import Select from 'react-select'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
-  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
   setId: React.Dispatch<React.SetStateAction<string>>
-  setMess: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getServicesFee: any
 }
-const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee, setId, setMess, setShowMes }) => {
+const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee, setId }) => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [showMessage, setShowMessage] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
@@ -49,7 +52,14 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
     buildingId: [],
     apartmentId: []
   })
-
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const onSubmit = async () => {
     if (!(Object.keys(ValidateServiceFee(servicesFee, setError)).length > 0)) {
       const newServiceFee = {
@@ -60,16 +70,25 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
         apartmentId: servicesFee.apartmentId.value
       }
       try {
-        await baseAxios.post('/summary/insert-update', newServiceFee)
-        getServicesFee()
-        setMess(id ? 'Edit success' : 'Create success')
-        setShowMes(true)
-        setShow(!show)
-        if (id) {
-          setId('')
+        const res = await baseAxios.post('/summary/insert-update', newServiceFee)
+        if (res.data.success && res.data.errorCode == 0) {
+          getServicesFee()
+          if (id) {
+            showToasts('Edit success', 'green')
+          } else {
+            showToasts('Create success', 'green')
+          }
+          setShow(!show)
+          if (id) {
+            setId('')
+          }
+        } else if (res.data.errorCode == 401) {
+          Navigate('/login')
+        } else {
+          showToasts(res.data.message, 'red')
         }
       } catch (error) {
-        console.log(error)
+        showToasts(error as string, 'red')
       }
     }
   }

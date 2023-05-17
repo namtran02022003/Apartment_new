@@ -4,6 +4,9 @@ import { Forms } from '../../assets/styles/Forms'
 import styled from 'styled-components'
 import { ValidateBuilding } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 const TextareaStyled = styled.textarea`
   width: 100%;
   padding: 10px;
@@ -18,15 +21,15 @@ const TextareaStyled = styled.textarea`
 `
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
-  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
   setId: React.Dispatch<React.SetStateAction<string>>
-  setMess: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getBuildings: any
 }
-const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, setId, setMess, setShowMes }) => {
+const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, setId }) => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [values, setValues] = useState({
     buildingCode: '',
     buildingName: '',
@@ -39,15 +42,36 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, 
   })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const onSubmit = async () => {
     if (!(Object.keys(ValidateBuilding(values, setError)).length > 0)) {
-      await baseAxios.post('/buildings/insert-update', values)
-      getBuildings()
-      setMess(id ? 'Edit success' : 'Create success')
-      setShowMes(true)
-      setShow(!show)
-      if (id) {
-        setId('')
+      try {
+        const res = await baseAxios.post('/buildings/insert-update', values)
+        if (res.data.success && res.data.errorCode == 0) {
+          getBuildings()
+          if (id) {
+            showToasts('Edit success', 'green')
+          } else {
+            showToasts('Create success', 'green')
+          }
+          setShow(!show)
+          if (id) {
+            setId('')
+          }
+        } else if (res.data.errorCode == 401) {
+          Navigate('/login')
+        } else {
+          showToasts(res.data.message, 'red')
+        }
+      } catch (error) {
+        showToasts(error as string, 'red')
       }
     }
   }

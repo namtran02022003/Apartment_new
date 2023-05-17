@@ -21,7 +21,6 @@ const ModalConfirm: FC<PropsFace> = ({ showForm, setId, setShowForm, action, tex
       window.removeEventListener('click', closeItem as unknown as EventListener)
     }
   })
-  console.log(text)
   return (
     <ModalConfirmStyled className="modal-create">
       <div className="content animate shadow rounded-3 position-relative pt-3">

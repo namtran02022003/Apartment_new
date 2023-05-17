@@ -7,9 +7,11 @@ import ModalConfirm from '../alertMessage/ModalConfirm'
 import baseAxios from '../../apis/ConfigAxios'
 import Loading from '../others/Loading'
 import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
-import AlertMessage from '../alertMessage/AlertMessage'
 import CreateResident from '../form/CreateResidents'
 import { InputStyled } from '../../assets/styles/Input'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 export interface User {
   id: number
   fullName: string
@@ -45,19 +47,27 @@ interface usersListFace {
 }
 
 const Residents: FC = () => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const [id, setId] = useState('')
   const [showModalConfirm, setShowModalConfirm] = useState(false)
   const [loading, setLoading] = useState(true)
   const [residents, setResidents] = useState<usersListFace>({})
-  const [messages, setMessages] = useState('')
-  const [showMessage, setShowMessage] = useState(false)
   const [errorPage, setErrorPage] = useState('')
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
     searchInput: ''
   })
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const handleEditUser = (id: string) => {
     setId(id)
     setShowForm(true)
@@ -87,34 +97,26 @@ const Residents: FC = () => {
   }
   const deleteResident = async () => {
     try {
-      await baseAxios.delete(`/residents/${id}`)
-      setMessages('delete success')
-      setShowMessage(true)
-      getResidents()
+      const res = await baseAxios.delete(`/residents/${id}`)
+      if (res.data.errorCode == 0) {
+        showToasts('Delete success', 'green')
+        getResidents()
+      } else if (res.data.errorCode == 401) {
+        Navigate('/login')
+      } else {
+        showToasts(res.data.message, 'green')
+      }
       setId('')
     } catch (error) {
-      console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
   }
   if (loading) return <Loading />
   if (errorPage) return <div>{errorPage}</div>
   return (
     <>
-      {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteResident} />}
-      {showForm && (
-        <CreateResident
-          setShowMes={setShowMessage}
-          setMess={setMessages}
-          setShow={setShowForm}
-          show={showForm}
-          id={id}
-          getResidents={getResidents}
-          setId={setId}
-        />
-      )}
+      {showForm && <CreateResident setShow={setShowForm} show={showForm} id={id} getResidents={getResidents} setId={setId} />}
       <div className="shadow rounded-4 color-table">
         <HeadingPage setShowForm={setShowForm} heading="Resident List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">

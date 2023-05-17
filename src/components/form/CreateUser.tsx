@@ -2,11 +2,13 @@ import { useState, FC, ChangeEvent, useEffect } from 'react'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { InputStyled } from '../../assets/styles/Input'
-import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import styled from 'styled-components'
 import baseAxios from '../../apis/ConfigAxios'
 import { ValidateUser } from './Validates'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 const ImgFormStyled = styled.div`
   min-height: 188px;
   text-align: center;
@@ -28,15 +30,13 @@ const ImgFormStyled = styled.div`
     color: #fff;
   }
 `
-interface SignUpProps {
+interface UserFormProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
   setId: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getUsers: any
-  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
-  setMess: React.Dispatch<React.SetStateAction<string>>
 }
 interface User {
   userName: string
@@ -49,11 +49,11 @@ interface User {
   tokenKey: string
   id: number
 }
-const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setShowMes, setMess }) => {
+const CreateUser: FC<UserFormProps> = ({ setShow, show, id, getUsers, setId }) => {
   const [typeInput, setTypeInput] = useState(true)
-  const [showMessage, setShowMessage] = useState(false)
-  const [err, setErr] = useState('')
   const [file, setFile] = useState<string>('')
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [user, setUser] = useState<User>({
     firstName: '',
     lastName: '',
@@ -67,6 +67,14 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
   })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const onSubmit = async () => {
     const type = id ? false : true
     if (!(Object.keys(ValidateUser(user, setError, type)).length > 0)) {
@@ -86,18 +94,22 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
         const res: any = await baseAxios.post(`/users/insert-update`, userData)
         if (res.data.success && res.data.errorCode == 0) {
           getUsers()
-          setMess(id ? 'Edit success' : 'Create success')
-          setShowMes(true)
+          if (id) {
+            showToasts('Edit success', 'green')
+          } else {
+            showToasts('Create success', 'green')
+          }
           setShow(!show)
           if (id) {
             setId('')
           }
-        } else if (res.data.errorCode == 409) {
-          setErr(res.data.message)
-          setShowMessage(true)
+        } else if (res.data.errorCode == 401) {
+          Navigate('/login')
+        } else {
+          showToasts(res.data.message, 'red')
         }
       } catch (error) {
-        console.log(error)
+        showToasts(error as string, 'red')
       }
     }
   }
@@ -124,7 +136,6 @@ const CreateUser: FC<SignUpProps> = ({ setShow, show, id, getUsers, setId, setSh
   }, [id])
   return (
     <Forms className="bg-form">
-      {showMessage && <AlertMessage color={'green'} message={err} show={showMessage} setShow={setShowMessage} />}
       <div className="w-75 form-content bg-white rounded-3 animate">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} user</h5>
         <div className="p-3">

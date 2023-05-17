@@ -159,17 +159,7 @@ const ServiceFee: FC = () => {
     <>
       {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm setId={setId} showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteServiceFee} />}
-      {showForm && (
-        <CreateServicesFee
-          setMess={setMessages}
-          setShowMes={setShowMessage}
-          setId={setId}
-          setShow={setShowForm}
-          show={showForm}
-          id={id}
-          getServicesFee={getServicesFee}
-        />
-      )}
+      {showForm && <CreateServicesFee setId={setId} setShow={setShowForm} show={showForm} id={id} getServicesFee={getServicesFee} />}
       <div className="shadow rounded-4 color-table">
         <HeadingPage setShowForm={setShowForm} heading="Service Fee List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">

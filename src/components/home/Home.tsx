@@ -2,12 +2,10 @@ import { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import { faCalendar, faDollar, faClipboardList, faComments } from '@fortawesome/free-solid-svg-icons'
+import { faContactCard, faUser, faBuilding, faHome } from '@fortawesome/free-solid-svg-icons'
 import AlertMessage from '../alertMessage/AlertMessage'
 import MonthlyRevenueChart from '../recharts/Recharts'
 import baseAxios from '../../apis/ConfigAxios'
-import { useDispatch } from 'react-redux'
-import { showToast } from '../toasts/ToastActions'
 const HomeStyled = styled.div`
   .menu-icon {
     color: #dddfeb
@@ -34,7 +32,6 @@ interface Synthetic {
 }
 
 const Home: FC = () => {
-  const dispatch = useDispatch()
   const [message, setMessage] = useState('')
   const [show, setShow] = useState(false)
   const [synthetic, setSynthetic] = useState<Synthetic[]>([])
@@ -54,29 +51,19 @@ const Home: FC = () => {
     const getSynthetic = async () => {
       const res = await baseAxios.get('/summary/synthetic')
       const listMenu: Synthetic[] = [
-        { icon: faCalendar, color: '#4e73df', textTop: 'Total Number Users', textBottom: res.data.item.totalNumberUsers },
-        { icon: faDollar, color: '#1cc88a', textTop: 'Total Number Buildings', textBottom: res.data.item.totaNumberBuildings },
-        { icon: faClipboardList, color: '#36b9cc', textTop: 'Total Number Apartment', textBottom: res.data.item.totalNumberApartments },
-        { icon: faComments, color: '#f6c23e', textTop: 'Total Number Contracts', textBottom: res.data.item.totalNumberContracts }
+        { icon: faUser, color: '#4e73df', textTop: 'Total Number Users', textBottom: res.data.item.totalNumberUsers },
+        { icon: faBuilding, color: '#1cc88a', textTop: 'Total Number Buildings', textBottom: res.data.item.totaNumberBuildings },
+        { icon: faHome, color: '#36b9cc', textTop: 'Total Number Apartment', textBottom: res.data.item.totalNumberApartments },
+        { icon: faContactCard, color: '#f6c23e', textTop: 'Total Number Contracts', textBottom: res.data.item.totalNumberContracts }
       ]
       setSynthetic(listMenu)
     }
     getSynthetic()
   }, [])
-  const showT = (message: string, color: string) => {
-    dispatch(
-      showToast({
-        message: message,
-        color: color
-      })
-    )
-  }
-
   return (
     <HomeStyled>
       {message && <AlertMessage show={show} setShow={setShow} message={`Xin chào ${message}`} color="green" />}
       <h2>Dashboard</h2>
-      <button onClick={() => showT('okiiiii', 'green')}>oki</button>
       <div className="row">
         {synthetic.map((menu: Synthetic, index: number) => {
           return (

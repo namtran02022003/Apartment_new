@@ -5,9 +5,11 @@ import ModalConfirm from '../alertMessage/ModalConfirm'
 import FormCreateBuilding from '../form/FormCreateBuilding'
 import baseAxios from '../../apis/ConfigAxios'
 import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
-import AlertMessage from '../alertMessage/AlertMessage'
 import Loading from '../others/Loading'
 import { InputStyled } from '../../assets/styles/Input'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 interface buildingFace {
   id: number | string
   acreage: string
@@ -30,18 +32,26 @@ interface BuildingsFace {
   success?: boolean
 }
 const Buildings: FC = () => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [id, setId] = useState('')
   const [buildings, setBuildings] = useState<BuildingsFace>({})
   const [showModalConfirm, setShowModalConfirm] = useState(false)
-  const [messages, setMessages] = useState('')
-  const [showMessage, setShowMessage] = useState(false)
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
     searchInput: ''
   })
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const handleEditBuilding = (id: string) => {
     setId(id)
     setShowForm(true)
@@ -69,25 +79,21 @@ const Buildings: FC = () => {
     try {
       const res = await baseAxios.delete(`/buildings/${id}`)
       if (res.data.errorCode == 0) {
-        setMessages('delete success')
-        setShowMessage(true)
+        showToasts('Delete success', 'green')
         getBuildings()
+      } else if (res.data.errorCode == 401) {
+        Navigate('/login')
       } else {
-        setMessages(res.data.message)
-        setShowMessage(true)
+        showToasts(res.data.message, 'green')
       }
       setId('')
     } catch (error) {
-      console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
   }
-  console.log(buildings)
   if (loading) return <Loading />
   return (
     <>
-      {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && (
         <ModalConfirm
           text="Do you want to delete building?"
@@ -97,17 +103,7 @@ const Buildings: FC = () => {
           action={deleteBuilding}
         />
       )}
-      {showForm && (
-        <FormCreateBuilding
-          setMess={setMessages}
-          setShowMes={setShowMessage}
-          setId={setId}
-          setShow={setShowForm}
-          show={showForm}
-          id={id}
-          getBuildings={getBuildings}
-        />
-      )}
+      {showForm && <FormCreateBuilding setId={setId} setShow={setShowForm} show={showForm} id={id} getBuildings={getBuildings} />}
       <div className="shadow rounded-4 color-table">
         <HeadingPage setShowForm={setShowForm} heading="Building List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">

@@ -1,11 +1,13 @@
 import { FC, useEffect, useState } from 'react'
 import { InputStyled } from '../../assets/styles/Input'
-import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import styled from 'styled-components'
 import Select from 'react-select'
 import { ValidateApartment } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 export const SelectStyled = styled.select`
   width: 100%;
   padding: 9px 10px;
@@ -29,9 +31,7 @@ const TextareaStyled = styled.textarea`
 `
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
-  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
   setId: React.Dispatch<React.SetStateAction<string>>
-  setMess: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,9 +41,9 @@ interface DataBuildingName {
   label: string
   value: string
 }
-const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments, setId, setMess, setShowMes }) => {
-  console.log('form create', id)
-  const [showMessage, setShowMessage] = useState(false)
+const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments, setId }) => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
   const [typeApartments, setTypeApartments] = useState([])
@@ -63,6 +63,14 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
     id: 0
   })
   const [dataBuildingName, setDataBuildingName] = useState<Array<DataBuildingName>>([])
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   useEffect(() => {
     const getBuildingsName = async () => {
       const res = await baseAxios.get('/master-data/building')
@@ -84,16 +92,25 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
         roomNumber: apartments.roomNumber.toString()
       }
       try {
-        await baseAxios.post('/apartment/insert-update', newApartments)
-        getApartments()
-        setMess(id ? 'Edit success' : 'Create success')
-        setShowMes(true)
-        setShow(!show)
-        if (id) {
-          setId('')
+        const res = await baseAxios.post('/apartment/insert-update', newApartments)
+        if (res.data.success && res.data.errorCode == 0) {
+          getApartments()
+          if (id) {
+            showToasts('Edit success', 'green')
+          } else {
+            showToasts('Create success', 'green')
+          }
+          setShow(!show)
+          if (id) {
+            setId('')
+          }
+        } else if (res.data.errorCode == 401) {
+          Navigate('/login')
+        } else {
+          showToasts(res.data.message, 'red')
         }
       } catch (error) {
-        console.log(error)
+        showToasts(error as string, 'red')
       }
     }
   }
@@ -136,7 +153,6 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
   }, [id])
   return (
     <Forms className="bg-form">
-      {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
       <div className="w-75 animate bg-white rounded-3 form-content">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Apartment</h5>
         <div>

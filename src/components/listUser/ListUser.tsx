@@ -8,7 +8,8 @@ import ModalConfirm from '../alertMessage/ModalConfirm'
 import baseAxios from '../../apis/ConfigAxios'
 import Loading from '../others/Loading'
 import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
-import AlertMessage from '../alertMessage/AlertMessage'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
 import { InputStyled } from '../../assets/styles/Input'
 export interface User {
   userName: string
@@ -34,8 +35,7 @@ const ListUser: FC = () => {
   const [showModalConfirm, setShowModalConfirm] = useState(false)
   const [loading, setLoading] = useState(true)
   const [usersList, setUsersList] = useState<usersListFace>({})
-  const [messages, setMessages] = useState('')
-  const [showMessage, setShowMessage] = useState(false)
+  const dispatch = useDispatch()
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
@@ -69,17 +69,23 @@ const ListUser: FC = () => {
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const deleteUser = async () => {
     try {
       await baseAxios.delete(`/users/${id}`)
-      setMessages('success')
-      setShowMessage(true)
+      showToasts('Delete success', 'green')
       getUsersList()
       setId('')
     } catch (error) {
       console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts('err', 'red')
     }
   }
 
@@ -89,15 +95,11 @@ const ListUser: FC = () => {
       actflg: 'I'
     })
   }
-  console.log(usersList)
   if (loading) return <Loading />
   return (
     <>
-      {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteUser} />}
-      {showForm && (
-        <CreateUser setShowMes={setShowMessage} setMess={setMessages} setShow={setShowForm} show={showForm} id={id} getUsers={getUsersList} setId={setId} />
-      )}
+      {showForm && <CreateUser setShow={setShowForm} show={showForm} id={id} getUsers={getUsersList} setId={setId} />}
       <div className="shadow rounded-4 color-table">
         <HeadingPage setShowForm={setShowForm} heading="Users List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">

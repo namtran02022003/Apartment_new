@@ -1,17 +1,17 @@
 import { FC, useState, useEffect } from 'react'
 import { InputStyled } from '../../assets/styles/Input'
-import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import { ValidateResident } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
 import { SelectStyled } from './FormCreateApartment'
 import Select from 'react-select'
 import * as moment from 'moment'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
-  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
   setId: React.Dispatch<React.SetStateAction<string>>
-  setMess: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,8 +21,9 @@ interface OptionSelect {
   id: number
   name: string
 }
-const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setId, setMess, setShowMes }) => {
-  const [showMessage, setShowMessage] = useState(false)
+const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setId }) => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,6 +64,14 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
     wards: [],
     residentTypes: []
   })
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const onSubmit = async () => {
     console.log(residents)
     if (!(Object.keys(ValidateResident(residents, setError)).length > 0)) {
@@ -74,16 +83,25 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
         wardId: residents.wardId.value
       }
       try {
-        await baseAxios.post('/residents/insert-update', newResident)
-        getResidents()
-        setMess(id ? 'Edit success' : 'Create success')
-        setShowMes(true)
-        setShow(!show)
-        if (id) {
-          setId('')
+        const res = await baseAxios.post('/residents/insert-update', newResident)
+        if (res.data.success && res.data.errorCode == 0) {
+          getResidents()
+          if (id) {
+            showToasts('Edit success', 'green')
+          } else {
+            showToasts('Create success', 'green')
+          }
+          setShow(!show)
+          if (id) {
+            setId('')
+          }
+        } else if (res.data.errorCode == 401) {
+          Navigate('/login')
+        } else {
+          showToasts(res.data.message, 'red')
         }
       } catch (error) {
-        console.log(error)
+        showToasts(error as string, 'red')
       }
     }
   }
@@ -222,10 +240,8 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
       getWard()
     }
   }, [residents.districtId])
-  console.log(masterDatas.residentTypes)
   return (
     <Forms className="bg-form">
-      {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
       <div className="w-75 animate bg-white rounded-3 form-content">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Resident</h5>
         <div>

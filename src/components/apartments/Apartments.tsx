@@ -4,10 +4,12 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import baseAxios from '../../apis/ConfigAxios'
-import AlertMessage from '../alertMessage/AlertMessage'
 import FormCreateApartment from '../form/FormCreateApartment'
 import Loading from '../others/Loading'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
 import { InputStyled } from '../../assets/styles/Input'
+import { useNavigate } from 'react-router-dom'
 interface ApartmentsFace {
   item?: [Aaprtment]
   message?: string | null
@@ -34,18 +36,26 @@ interface Aaprtment {
   updatedAt: string
 }
 const Apartments: FC = () => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [id, setId] = useState('')
   const [showModalConfirm, setShowModalConfirm] = useState(false)
-  const [messages, setMessages] = useState('')
-  const [showMessage, setShowMessage] = useState(false)
   const [apartments, setApartments] = useState<ApartmentsFace>({})
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
     searchInput: ''
   })
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
@@ -79,18 +89,16 @@ const Apartments: FC = () => {
     try {
       const res = await baseAxios.delete(`/apartment/${id}`)
       if (res.data.errorCode == 0) {
-        setMessages('delete success')
-        setShowMessage(true)
+        showToasts('Delete success', 'green')
         getApartments()
+      } else if (res.data.errorCode == 401) {
+        Navigate('/login')
       } else {
-        setMessages(res.data.message)
-        setShowMessage(true)
+        showToasts(res.data.message, 'green')
       }
       setId('')
     } catch (error) {
-      console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
   }
   const ChangeStatus = async (id: number) => {
@@ -99,11 +107,10 @@ const Apartments: FC = () => {
       actflg: 'I'
     })
   }
-  console.log(apartments)
+
   if (loading) return <Loading />
   return (
     <>
-      {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && (
         <ModalConfirm
           text="Do you want to deldete apartment"
@@ -113,17 +120,7 @@ const Apartments: FC = () => {
           action={deleteApartment}
         />
       )}
-      {showForm && (
-        <FormCreateApartment
-          setMess={setMessages}
-          setShowMes={setShowMessage}
-          setId={setId}
-          setShow={setShowForm}
-          show={showForm}
-          id={id}
-          getApartments={getApartments}
-        />
-      )}
+      {showForm && <FormCreateApartment setId={setId} setShow={setShowForm} show={showForm} id={id} getApartments={getApartments} />}
       <div className="shadow rounded-4 color-table">
         <HeadingPage setShowForm={setShowForm} heading="Apartment List" />
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
