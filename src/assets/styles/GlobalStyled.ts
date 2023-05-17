@@ -199,6 +199,23 @@ const GlobalStyles = createGlobalStyle`
   }
   .table-scroll {
     padding-bottom: 2px;
+    &-content {
+      overflow-x: auto !important; 
+      width: 1272px;
+      ::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+        background-color: #f5f5f5;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: #aaa;
+        border-radius: 10px;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+      }
+    }
   }
   .flex-grow-02 {
     flex-grow: 0.2 !important;

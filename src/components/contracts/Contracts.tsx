@@ -41,6 +41,7 @@ const Contracts: FC = () => {
   const [showMessage, setShowMessage] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [showConfirmChangeStatus, setShowConfirmChangeStatus] = useState(false)
+  const [typeAction, setTypeAction] = useState('')
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
@@ -97,7 +98,7 @@ const Contracts: FC = () => {
     try {
       const res = await baseAxios.post(`/contracts/active-inactive`, {
         id: Number(id),
-        actflg: 'I'
+        actflg: typeAction
       })
       if (res.data.errorCode == 0) {
         setMessages('success')
@@ -220,13 +221,23 @@ const Contracts: FC = () => {
                         <FontAwesomeIcon
                           onClick={() => {
                             setId(data.id.toString())
+                            setTypeAction('A')
                             setShowConfirmChangeStatus(true)
                           }}
                           title="Confirm contract"
                           className="btn-check-contract"
                           icon={faCircleCheck}
                         />
-                        <FontAwesomeIcon title="Remove contract" className="btn-remove-contract" icon={faXmark} />
+                        <FontAwesomeIcon
+                          onClick={() => {
+                            setId(data.id.toString())
+                            setTypeAction('I')
+                            setShowConfirmChangeStatus(true)
+                          }}
+                          title="Remove contract"
+                          className="btn-remove-contract"
+                          icon={faXmark}
+                        />
                       </td>
                     </tr>
                   )

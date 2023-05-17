@@ -1,14 +1,15 @@
 import { FC, useCallback, useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import ModalConfirm from '../alertMessage/ModalConfirm'
-import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
+import { PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import baseAxios from '../../apis/ConfigAxios'
 import AlertMessage from '../alertMessage/AlertMessage'
 import CreateServicesFee from '../form/CreateServiceFee'
 import Loading from '../others/Loading'
 import * as moment from 'moment'
 import Select from 'react-select'
+import { saveAs } from 'file-saver'
 interface Services {
   item?: [Service]
   message?: string | null
@@ -18,13 +19,28 @@ interface Services {
 }
 interface Service {
   id: number
-  electricityNumber: number
-  waterMumber: number
-  buildingName: string
-  apartmentName: string
-  residentName: string
-  actflg: string
+  orderNo: number
+  periodId: number
+  fromDate: string
   periodName: string
+  residentId: number
+  residentName: string
+  email: string
+  buildingId: number
+  buildingName: string
+  apartmentId: number
+  apartmentName: string
+  electricityNumber: number
+  electricityMoney: number
+  waterMumber: number
+  waterMoney: number
+  motorcycleNumber: number
+  motorcycleDeposit: number
+  carNumber: number
+  carDeposit: number
+  serviceFee: number
+  cleaningNumber: number
+  cleaningFee: number
   createdAt: string
   updatedAt: string
 }
@@ -59,10 +75,6 @@ const ServiceManagement: FC = () => {
   })
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
-  }
-  const handleEditServiceFee = (id: string) => {
-    setId(id)
-    setShowForm(true)
   }
   const getServicesFee = useCallback(async () => {
     try {
@@ -154,6 +166,42 @@ const ServiceManagement: FC = () => {
     }
     getApartments()
   }, [params.buildingId.value])
+
+  const exportCsv = async () => {
+    const res = await baseAxios.get('/summary/export-csv', {
+      params: {
+        periodId: params.periodId.value
+      }
+    })
+    try {
+      const csvContent = '\ufeff' + res.data
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      saveAs(blob, 'building-services.csv')
+      setMessages('dowaload success')
+      setShowMessage(true)
+    } catch (error) {
+      setMessages(error as string)
+      setShowMessage(true)
+    }
+  }
+  const sendAllEmail = async () => {
+    await baseAxios.get('/summary/sendmail-list', {
+      params: {
+        periodId: params.periodId.value
+      }
+    })
+    setMessages('send email success')
+    setShowMessage(true)
+  }
+  const sendMail = async (id: number) => {
+    await baseAxios.get('/summary/sendmail', {
+      params: {
+        summaryId: id
+      }
+    })
+    setMessages('send email success')
+    setShowMessage(true)
+  }
   console.log(servicesFee)
   if (loading) return <Loading />
   return (
@@ -202,43 +250,68 @@ const ServiceManagement: FC = () => {
               }}
               className="select-fee"
             />
-            <button className="btn btn-primary px-3">Search</button>
-            <button className="btn btn-primary px-3">Export csv</button>
-            <button className="btn btn-primary px-3">tinh</button>
+            <button
+              onClick={() => {
+                setParams({
+                  ...params,
+                  periodId: {
+                    label: '',
+                    value: 0
+                  }
+                })
+              }}
+              className="btn btn-primary px-3"
+            >
+              Clear search
+            </button>
+            <button onClick={() => exportCsv()} disabled={!params.periodId.value} className="btn btn-primary px-3">
+              Export csv
+            </button>
+            <button className="btn btn-primary px-3">Calculator</button>
+            <button onClick={() => sendAllEmail()} disabled={!params.periodId.value} className="btn btn-primary px-3">
+              Send Email
+            </button>
           </div>
         </div>
         <div className="px-4 table-scroll">
-          <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-            <thead>
-              <tr>
-                <th className="text-center">#</th>
-                <th>Building Name</th>
-                <th>Apartment Name</th>
-                <th>Period</th>
-                <th>Resident Name</th>
-                <th>Electricity Price</th>
-                <th>Water Price</th>
-                <th className="text-center">Create At</th>
-                {/* <th className="text-center">Update At</th> */}
-                <th className="text-center th-sm">Actions</th>
-              </tr>
-            </thead>
-            {servicesFee.totalRecords ? (
-              <tbody>
-                {servicesFee.item?.map((data) => {
-                  return (
-                    <tr key={data.id}>
-                      <td className="text-center">{data.id}</td>
-                      <td>{data.buildingName}</td>
-                      <td>{data.apartmentName}</td>
-                      <td>{data.periodName}</td>
-                      <td>{data.residentName}</td>
-                      <td className="text-center">{data.electricityNumber}</td>
-                      <td className="text-center">{data.waterMumber}</td>
-                      <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
-                      {/* <td>{moment(data.updatedAt).format('DD/MM/YYYY hh:mm:ss')}</td> */}
-                      <td className="d-flex justify-content-around td-action">
-                        {/* <FontAwesomeIcon
+          <div className="table-scroll-content">
+            <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th className="text-center">#</th>
+                  <th>Building Name</th>
+                  <th>Apartment Name</th>
+                  <th>Period</th>
+                  <th>Resident Name</th>
+                  <th>Electricity Price</th>
+                  <th>Water Price</th>
+                  <th>Cleaning Price</th>
+                  <th>Motorcycle Price</th>
+                  <th>Car Price</th>
+                  <th className="text-center">Create At</th>
+                  {/* <th className="text-center">Update At</th> */}
+                  <th className="text-center th-sm">Actions</th>
+                </tr>
+              </thead>
+              {servicesFee.totalRecords ? (
+                <tbody>
+                  {servicesFee.item?.map((data) => {
+                    return (
+                      <tr key={data.orderNo}>
+                        <td className="text-center">{data.orderNo}</td>
+                        <td>{data.buildingName}</td>
+                        <td>{data.apartmentName}</td>
+                        <td>{data.periodName}</td>
+                        <td>{data.residentName}</td>
+                        <td className="text-center">{data.electricityNumber}</td>
+                        <td className="text-center">{data.waterMumber}</td>
+                        <td className="text-center">{data.cleaningFee}</td>
+                        <td className="text-center">{data.motorcycleDeposit}</td>
+                        <td className="text-center">{data.carDeposit}</td>
+                        <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
+                        {/* <td>{moment(data.updatedAt).format('DD/MM/YYYY hh:mm:ss')}</td> */}
+                        <td className="d-flex justify-content-around td-action">
+                          {/* <FontAwesomeIcon
                           onClick={() => {
                             setShowModalConfirm(true)
                             setId(data.id.toString())
@@ -246,17 +319,17 @@ const ServiceManagement: FC = () => {
                           className="btn-delete"
                           icon={faTrash}
                         /> */}
-                        <FontAwesomeIcon onClick={() => handleEditServiceFee(data.id.toString())} className="btn-edit" icon={faEdit} />
-                        <TonggleInput actflg={data.actflg} />
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            ) : (
-              <NodataMatching count={9} />
-            )}
-          </table>
+                          <FontAwesomeIcon onClick={() => sendMail(data.id)} title="send all email" className="btn-edit" icon={faEnvelope} />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              ) : (
+                <NodataMatching count={9} />
+              )}
+            </table>
+          </div>
           {!!servicesFee.totalRecords && (
             <div className="d-flex justify-content-between table-bottom">
               <div>

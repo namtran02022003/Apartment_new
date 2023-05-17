@@ -6,7 +6,8 @@ import { faCalendar, faDollar, faClipboardList, faComments } from '@fortawesome/
 import AlertMessage from '../alertMessage/AlertMessage'
 import MonthlyRevenueChart from '../recharts/Recharts'
 import baseAxios from '../../apis/ConfigAxios'
-
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
 const HomeStyled = styled.div`
   .menu-icon {
     color: #dddfeb
@@ -33,6 +34,7 @@ interface Synthetic {
 }
 
 const Home: FC = () => {
+  const dispatch = useDispatch()
   const [message, setMessage] = useState('')
   const [show, setShow] = useState(false)
   const [synthetic, setSynthetic] = useState<Synthetic[]>([])
@@ -61,13 +63,20 @@ const Home: FC = () => {
     }
     getSynthetic()
   }, [])
-
-  console.log(synthetic)
+  const showT = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
 
   return (
     <HomeStyled>
       {message && <AlertMessage show={show} setShow={setShow} message={`Xin chào ${message}`} color="green" />}
       <h2>Dashboard</h2>
+      <button onClick={() => showT('okiiiii', 'green')}>oki</button>
       <div className="row">
         {synthetic.map((menu: Synthetic, index: number) => {
           return (

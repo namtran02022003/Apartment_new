@@ -104,7 +104,15 @@ const Apartments: FC = () => {
   return (
     <>
       {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
-      {showModalConfirm && <ModalConfirm setId={setId} showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteApartment} />}
+      {showModalConfirm && (
+        <ModalConfirm
+          text="Do you want to deldete apartment"
+          setId={setId}
+          showForm={showModalConfirm}
+          setShowForm={setShowModalConfirm}
+          action={deleteApartment}
+        />
+      )}
       {showForm && (
         <FormCreateApartment
           setMess={setMessages}

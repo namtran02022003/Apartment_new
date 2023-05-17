@@ -162,24 +162,6 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                   />
                   {errors.apartmentCode && <p className="m-0 message_form">{errors.apartmentCode}</p>}
                 </div>
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="apartmentName">
-                    Apartment Name:
-                    <span className="color-red">*</span>
-                  </label>
-                  <InputStyled
-                    id="apartmentName"
-                    type="text"
-                    maxLength={250}
-                    placeholder="Enter Apartment Name"
-                    value={apartments.apartmentName}
-                    onChange={(e) => {
-                      setApartments({ ...apartments, apartmentName: e.target.value })
-                      setError({ ...errors, apartmentName: '' })
-                    }}
-                  />
-                  {errors.apartmentName && <p className="m-0 message_form">{errors.apartmentName}</p>}
-                </div>
                 <div className="position-relative pb-1">
                   <label htmlFor="buildingname">
                     Building Name
@@ -194,8 +176,6 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                   />
                   {errors.buildingId && <p className="m-0 message_form">{errors.buildingId}</p>}
                 </div>
-              </div>
-              <div className="col-6">
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="acreage">
                     Acreage:
@@ -214,18 +194,25 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                   />
                   {errors.acreage && <p className="m-0 message_form">{errors.acreage}</p>}
                 </div>
+              </div>
+              <div className="col-6">
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="roomNumber">Room Number:</label>
+                  <label htmlFor="apartmentName">
+                    Apartment Name:
+                    <span className="color-red">*</span>
+                  </label>
                   <InputStyled
-                    min="0"
-                    id="roomNumber"
-                    type="number"
-                    placeholder="Enter Room Number"
-                    value={apartments.roomNumber}
+                    id="apartmentName"
+                    type="text"
+                    maxLength={250}
+                    placeholder="Enter Apartment Name"
+                    value={apartments.apartmentName}
                     onChange={(e) => {
-                      setApartments({ ...apartments, roomNumber: Number(e.target.value) })
+                      setApartments({ ...apartments, apartmentName: e.target.value })
+                      setError({ ...errors, apartmentName: '' })
                     }}
                   />
+                  {errors.apartmentName && <p className="m-0 message_form">{errors.apartmentName}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="apartmentTypeId">Apartment Type</label>
@@ -246,6 +233,19 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                     })}
                   </SelectStyled>
                 </div>
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="roomNumber">Room Number:</label>
+                  <InputStyled
+                    min="0"
+                    id="roomNumber"
+                    type="number"
+                    placeholder="Enter Room Number"
+                    value={apartments.roomNumber}
+                    onChange={(e) => {
+                      setApartments({ ...apartments, roomNumber: Number(e.target.value) })
+                    }}
+                  />
+                </div>
               </div>
               <div className="my-2 position-relative pb-1">
                 <label htmlFor="location">Location:</label>
@@ -261,17 +261,6 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                 />
               </div>
               <div className="position-relative">
-                <label htmlFor="note">Note:</label>
-                <TextareaStyled
-                  id="note"
-                  placeholder="Enter Note"
-                  value={apartments.note}
-                  onChange={(e) => {
-                    setApartments({ ...apartments, note: e.target.value })
-                  }}
-                />
-              </div>
-              <div className="position-relative">
                 <label htmlFor="address">Address:</label>
                 <TextareaStyled
                   id="address"
@@ -279,6 +268,17 @@ const FormCreateApartment: FC<SignUpProps> = ({ show, setShow, id, getApartments
                   value={apartments.address}
                   onChange={(e) => {
                     setApartments({ ...apartments, address: e.target.value })
+                  }}
+                />
+              </div>
+              <div className="position-relative">
+                <label htmlFor="note">Note:</label>
+                <TextareaStyled
+                  id="note"
+                  placeholder="Enter Note"
+                  value={apartments.note}
+                  onChange={(e) => {
+                    setApartments({ ...apartments, note: e.target.value })
                   }}
                 />
               </div>

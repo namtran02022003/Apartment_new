@@ -182,6 +182,12 @@ const ValidateResident = (resident: resident, setError: Dispatch<SetStateAction<
   if (!resident.wardId.value) {
     errs.wardId = 'Invalid ward'
   }
+  if (!resident.idDate.trim()) {
+    errs.idDate = 'Invalid id date'
+  }
+  if (!resident.idPlace.trim()) {
+    errs.idPlace = 'Invalid id place'
+  }
   setError(errs)
   return errs
 }

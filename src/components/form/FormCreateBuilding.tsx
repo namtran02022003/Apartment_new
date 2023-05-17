@@ -89,6 +89,33 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, 
                   {errors.buildingCode && <p className="m-0 message_form">{errors.buildingCode}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
+                  <label htmlFor="acreage">Acreage:</label>
+                  <InputStyled
+                    maxLength={50}
+                    id="acreage"
+                    type="text"
+                    placeholder="Enter acreage"
+                    value={values.acreage}
+                    onChange={(e) => {
+                      setValues({ ...values, acreage: e.target.value })
+                    }}
+                  />
+                </div>
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="numberApartment">Number of Apartment:</label>
+                  <InputStyled
+                    id="numberApartment"
+                    type="number"
+                    placeholder="Enter numberApartment"
+                    value={Number(values.numberOfApartments)}
+                    onChange={(e) => {
+                      setValues({ ...values, numberOfApartments: Number(e.target.value) })
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="my-2 position-relative pb-1">
                   <label htmlFor="buildingName">
                     Building Name:
                     <span className="color-red">*</span>
@@ -117,8 +144,6 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, 
                     }}
                   />
                 </div>
-              </div>
-              <div className="col-6">
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="height">Height:</label>
                   <InputStyled
@@ -129,31 +154,6 @@ const FormCreateBuilding: FC<SignUpProps> = ({ show, setShow, id, getBuildings, 
                     value={values.height}
                     onChange={(e) => {
                       setValues({ ...values, height: e.target.value })
-                    }}
-                  />
-                </div>
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="acreage">Acreage:</label>
-                  <InputStyled
-                    maxLength={50}
-                    id="acreage"
-                    type="text"
-                    placeholder="Enter acreage"
-                    value={values.acreage}
-                    onChange={(e) => {
-                      setValues({ ...values, acreage: e.target.value })
-                    }}
-                  />
-                </div>
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="numberApartment">Number of Apartment:</label>
-                  <InputStyled
-                    id="numberApartment"
-                    type="number"
-                    placeholder="Enter numberApartment"
-                    value={Number(values.numberOfApartments)}
-                    onChange={(e) => {
-                      setValues({ ...values, numberOfApartments: Number(e.target.value) })
                     }}
                   />
                 </div>

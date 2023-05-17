@@ -222,6 +222,7 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
       getWard()
     }
   }, [residents.districtId])
+  console.log(masterDatas.residentTypes)
   return (
     <Forms className="bg-form">
       {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
@@ -329,10 +330,13 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                     value={residents.gender}
                     onChange={(e) => {
                       setResidents({ ...residents, gender: Number(e.target.value) })
+                      setError({ ...errors, gender: '' })
                     }}
                     title="Apartment type"
                   >
-                    <option value={''}>Gender</option>
+                    <option value={0} disabled hidden>
+                      Gender
+                    </option>
                     {masterDatas.genders.map((gender: { id: number; name: string }) => {
                       return (
                         <option value={gender.id} key={gender.id}>
@@ -370,9 +374,13 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                     value={residents.residentType}
                     onChange={(e) => {
                       setResidents({ ...residents, residentType: Number(e.target.value) })
+                      setError({ ...errors, residentType: '' })
                     }}
                     title="Apartment type"
                   >
+                    <option value={0} disabled hidden>
+                      Resident type
+                    </option>
                     {masterDatas.residentTypes.map((type: { id: number; name: string }) => {
                       return (
                         <option key={type.id} value={type.id}>

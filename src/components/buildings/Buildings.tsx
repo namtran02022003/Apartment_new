@@ -88,7 +88,15 @@ const Buildings: FC = () => {
   return (
     <>
       {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
-      {showModalConfirm && <ModalConfirm setId={setId} showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteBuilding} />}
+      {showModalConfirm && (
+        <ModalConfirm
+          text="Do you want to delete building?"
+          setId={setId}
+          showForm={showModalConfirm}
+          setShowForm={setShowModalConfirm}
+          action={deleteBuilding}
+        />
+      )}
       {showForm && (
         <FormCreateBuilding
           setMess={setMessages}
