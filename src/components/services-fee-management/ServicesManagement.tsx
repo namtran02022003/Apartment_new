@@ -225,14 +225,14 @@ const ServiceManagement: FC = () => {
   const Caculate = async () => {
     const res = await baseAxios.get('/summary/caculator', {
       params: {
-        pariodId: params.periodId.value
+        periodId: params.periodId.value
       }
     })
     console.log(res)
-    if (res.data.errCode == 0) {
+    if (res.data.errorCode == 0) {
       showToasts('Success', 'green')
       getServicesFee()
-    } else if (res.data.errCode == 401) {
+    } else if (res.data.errorCode == 401) {
       Navigate('/login')
     } else {
       showToasts(res.data.message, 'green')
@@ -244,7 +244,20 @@ const ServiceManagement: FC = () => {
       {showModalConfirm && <ModalConfirm setId={setId} showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteServiceFee} />}
       {showForm && <CreateServicesFee setId={setId} setShow={setShowForm} show={showForm} id={id} getServicesFee={getServicesFee} />}
       <div className="shadow rounded-4 color-table">
-        <HeadingPage isDisable={true} setShowForm={setShowForm} heading="Service Management List" />
+        <div className="d-flex mb-2 py-2 bg-heading-table justify-content-between align-items-center">
+          <HeadingPage isDisable={true} setShowForm={setShowForm} heading="Service Management List" />
+          <div>
+            <button onClick={() => exportCsv()} disabled={!params.periodId.value} className="btn btn-primary mx-2 px-3">
+              Export csv
+            </button>
+            <button onClick={() => Caculate()} disabled={!params.periodId.value} className="btn btn-primary mx-2 px-3">
+              Calculate
+            </button>
+            <button onClick={() => sendAllEmail()} disabled={!params.periodId.value} className="btn btn-primary mx-2 px-3">
+              Send Email
+            </button>
+          </div>
+        </div>
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
           <div>
             Show
@@ -287,15 +300,6 @@ const ServiceManagement: FC = () => {
               className="btn btn-primary px-3"
             >
               Clear search
-            </button>
-            <button onClick={() => exportCsv()} disabled={!params.periodId.value} className="btn btn-primary px-3">
-              Export csv
-            </button>
-            <button onClick={() => Caculate()} className="btn btn-primary px-3">
-              Calculate
-            </button>
-            <button onClick={() => sendAllEmail()} disabled={!params.periodId.value} className="btn btn-primary px-3">
-              Send Email
             </button>
           </div>
         </div>

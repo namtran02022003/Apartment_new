@@ -115,7 +115,9 @@ const Residents: FC = () => {
   if (errorPage) return <div>{errorPage}</div>
   return (
     <>
-      {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteResident} />}
+      {showModalConfirm && (
+        <ModalConfirm text="Do you want delete resident" showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteResident} />
+      )}
       {showForm && <CreateResident setShow={setShowForm} show={showForm} id={id} getResidents={getResidents} setId={setId} />}
       <div className="shadow rounded-4 color-table">
         <HeadingPage setShowForm={setShowForm} heading="Resident List" />

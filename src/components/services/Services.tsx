@@ -4,11 +4,13 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import baseAxios from '../../apis/ConfigAxios'
-import AlertMessage from '../alertMessage/AlertMessage'
 import CreateServices from '../form/CreateServices'
 import Loading from '../others/Loading'
 import * as moment from 'moment'
 import { InputStyled } from '../../assets/styles/Input'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 interface Services {
   item?: [Service]
   message?: string | null
@@ -28,18 +30,26 @@ interface Service {
   updatedAt: string
 }
 const Services: FC = () => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [id, setId] = useState('')
   const [showModalConfirm, setShowModalConfirm] = useState(false)
-  const [messages, setMessages] = useState('')
-  const [showMessage, setShowMessage] = useState(false)
   const [services, setServices] = useState<Services>({})
   const [params, setParams] = useState({
     pageSize: 10,
     pageNum: 1,
     searchInput: ''
   })
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
@@ -69,35 +79,30 @@ const Services: FC = () => {
   }, [getServices])
   const deleteService = async () => {
     try {
-      await baseAxios.delete(`/services/${id}`)
-      setMessages('delete success')
-      setShowMessage(true)
-      getServices()
+      const res = await baseAxios.delete(`/services/${id}`)
+      if (res.data.errorCode == 0) {
+        showToasts('Delete success', 'green')
+        getServices()
+      } else if (res.data.errorCode == 401) {
+        Navigate('/login')
+      } else {
+        showToasts(res.data.message, 'green')
+      }
+      setId('')
     } catch (error) {
-      console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
     setId('')
   }
   if (loading) return <Loading />
   return (
     <>
-      {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm setId={setId} showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteService} />}
-      {showForm && (
-        <CreateServices
-          setMess={setMessages}
-          setShowMes={setShowMessage}
-          setId={setId}
-          setShow={setShowForm}
-          show={showForm}
-          id={id}
-          getServices={getServices}
-        />
-      )}
+      {showForm && <CreateServices setId={setId} setShow={setShowForm} show={showForm} id={id} getServices={getServices} />}
       <div className="shadow rounded-4 color-table">
-        <HeadingPage isDisable={true} setShowForm={setShowForm} heading="Service List" />
+        <div className="bg-heading-table py-2">
+          <HeadingPage isDisable={true} setShowForm={setShowForm} heading="Service List" />
+        </div>
         <div className="d-flex mb-4 px-4 justify-content-between align-items-center">
           <div>
             Show

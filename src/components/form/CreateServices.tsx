@@ -1,23 +1,22 @@
 import { FC, useState, useEffect } from 'react'
 import { InputStyled } from '../../assets/styles/Input'
-import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import { ValidateServices } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
-
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 interface SignUpProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>
-  setShowMes: React.Dispatch<React.SetStateAction<boolean>>
   setId: React.Dispatch<React.SetStateAction<string>>
-  setMess: React.Dispatch<React.SetStateAction<string>>
   show: boolean
   id?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getServices: any
 }
-const CreateServices: FC<SignUpProps> = ({ show, setShow, id, getServices, setId, setMess, setShowMes }) => {
-  console.log(id)
-  const [showMessage, setShowMessage] = useState(false)
+const CreateServices: FC<SignUpProps> = ({ show, setShow, id, getServices, setId }) => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
   const [services, setServices] = useState({
@@ -27,20 +26,36 @@ const CreateServices: FC<SignUpProps> = ({ show, setShow, id, getServices, setId
     note: '',
     id: 0
   })
-
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const onSubmit = async () => {
     if (!(Object.keys(ValidateServices(services, setError)).length > 0)) {
       try {
-        await baseAxios.post('/services/insert-update', services)
-        getServices()
-        setMess(id ? 'Edit success' : 'Create success')
-        setShowMes(true)
-        setShow(!show)
-        if (id) {
-          setId('')
+        const res = await baseAxios.post('/services/insert-update', services)
+        if (res.data.success && res.data.errorCode == 0) {
+          getServices()
+          if (id) {
+            showToasts('Edit success', 'green')
+          } else {
+            showToasts('Create success', 'green')
+          }
+          setShow(!show)
+          if (id) {
+            setId('')
+          }
+        } else if (res.data.errorCode == 401) {
+          Navigate('/login')
+        } else {
+          showToasts(res.data.message, 'red')
         }
       } catch (error) {
-        console.log(error)
+        showToasts(error as string, 'red')
       }
     }
   }
@@ -53,10 +68,8 @@ const CreateServices: FC<SignUpProps> = ({ show, setShow, id, getServices, setId
       getService()
     }
   }, [id])
-  console.log(services)
   return (
     <Forms className="bg-form">
-      {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
       <div className="w-50 animate bg-white rounded-3 form-content">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Service</h5>
         <div>

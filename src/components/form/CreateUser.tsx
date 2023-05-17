@@ -1,4 +1,4 @@
-import { useState, FC, ChangeEvent, useEffect } from 'react'
+import { useState, FC, ChangeEvent, useEffect, useCallback } from 'react'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { InputStyled } from '../../assets/styles/Input'
@@ -67,14 +67,17 @@ const CreateUser: FC<UserFormProps> = ({ setShow, show, id, getUsers, setId }) =
   })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
-  const showToasts = (message: string, color: string) => {
-    dispatch(
-      showToast({
-        message: message,
-        color: color
-      })
-    )
-  }
+  const showToasts = useCallback(
+    (message: string, color: string) => {
+      dispatch(
+        showToast({
+          message: message,
+          color: color
+        })
+      )
+    },
+    [dispatch]
+  )
   const onSubmit = async () => {
     const type = id ? false : true
     if (!(Object.keys(ValidateUser(user, setError, type)).length > 0)) {
@@ -92,7 +95,8 @@ const CreateUser: FC<UserFormProps> = ({ setShow, show, id, getUsers, setId }) =
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const res: any = await baseAxios.post(`/users/insert-update`, userData)
-        if (res.data.success && res.data.errorCode == 0) {
+        console.log(res)
+        if (res.data.errorCode == 0 || res.status == 204) {
           getUsers()
           if (id) {
             showToasts('Edit success', 'green')
@@ -106,10 +110,10 @@ const CreateUser: FC<UserFormProps> = ({ setShow, show, id, getUsers, setId }) =
         } else if (res.data.errorCode == 401) {
           Navigate('/login')
         } else {
-          showToasts(res.data.message, 'red')
+          showToasts(res.data.message || 'Error', 'red')
         }
       } catch (error) {
-        showToasts(error as string, 'red')
+        showToasts((error as Error).message, 'red')
       }
     }
   }
@@ -125,15 +129,23 @@ const CreateUser: FC<UserFormProps> = ({ setShow, show, id, getUsers, setId }) =
   }
   useEffect(() => {
     const getUser = async () => {
-      const res = await baseAxios.get(`/users/${id}`)
-      if (res.status == 200) {
-        setUser(res.data.item)
+      try {
+        const res = await baseAxios.get(`/users/${id}`)
+        if (res.status == 200) {
+          setUser(res.data.item)
+        } else if (res.data.errorCode == 401) {
+          Navigate('/login')
+        } else {
+          showToasts(res.data.message, 'red')
+        }
+      } catch (error) {
+        showToasts((error as Error).message, 'red')
       }
     }
     if (id) {
       getUser()
     }
-  }, [id])
+  }, [id, Navigate, showToasts])
   return (
     <Forms className="bg-form">
       <div className="w-75 form-content bg-white rounded-3 animate">

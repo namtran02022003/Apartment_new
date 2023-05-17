@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from 'react'
 import { InputStyled } from '../../assets/styles/Input'
-import AlertMessage from '../alertMessage/AlertMessage'
 import { Forms } from '../../assets/styles/Forms'
 import { ValidateServiceFee } from './Validates'
 import baseAxios from '../../apis/ConfigAxios'
@@ -19,7 +18,6 @@ interface SignUpProps {
 const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee, setId }) => {
   const dispatch = useDispatch()
   const Navigate = useNavigate()
-  const [showMessage, setShowMessage] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setError] = useState<any>({})
   const [servicesFee, setServicesFee] = useState({
@@ -195,10 +193,8 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
     }
     getResidents()
   }, [])
-  console.log(servicesFee.apartmentId)
   return (
     <Forms className="bg-form">
-      {showMessage && <AlertMessage color={'green'} message="ok" show={showMessage} setShow={setShowMessage} />}
       <div className="w-50 animate bg-white rounded-3 form-content">
         <h5 className="title_page px-3 rounded-3 py-2 bg-heading-table pt-2">{id ? 'Edit' : 'Create new'} Service Fee</h5>
         <div>
@@ -321,10 +317,7 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
               <div className="row">
                 <div className="col-4">
                   <div className="my-2 position-relative pb-1">
-                    <label htmlFor="carnumber">
-                      Car Number:
-                      <span className="color-red">*</span>
-                    </label>
+                    <label htmlFor="carnumber">Car Number:</label>
                     <InputStyled
                       id="carnumber"
                       type="number"
@@ -342,10 +335,7 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
                 </div>
                 <div className="col-4">
                   <div className="my-2 position-relative pb-1">
-                    <label htmlFor="motorcycleNumber">
-                      Motorcycle Number:
-                      <span className="color-red">*</span>
-                    </label>
+                    <label htmlFor="motorcycleNumber">Motorcycle Number:</label>
                     <InputStyled
                       id="motorcycleNumber"
                       type="number"
@@ -363,10 +353,7 @@ const CreateServicesFee: FC<SignUpProps> = ({ show, setShow, id, getServicesFee,
                 </div>
                 <div className="col-4">
                   <div className="my-2 position-relative pb-1">
-                    <label htmlFor="cleaningNumber">
-                      Cleaning Number:
-                      <span className="color-red">*</span>
-                    </label>
+                    <label htmlFor="cleaningNumber">Cleaning Number:</label>
                     <InputStyled
                       id="cleaningNumber"
                       type="number"

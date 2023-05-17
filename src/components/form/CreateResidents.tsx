@@ -73,7 +73,6 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
     )
   }
   const onSubmit = async () => {
-    console.log(residents)
     if (!(Object.keys(ValidateResident(residents, setError)).length > 0)) {
       const newResident = {
         ...residents,
@@ -266,21 +265,21 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.fullName && <p className="m-0 message_form">{errors.fullName}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="email">
-                    Email:
+                  <label htmlFor="idNo">
+                    ID Code:
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
-                    id="email"
+                    id="idNo"
                     type="text"
-                    placeholder="Enter email"
-                    value={residents.email}
+                    placeholder="Enter id code"
+                    value={residents.idNo}
                     onChange={(e) => {
-                      setResidents({ ...residents, email: e.target.value })
-                      setError({ ...errors, email: '' })
+                      setResidents({ ...residents, idNo: e.target.value })
+                      setError({ ...errors, idNo: '' })
                     }}
                   />
-                  {errors.email && <p className="m-0 message_form">{errors.email}</p>}
+                  {errors.idNo && <p className="m-0 message_form">{errors.idNo}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="phoneNumber">
@@ -301,38 +300,40 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.phoneNumber && <p className="m-0 message_form">{errors.phoneNumber}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="birthDate">
-                    Birth of Date:
+                  <label htmlFor="nation">
+                    Nation:
                     <span className="color-red">*</span>
                   </label>
-                  <InputStyled
-                    id="birthDate"
-                    type="date"
-                    placeholder="Enter birthDate"
-                    value={moment(residents.birthDate).format('YYYY-MM-DD')}
-                    onChange={(e) => {
-                      setResidents({ ...residents, birthDate: e.target.value })
-                      setError({ ...errors, birthDate: '' })
+                  <Select
+                    placeholder="Select a nation"
+                    value={residents.nationId.value ? residents.nationId : 0}
+                    options={masterDatas.nations}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onChange={(e: any) => {
+                      setResidents({ ...residents, nationId: e })
+                      setError({ ...errors, nationId: '' })
                     }}
+                    id="nation"
                   />
-                  {errors.birthDate && <p className="m-0 message_form">{errors.birthDate}</p>}
+                  {errors.nationId && <p className="m-0 message_form">{errors.nationId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="idDate">
-                    ID Date:
+                  <label htmlFor="wardId">
+                    Ward:
                     <span className="color-red">*</span>
                   </label>
-                  <InputStyled
-                    id="idDate"
-                    type="date"
-                    placeholder="Enter idDate"
-                    value={moment(residents.idDate).format('YYYY-MM-DD')}
-                    onChange={(e) => {
-                      setResidents({ ...residents, idDate: e.target.value })
-                      setError({ ...errors, idDate: '' })
+                  <Select
+                    placeholder="Select a ward"
+                    value={residents.wardId.value ? residents.wardId : 0}
+                    options={masterDatas.wards}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onChange={(e: any) => {
+                      setResidents({ ...residents, wardId: e })
+                      setError({ ...errors, wardId: '' })
                     }}
+                    id="wardId"
                   />
-                  {errors.idDate && <p className="m-0 message_form">{errors.idDate}</p>}
+                  {errors.wardId && <p className="m-0 message_form">{errors.wardId}</p>}
                 </div>
               </div>
               <div className="col-4">
@@ -364,21 +365,21 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.gender && <p className="m-0 message_form">{errors.gender}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="idNo">
-                    ID Code:
+                  <label htmlFor="idDate">
+                    ID Date:
                     <span className="color-red">*</span>
                   </label>
                   <InputStyled
-                    id="idNo"
-                    type="text"
-                    placeholder="Enter id code"
-                    value={residents.idNo}
+                    id="idDate"
+                    type="date"
+                    placeholder="Enter idDate"
+                    value={moment(residents.idDate).format('YYYY-MM-DD')}
                     onChange={(e) => {
-                      setResidents({ ...residents, idNo: e.target.value })
-                      setError({ ...errors, idNo: '' })
+                      setResidents({ ...residents, idDate: e.target.value })
+                      setError({ ...errors, idDate: '' })
                     }}
                   />
-                  {errors.idNo && <p className="m-0 message_form">{errors.idNo}</p>}
+                  {errors.idDate && <p className="m-0 message_form">{errors.idDate}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
                   <label htmlFor="residentType">
@@ -408,60 +409,6 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.residentType && <p className="m-0 message_form">{errors.residentType}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
-                  <label htmlFor="address">
-                    Address:
-                    <span className="color-red">*</span>
-                  </label>
-                  <InputStyled
-                    id="address"
-                    type="text"
-                    placeholder="Enter address"
-                    value={residents.address}
-                    onChange={(e) => {
-                      setResidents({ ...residents, address: e.target.value })
-                      setError({ ...errors, address: '' })
-                    }}
-                  />
-                  {errors.address && <p className="m-0 message_form">{errors.address}</p>}
-                </div>
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="idPlace">
-                    ID Place:
-                    <span className="color-red">*</span>
-                  </label>
-                  <InputStyled
-                    id="idPlace"
-                    type="text"
-                    placeholder="Enter id place"
-                    value={residents.idPlace}
-                    onChange={(e) => {
-                      setResidents({ ...residents, idPlace: e.target.value })
-                      setError({ ...errors, idPlace: '' })
-                    }}
-                  />
-                  {errors.idPlace && <p className="m-0 message_form">{errors.idPlace}</p>}
-                </div>
-              </div>
-              <div className="col-4">
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="nation">
-                    Nation:
-                    <span className="color-red">*</span>
-                  </label>
-                  <Select
-                    placeholder="Select a nation"
-                    value={residents.nationId.value ? residents.nationId : 0}
-                    options={masterDatas.nations}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(e: any) => {
-                      setResidents({ ...residents, nationId: e })
-                      setError({ ...errors, nationId: '' })
-                    }}
-                    id="nation"
-                  />
-                  {errors.nationId && <p className="m-0 message_form">{errors.nationId}</p>}
-                </div>
-                <div className="my-2 position-relative pb-1">
                   <label htmlFor="provinceId">
                     Province:
                     <span className="color-red">*</span>
@@ -480,6 +427,76 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                   {errors.provinceId && <p className="m-0 message_form">{errors.provinceId}</p>}
                 </div>
                 <div className="my-2 position-relative pb-1">
+                  <label htmlFor="address">
+                    Address:
+                    <span className="color-red">*</span>
+                  </label>
+                  <InputStyled
+                    id="address"
+                    type="text"
+                    placeholder="Enter address"
+                    value={residents.address}
+                    onChange={(e) => {
+                      setResidents({ ...residents, address: e.target.value })
+                      setError({ ...errors, address: '' })
+                    }}
+                  />
+                  {errors.address && <p className="m-0 message_form">{errors.address}</p>}
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="email">
+                    Email:
+                    <span className="color-red">*</span>
+                  </label>
+                  <InputStyled
+                    id="email"
+                    type="text"
+                    placeholder="Enter email"
+                    value={residents.email}
+                    onChange={(e) => {
+                      setResidents({ ...residents, email: e.target.value })
+                      setError({ ...errors, email: '' })
+                    }}
+                  />
+                  {errors.email && <p className="m-0 message_form">{errors.email}</p>}
+                </div>
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="idPlace">
+                    ID Place:
+                    <span className="color-red">*</span>
+                  </label>
+                  <InputStyled
+                    id="idPlace"
+                    type="text"
+                    placeholder="Enter id place"
+                    value={residents.idPlace}
+                    onChange={(e) => {
+                      setResidents({ ...residents, idPlace: e.target.value })
+                      setError({ ...errors, idPlace: '' })
+                    }}
+                  />
+                  {errors.idPlace && <p className="m-0 message_form">{errors.idPlace}</p>}
+                </div>
+                <div className="my-2 position-relative pb-1">
+                  <label htmlFor="birthDate">
+                    Birth of Date:
+                    <span className="color-red">*</span>
+                  </label>
+                  <InputStyled
+                    id="birthDate"
+                    type="date"
+                    placeholder="Enter birthDate"
+                    value={moment(residents.birthDate).format('YYYY-MM-DD')}
+                    onChange={(e) => {
+                      setResidents({ ...residents, birthDate: e.target.value })
+                      setError({ ...errors, birthDate: '' })
+                    }}
+                  />
+                  {errors.birthDate && <p className="m-0 message_form">{errors.birthDate}</p>}
+                </div>
+                <div className="my-2 position-relative pb-1">
                   <label htmlFor="districtId">
                     District:
                     <span className="color-red">*</span>
@@ -496,24 +513,6 @@ const CreateResident: FC<SignUpProps> = ({ show, setShow, id, getResidents, setI
                     id="districtId"
                   />
                   {errors.districtId && <p className="m-0 message_form">{errors.districtId}</p>}
-                </div>
-                <div className="my-2 position-relative pb-1">
-                  <label htmlFor="wardId">
-                    Ward:
-                    <span className="color-red">*</span>
-                  </label>
-                  <Select
-                    placeholder="Select a ward"
-                    value={residents.wardId.value ? residents.wardId : 0}
-                    options={masterDatas.wards}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(e: any) => {
-                      setResidents({ ...residents, wardId: e })
-                      setError({ ...errors, wardId: '' })
-                    }}
-                    id="wardId"
-                  />
-                  {errors.wardId && <p className="m-0 message_form">{errors.wardId}</p>}
                 </div>
               </div>
             </div>

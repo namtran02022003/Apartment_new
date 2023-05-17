@@ -78,11 +78,13 @@ interface HeadingPage {
 }
 const HeadingPage: FC<HeadingPage> = ({ setShowForm, heading, isDisable }) => {
   return (
-    <div className="d-flex mb-4 round-top bg-heading-table px-4 py-2 justify-content-between align-items-center mb-2">
+    <div className={`d-flex round-top ${isDisable ? '' : 'bg-heading-table py-2'} px-4  justify-content-between align-items-center mb-2`}>
       <h5>{heading}</h5>
-      <button disabled={isDisable} onClick={() => setShowForm(true)} className="btn btn-primary px-3 ">
-        Create
-      </button>
+      {!isDisable && (
+        <button disabled={isDisable} onClick={() => setShowForm(true)} className="btn btn-primary px-3 ">
+          Create
+        </button>
+      )}
     </div>
   )
 }

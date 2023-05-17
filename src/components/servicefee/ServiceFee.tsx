@@ -4,11 +4,13 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import ModalConfirm from '../alertMessage/ModalConfirm'
 import { TonggleInput, PagingBar, HeadingPage, NodataMatching } from '../../common/CommonComponent'
 import baseAxios from '../../apis/ConfigAxios'
-import AlertMessage from '../alertMessage/AlertMessage'
 import CreateServicesFee from '../form/CreateServiceFee'
 import Loading from '../others/Loading'
 import * as moment from 'moment'
 import Select from 'react-select'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
+import { useNavigate } from 'react-router-dom'
 interface Services {
   item?: [Service]
   message?: string | null
@@ -27,14 +29,17 @@ interface Service {
   periodName: string
   createdAt: string
   updatedAt: string
+  carNumber: number
+  cleaningNumber: number
+  motorcycleNumber: number
 }
 const ServiceFee: FC = () => {
+  const dispatch = useDispatch()
+  const Navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [id, setId] = useState('')
   const [showModalConfirm, setShowModalConfirm] = useState(false)
-  const [messages, setMessages] = useState('')
-  const [showMessage, setShowMessage] = useState(false)
   const [servicesFee, setServicesFee] = useState<Services>({})
   const [masterDataSelects, setMasterDataSelects] = useState({
     periodId: [],
@@ -57,6 +62,14 @@ const ServiceFee: FC = () => {
       value: 0
     }
   })
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
@@ -88,14 +101,18 @@ const ServiceFee: FC = () => {
   }, [getServicesFee])
   const deleteServiceFee = async () => {
     try {
-      await baseAxios.delete(`/summary/${id}`)
-      setMessages('delete success')
-      setShowMessage(true)
-      getServicesFee()
+      const res = await baseAxios.delete(`/summary/${id}`)
+      if (res.data.errorCode == 0) {
+        showToasts('Delete success', 'green')
+        getServicesFee()
+      } else if (res.data.errorCode == 401) {
+        Navigate('/login')
+      } else {
+        showToasts(res.data.message, 'green')
+      }
+      setId('')
     } catch (error) {
-      console.log(error)
-      setMessages('err')
-      setShowMessage(true)
+      showToasts(error as string, 'red')
     }
     setId('')
   }
@@ -154,10 +171,27 @@ const ServiceFee: FC = () => {
     }
     getApartments()
   }, [params.buildingId.value, id])
+  const ClearSearch = () => {
+    setParams({
+      ...params,
+      periodId: {
+        label: '',
+        value: 0
+      },
+      buildingId: {
+        label: '',
+        value: 0
+      },
+      apartmentId: {
+        label: '',
+        value: 0
+      }
+    })
+  }
+  console.log(servicesFee)
   if (loading) return <Loading />
   return (
     <>
-      {showMessage && <AlertMessage show={showMessage} setShow={setShowMessage} message={messages} color="green" />}
       {showModalConfirm && <ModalConfirm setId={setId} showForm={showModalConfirm} setShowForm={setShowModalConfirm} action={deleteServiceFee} />}
       {showForm && <CreateServicesFee setId={setId} setShow={setShowForm} show={showForm} id={id} getServicesFee={getServicesFee} />}
       <div className="shadow rounded-4 color-table">
@@ -211,41 +245,50 @@ const ServiceFee: FC = () => {
               }}
               className="select-fee"
             />
-            <button className="btn btn-primary px-3">Search</button>
+            <button onClick={() => ClearSearch()} className="btn btn-primary px-3">
+              Clear search
+            </button>
           </div>
         </div>
         <div className="px-4 table-scroll">
-          <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
-            <thead>
-              <tr>
-                <th className="text-center">#</th>
-                <th>Building Name</th>
-                <th>Apartment Name</th>
-                <th>Period</th>
-                <th>Resident Name</th>
-                <th>Electricity Number</th>
-                <th>Water Number</th>
-                <th className="text-center">Create At</th>
-                {/* <th className="text-center">Update At</th> */}
-                <th className="text-center th-sm">Actions</th>
-              </tr>
-            </thead>
-            {servicesFee.totalRecords ? (
-              <tbody>
-                {servicesFee.item?.map((data) => {
-                  return (
-                    <tr key={data.id}>
-                      <td className="text-center">{data.id}</td>
-                      <td>{data.buildingName}</td>
-                      <td>{data.apartmentName}</td>
-                      <td>{data.periodName}</td>
-                      <td>{data.residentName}</td>
-                      <td className="text-center">{data.electricityNumber}</td>
-                      <td className="text-center">{data.waterMumber}</td>
-                      <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
-                      {/* <td>{moment(data.updatedAt).format('DD/MM/YYYY hh:mm:ss')}</td> */}
-                      <td className="d-flex justify-content-around td-action">
-                        {/* <FontAwesomeIcon
+          <div className="table-scroll-content">
+            <table id="dtDynamicVerticalScrollExample" className="table color-table table-bordered table-sm">
+              <thead>
+                <tr>
+                  <th className="text-center">#</th>
+                  <th>Building Name</th>
+                  <th>Apartment Name</th>
+                  <th>Period</th>
+                  <th>Resident Name</th>
+                  <th>Electricity Number</th>
+                  <th>Water Number</th>
+                  <th>Car Number</th>
+                  <th>Motorcycle Number</th>
+                  <th>Cleaning Number</th>
+                  <th className="text-center">Create At</th>
+                  {/* <th className="text-center">Update At</th> */}
+                  <th className="text-center th-sm">Actions</th>
+                </tr>
+              </thead>
+              {servicesFee.totalRecords ? (
+                <tbody>
+                  {servicesFee.item?.map((data) => {
+                    return (
+                      <tr key={data.id}>
+                        <td className="text-center">{data.id}</td>
+                        <td>{data.buildingName}</td>
+                        <td>{data.apartmentName}</td>
+                        <td>{data.periodName}</td>
+                        <td>{data.residentName}</td>
+                        <td className="text-center">{data.electricityNumber}</td>
+                        <td className="text-center">{data.waterMumber}</td>
+                        <td className="text-center">{data.carNumber}</td>
+                        <td className="text-center">{data.motorcycleNumber}</td>
+                        <td className="text-center">{data.cleaningNumber}</td>
+                        <td>{moment(data.createdAt).format('DD/MM/YYYY hh:mm:ss')}</td>
+                        {/* <td>{moment(data.updatedAt).format('DD/MM/YYYY hh:mm:ss')}</td> */}
+                        <td className="d-flex justify-content-around td-action">
+                          {/* <FontAwesomeIcon
                           onClick={() => {
                             setShowModalConfirm(true)
                             setId(data.id.toString())
@@ -253,17 +296,18 @@ const ServiceFee: FC = () => {
                           className="btn-delete"
                           icon={faTrash}
                         /> */}
-                        <FontAwesomeIcon onClick={() => handleEditServiceFee(data.id.toString())} className="btn-edit" icon={faEdit} />
-                        <TonggleInput actflg={data.actflg} />
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            ) : (
-              <NodataMatching count={9} />
-            )}
-          </table>
+                          <FontAwesomeIcon onClick={() => handleEditServiceFee(data.id.toString())} className="btn-edit" icon={faEdit} />
+                          <TonggleInput actflg={data.actflg} />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              ) : (
+                <NodataMatching count={9} />
+              )}
+            </table>
+          </div>
           {!!servicesFee.totalRecords && (
             <div className="d-flex justify-content-between table-bottom">
               <div>

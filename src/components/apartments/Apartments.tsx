@@ -48,14 +48,17 @@ const Apartments: FC = () => {
     pageNum: 1,
     searchInput: ''
   })
-  const showToasts = (message: string, color: string) => {
-    dispatch(
-      showToast({
-        message: message,
-        color: color
-      })
-    )
-  }
+  const showToasts = useCallback(
+    (message: string, color: string) => {
+      dispatch(
+        showToast({
+          message: message,
+          color: color
+        })
+      )
+    },
+    [dispatch]
+  )
   const setPageNum = (index: number) => {
     setParams({ ...params, pageNum: index })
   }
@@ -73,11 +76,17 @@ const Apartments: FC = () => {
           searchInput: params.searchInput
         }
       })
-      setApartments(res.data)
+      if (res.data.errorCode == 0) {
+        setApartments(res.data)
+      } else if (res.data.errorCode == 401) {
+        Navigate('/login')
+      } else {
+        showToasts(res.data.message, 'red')
+      }
     } catch (error) {
-      console.log(error)
+      showToasts((error as Error).message, 'red')
     }
-  }, [params.pageSize, params.pageNum, params.searchInput])
+  }, [params.pageSize, params.pageNum, params.searchInput, showToasts, Navigate])
   useEffect(() => {
     setTimeout(() => {
       getApartments()

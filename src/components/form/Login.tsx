@@ -5,21 +5,28 @@ import { faLock, faUser, faEye } from '@fortawesome/free-solid-svg-icons'
 import { Forms } from '../../assets/styles/Forms'
 import { InputStyled } from '../../assets/styles/Input'
 import { ButtonSubmit } from '../../assets/styles/Buttons'
-import AlertMessage from '../alertMessage/AlertMessage'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-
+import { useDispatch } from 'react-redux'
+import { showToast } from '../toasts/ToastActions'
 export default function Login() {
   const refMessage = useRef()
   const [typeInput, setTypeInput] = useState(true)
-  const [showMessage, setShowMessage] = useState(false)
-  const [message, setMessage] = useState('')
   const Navigate = useNavigate()
+  const dispatch = useDispatch()
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm()
+  const showToasts = (message: string, color: string) => {
+    dispatch(
+      showToast({
+        message: message,
+        color: color
+      })
+    )
+  }
   const onSubmit = async (data: unknown) => {
     try {
       const res = await axios.post(`http://localhost:8088/v1/users/login`, data)
@@ -32,16 +39,14 @@ export default function Login() {
         localStorage.setItem('isLogin', JSON.stringify('true'))
         Navigate('/')
       } else {
-        setMessage(res.data.message)
-        setShowMessage(true)
+        showToasts(res.data.message, 'red')
       }
     } catch (error) {
-      console.log(error)
+      showToasts((error as Error).message, 'red')
     }
   }
   return (
     <Forms className="bg-form bg-white">
-      {showMessage && <AlertMessage color={'red'} message={message} show={showMessage} setShow={setShowMessage} />}
       <div className=" container form-content bg-white p-3 rounded-3">
         <div className="row px-3">
           <div className="col-lg-6 d-none d-lg-block ">

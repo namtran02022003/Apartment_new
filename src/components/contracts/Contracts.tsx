@@ -109,7 +109,7 @@ const Contracts: FC = () => {
         actflg: typeAction
       })
       if (res.data.errorCode == 0) {
-        showToasts('Change success', 'green')
+        showToasts('Success', 'green')
         getContracts()
       } else {
         showToasts(res.data.message, 'green')
@@ -122,10 +122,18 @@ const Contracts: FC = () => {
   if (loading) return <Loading />
   return (
     <>
-      {showModalConfirm && <ModalConfirm showForm={showModalConfirm} setId={setId} setShowForm={setShowModalConfirm} action={deleteContact} />}
+      {showModalConfirm && (
+        <ModalConfirm
+          text="Do you want to delete contract?"
+          showForm={showModalConfirm}
+          setId={setId}
+          setShowForm={setShowModalConfirm}
+          action={deleteContact}
+        />
+      )}
       {showConfirmChangeStatus && (
         <ModalConfirm
-          text="Do you want change status?"
+          text={typeAction == 'A' ? 'Do you want to approve the contract?' : 'Do you want to terminate the contract?'}
           showForm={showConfirmChangeStatus}
           setId={setId}
           setShowForm={setShowConfirmChangeStatus}
